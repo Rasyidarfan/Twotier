@@ -123,13 +123,13 @@
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.subjects') }}" class="btn btn-info w-100">
+                        <a href="{{ route('admin.subjects.index') }}" class="btn btn-info w-100">
                             <i class="bi bi-book"></i>
                             Kelola Mapel
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('admin.chapters') }}" class="btn btn-warning w-100">
+                        <a href="{{ route('admin.chapters.index') }}" class="btn btn-warning w-100">
                             <i class="bi bi-bookmark"></i>
                             Kelola Bab
                         </a>
@@ -149,7 +149,7 @@
                     <i class="bi bi-clock-history"></i>
                     Soal Terbaru
                 </h5>
-                <a href="{{ route('admin.questions') }}" class="btn btn-sm btn-outline-primary">
+                <a href="{{ route('admin.questions.index') }}" class="btn btn-sm btn-outline-primary">
                     Lihat Semua
                 </a>
             </div>

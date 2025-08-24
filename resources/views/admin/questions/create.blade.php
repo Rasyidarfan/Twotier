@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'إضافة سؤال جديد')
+@section('title', 'Tambah Soal Baru')
 
 @section('content')
 <div class="container-fluid">
@@ -9,19 +9,19 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-plus-circle me-2"></i>
-                إضافة سؤال جديد
+                Tambah Soal Baru
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.questions.index') }}">الأسئلة</a></li>
-                    <li class="breadcrumb-item active">إضافة سؤال جديد</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.questions.index') }}">Kelola Soal</a></li>
+                    <li class="breadcrumb-item active">Tambah Soal</li>
                 </ol>
             </nav>
         </div>
         <a href="{{ route('admin.questions.index') }}" class="btn btn-secondary">
             <i class="bi bi-arrow-left me-2"></i>
-            العودة للأسئلة
+            Kembali ke Daftar Soal
         </a>
     </div>
 
@@ -32,7 +32,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="bi bi-pencil-square me-2"></i>
-                        بيانات السؤال
+                        Informasi Soal
                     </h6>
                 </div>
                 <div class="card-body">
@@ -42,9 +42,9 @@
                         <!-- Basic Information -->
                         <div class="row mb-4">
                             <div class="col-md-6">
-                                <label for="subject_id" class="form-label">المادة <span class="text-danger">*</span></label>
+                                <label for="subject_id" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
                                 <select class="form-select @error('subject_id') is-invalid @enderror" id="subject_id" name="subject_id" required>
-                                    <option value="">اختر المادة</option>
+                                    <option value="">Pilih Mata Pelajaran</option>
                                     @foreach($subjects as $subject)
                                         <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
                                             {{ $subject->name }}
@@ -56,9 +56,9 @@
                                 @enderror
                             </div>
                             <div class="col-md-6">
-                                <label for="chapter_id" class="form-label">الفصل <span class="text-danger">*</span></label>
+                                <label for="chapter_id" class="form-label">Bab <span class="text-danger">*</span></label>
                                 <select class="form-select @error('chapter_id') is-invalid @enderror" id="chapter_id" name="chapter_id" required>
-                                    <option value="">اختر الفصل</option>
+                                    <option value="">Pilih Bab</option>
                                     @foreach($chapters as $chapter)
                                         <option value="{{ $chapter->id }}" {{ old('chapter_id') == $chapter->id ? 'selected' : '' }}>
                                             {{ $chapter->name }}
@@ -73,32 +73,32 @@
 
                         <div class="row mb-4">
                             <div class="col-md-4">
-                                <label for="difficulty" class="form-label">مستوى الصعوبة <span class="text-danger">*</span></label>
+                                <label for="difficulty" class="form-label">Tingkat Kesulitan <span class="text-danger">*</span></label>
                                 <select class="form-select @error('difficulty') is-invalid @enderror" id="difficulty" name="difficulty" required>
-                                    <option value="">اختر المستوى</option>
-                                    <option value="easy" {{ old('difficulty') == 'easy' ? 'selected' : '' }}>سهل</option>
-                                    <option value="medium" {{ old('difficulty') == 'medium' ? 'selected' : '' }}>متوسط</option>
-                                    <option value="hard" {{ old('difficulty') == 'hard' ? 'selected' : '' }}>صعب</option>
+                                    <option value="">Pilih Tingkat Kesulitan</option>
+                                    <option value="mudah" {{ old('difficulty') == 'mudah' ? 'selected' : '' }}>Mudah</option>
+                                    <option value="sedang" {{ old('difficulty') == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                                    <option value="sulit" {{ old('difficulty') == 'sulit' ? 'selected' : '' }}>Sulit</option>
                                 </select>
                                 @error('difficulty')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-4">
-                                <label for="points" class="form-label">النقاط <span class="text-danger">*</span></label>
+                                <label for="points" class="form-label">Poin <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control @error('points') is-invalid @enderror" 
-                                       id="points" name="points" value="{{ old('points', 1) }}" min="1" max="10" required>
+                                       id="points" name="points" value="{{ old('points', 10) }}" min="1" max="100" required>
                                 @error('points')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
                             <div class="col-md-4">
-                                <label for="status" class="form-label">الحالة <span class="text-danger">*</span></label>
-                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                    <option value="active" {{ old('status', 'active') == 'active' ? 'selected' : '' }}>نشط</option>
-                                    <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
+                                <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
+                                <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
+                                    <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="0" {{ old('is_active') == '0' ? 'selected' : '' }}>Nonaktif</option>
                                 </select>
-                                @error('status')
+                                @error('is_active')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -109,24 +109,16 @@
                             <div class="card-header bg-primary text-white">
                                 <h6 class="mb-0">
                                     <i class="bi bi-1-circle me-2"></i>
-                                    السؤال الأساسي (المستوى الأول)
+                                    Pertanyaan Tier 1 (Pengetahuan Konsep)
                                 </h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="tier1_question" class="form-label">نص السؤال <span class="text-danger">*</span></label>
+                                    <label for="tier1_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
                                     <textarea class="form-control @error('tier1_question') is-invalid @enderror" 
-                                              id="tier1_question" name="tier1_question" rows="4" required>{{ old('tier1_question') }}</textarea>
+                                              id="tier1_question" name="tier1_question" rows="4" required 
+                                              placeholder="Masukkan pertanyaan utama di sini...">{{ old('tier1_question') }}</textarea>
                                     @error('tier1_question')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="tier1_image" class="form-label">صورة السؤال (اختياري)</label>
-                                    <input type="file" class="form-control @error('tier1_image') is-invalid @enderror" 
-                                           id="tier1_image" name="tier1_image" accept="image/*">
-                                    @error('tier1_image')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -134,48 +126,62 @@
                                 <!-- Tier 1 Options -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_option_a" class="form-label">الخيار أ <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_option_a') is-invalid @enderror" 
-                                               id="tier1_option_a" name="tier1_option_a" value="{{ old('tier1_option_a') }}" required>
-                                        @error('tier1_option_a')
+                                        <label for="tier1_options_0" class="form-label">Pilihan A <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.0') is-invalid @enderror" 
+                                               id="tier1_options_0" name="tier1_options[0]" value="{{ old('tier1_options.0') }}" required 
+                                               placeholder="Masukkan pilihan A">
+                                        @error('tier1_options.0')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_option_b" class="form-label">الخيار ب <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_option_b') is-invalid @enderror" 
-                                               id="tier1_option_b" name="tier1_option_b" value="{{ old('tier1_option_b') }}" required>
-                                        @error('tier1_option_b')
+                                        <label for="tier1_options_1" class="form-label">Pilihan B <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.1') is-invalid @enderror" 
+                                               id="tier1_options_1" name="tier1_options[1]" value="{{ old('tier1_options.1') }}" required 
+                                               placeholder="Masukkan pilihan B">
+                                        @error('tier1_options.1')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_option_c" class="form-label">الخيار ج <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_option_c') is-invalid @enderror" 
-                                               id="tier1_option_c" name="tier1_option_c" value="{{ old('tier1_option_c') }}" required>
-                                        @error('tier1_option_c')
+                                        <label for="tier1_options_2" class="form-label">Pilihan C <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.2') is-invalid @enderror" 
+                                               id="tier1_options_2" name="tier1_options[2]" value="{{ old('tier1_options.2') }}" required 
+                                               placeholder="Masukkan pilihan C">
+                                        @error('tier1_options.2')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_option_d" class="form-label">الخيار د <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_option_d') is-invalid @enderror" 
-                                               id="tier1_option_d" name="tier1_option_d" value="{{ old('tier1_option_d') }}" required>
-                                        @error('tier1_option_d')
+                                        <label for="tier1_options_3" class="form-label">Pilihan D <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.3') is-invalid @enderror" 
+                                               id="tier1_options_3" name="tier1_options[3]" value="{{ old('tier1_options.3') }}" required 
+                                               placeholder="Masukkan pilihan D">
+                                        @error('tier1_options.3')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tier1_options_4" class="form-label">Pilihan E <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.4') is-invalid @enderror" 
+                                               id="tier1_options_4" name="tier1_options[4]" value="{{ old('tier1_options.4') }}" required 
+                                               placeholder="Masukkan pilihan E">
+                                        @error('tier1_options.4')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tier1_correct_answer" class="form-label">الإجابة الصحيحة <span class="text-danger">*</span></label>
+                                    <label for="tier1_correct_answer" class="form-label">Jawaban Benar <span class="text-danger">*</span></label>
                                     <select class="form-select @error('tier1_correct_answer') is-invalid @enderror" 
                                             id="tier1_correct_answer" name="tier1_correct_answer" required>
-                                        <option value="">اختر الإجابة الصحيحة</option>
-                                        <option value="a" {{ old('tier1_correct_answer') == 'a' ? 'selected' : '' }}>أ</option>
-                                        <option value="b" {{ old('tier1_correct_answer') == 'b' ? 'selected' : '' }}>ب</option>
-                                        <option value="c" {{ old('tier1_correct_answer') == 'c' ? 'selected' : '' }}>ج</option>
-                                        <option value="d" {{ old('tier1_correct_answer') == 'd' ? 'selected' : '' }}>د</option>
+                                        <option value="">Pilih Jawaban yang Benar</option>
+                                        <option value="0" {{ old('tier1_correct_answer') == '0' ? 'selected' : '' }}>A</option>
+                                        <option value="1" {{ old('tier1_correct_answer') == '1' ? 'selected' : '' }}>B</option>
+                                        <option value="2" {{ old('tier1_correct_answer') == '2' ? 'selected' : '' }}>C</option>
+                                        <option value="3" {{ old('tier1_correct_answer') == '3' ? 'selected' : '' }}>D</option>
+                                        <option value="4" {{ old('tier1_correct_answer') == '4' ? 'selected' : '' }}>E</option>
                                     </select>
                                     @error('tier1_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -189,24 +195,16 @@
                             <div class="card-header bg-success text-white">
                                 <h6 class="mb-0">
                                     <i class="bi bi-2-circle me-2"></i>
-                                    سؤال التبرير (المستوى الثاني)
+                                    Pertanyaan Tier 2 (Alasan/Reasoning)
                                 </h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="tier2_question" class="form-label">نص السؤال <span class="text-danger">*</span></label>
+                                    <label for="tier2_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
                                     <textarea class="form-control @error('tier2_question') is-invalid @enderror" 
-                                              id="tier2_question" name="tier2_question" rows="4" required>{{ old('tier2_question') }}</textarea>
+                                              id="tier2_question" name="tier2_question" rows="4" required 
+                                              placeholder="Masukkan pertanyaan tentang alasan pemilihan jawaban...">{{ old('tier2_question') }}</textarea>
                                     @error('tier2_question')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="tier2_image" class="form-label">صورة السؤال (اختياري)</label>
-                                    <input type="file" class="form-control @error('tier2_image') is-invalid @enderror" 
-                                           id="tier2_image" name="tier2_image" accept="image/*">
-                                    @error('tier2_image')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -214,48 +212,62 @@
                                 <!-- Tier 2 Options -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_option_a" class="form-label">الخيار أ <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_option_a') is-invalid @enderror" 
-                                               id="tier2_option_a" name="tier2_option_a" value="{{ old('tier2_option_a') }}" required>
-                                        @error('tier2_option_a')
+                                        <label for="tier2_options_0" class="form-label">Pilihan A <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.0') is-invalid @enderror" 
+                                               id="tier2_options_0" name="tier2_options[0]" value="{{ old('tier2_options.0') }}" required 
+                                               placeholder="Masukkan alasan A">
+                                        @error('tier2_options.0')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_option_b" class="form-label">الخيار ب <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_option_b') is-invalid @enderror" 
-                                               id="tier2_option_b" name="tier2_option_b" value="{{ old('tier2_option_b') }}" required>
-                                        @error('tier2_option_b')
+                                        <label for="tier2_options_1" class="form-label">Pilihan B <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.1') is-invalid @enderror" 
+                                               id="tier2_options_1" name="tier2_options[1]" value="{{ old('tier2_options.1') }}" required 
+                                               placeholder="Masukkan alasan B">
+                                        @error('tier2_options.1')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_option_c" class="form-label">الخيار ج <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_option_c') is-invalid @enderror" 
-                                               id="tier2_option_c" name="tier2_option_c" value="{{ old('tier2_option_c') }}" required>
-                                        @error('tier2_option_c')
+                                        <label for="tier2_options_2" class="form-label">Pilihan C <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.2') is-invalid @enderror" 
+                                               id="tier2_options_2" name="tier2_options[2]" value="{{ old('tier2_options.2') }}" required 
+                                               placeholder="Masukkan alasan C">
+                                        @error('tier2_options.2')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_option_d" class="form-label">الخيار د <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_option_d') is-invalid @enderror" 
-                                               id="tier2_option_d" name="tier2_option_d" value="{{ old('tier2_option_d') }}" required>
-                                        @error('tier2_option_d')
+                                        <label for="tier2_options_3" class="form-label">Pilihan D <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.3') is-invalid @enderror" 
+                                               id="tier2_options_3" name="tier2_options[3]" value="{{ old('tier2_options.3') }}" required 
+                                               placeholder="Masukkan alasan D">
+                                        @error('tier2_options.3')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label for="tier2_options_4" class="form-label">Pilihan E <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.4') is-invalid @enderror" 
+                                               id="tier2_options_4" name="tier2_options[4]" value="{{ old('tier2_options.4') }}" required 
+                                               placeholder="Masukkan alasan E">
+                                        @error('tier2_options.4')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tier2_correct_answer" class="form-label">الإجابة الصحيحة <span class="text-danger">*</span></label>
+                                    <label for="tier2_correct_answer" class="form-label">Jawaban Benar <span class="text-danger">*</span></label>
                                     <select class="form-select @error('tier2_correct_answer') is-invalid @enderror" 
                                             id="tier2_correct_answer" name="tier2_correct_answer" required>
-                                        <option value="">اختر الإجابة الصحيحة</option>
-                                        <option value="a" {{ old('tier2_correct_answer') == 'a' ? 'selected' : '' }}>أ</option>
-                                        <option value="b" {{ old('tier2_correct_answer') == 'b' ? 'selected' : '' }}>ب</option>
-                                        <option value="c" {{ old('tier2_correct_answer') == 'c' ? 'selected' : '' }}>ج</option>
-                                        <option value="d" {{ old('tier2_correct_answer') == 'd' ? 'selected' : '' }}>د</option>
+                                        <option value="">Pilih Alasan yang Benar</option>
+                                        <option value="0" {{ old('tier2_correct_answer') == '0' ? 'selected' : '' }}>A</option>
+                                        <option value="1" {{ old('tier2_correct_answer') == '1' ? 'selected' : '' }}>B</option>
+                                        <option value="2" {{ old('tier2_correct_answer') == '2' ? 'selected' : '' }}>C</option>
+                                        <option value="3" {{ old('tier2_correct_answer') == '3' ? 'selected' : '' }}>D</option>
+                                        <option value="4" {{ old('tier2_correct_answer') == '4' ? 'selected' : '' }}>E</option>
                                     </select>
                                     @error('tier2_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -269,25 +281,26 @@
                             <div class="card-header bg-info text-white">
                                 <h6 class="mb-0">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    معلومات إضافية
+                                    Informasi Tambahan (Opsional)
                                 </h6>
                             </div>
                             <div class="card-body">
                                 <div class="mb-3">
-                                    <label for="explanation" class="form-label">شرح الإجابة (اختياري)</label>
+                                    <label for="explanation" class="form-label">Penjelasan Jawaban</label>
                                     <textarea class="form-control @error('explanation') is-invalid @enderror" 
-                                              id="explanation" name="explanation" rows="3">{{ old('explanation') }}</textarea>
+                                              id="explanation" name="explanation" rows="3" 
+                                              placeholder="Berikan penjelasan detail mengapa jawaban tersebut benar...">{{ old('explanation') }}</textarea>
                                     @error('explanation')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="tags" class="form-label">العلامات (اختياري)</label>
+                                    <label for="tags" class="form-label">Tag/Kata Kunci</label>
                                     <input type="text" class="form-control @error('tags') is-invalid @enderror" 
                                            id="tags" name="tags" value="{{ old('tags') }}" 
-                                           placeholder="مثال: رياضيات، جبر، معادلات">
-                                    <small class="form-text text-muted">افصل بين العلامات بفاصلة</small>
+                                           placeholder="contoh: qowaid, nahwu, fiil madhi">
+                                    <small class="form-text text-muted">Pisahkan tag dengan koma (,)</small>
                                     @error('tags')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -299,16 +312,16 @@
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('admin.questions.index') }}" class="btn btn-secondary">
                                 <i class="bi bi-x-circle me-2"></i>
-                                إلغاء
+                                Batal
                             </a>
                             <div>
                                 <button type="submit" name="action" value="save" class="btn btn-primary me-2">
                                     <i class="bi bi-check-circle me-2"></i>
-                                    حفظ السؤال
+                                    Simpan Soal
                                 </button>
                                 <button type="submit" name="action" value="save_and_new" class="btn btn-success">
                                     <i class="bi bi-plus-circle me-2"></i>
-                                    حفظ وإضافة آخر
+                                    Simpan & Tambah Lagi
                                 </button>
                             </div>
                         </div>
@@ -328,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     subjectSelect.addEventListener('change', function() {
         const subjectId = this.value;
-        chapterSelect.innerHTML = '<option value="">اختر الفصل</option>';
+        chapterSelect.innerHTML = '<option value="">Pilih Bab</option>';
         
         if (subjectId) {
             fetch(`/admin/subjects/${subjectId}/chapters`)
@@ -365,36 +378,50 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!isValid) {
             e.preventDefault();
             Swal.fire({
-                title: 'خطأ!',
-                text: 'يرجى ملء جميع الحقول المطلوبة',
-                icon: 'error',
-                confirmButtonText: 'موافق'
+                title: 'Peringatan!',
+                text: 'Mohon lengkapi semua field yang wajib diisi',
+                icon: 'warning',
+                confirmButtonText: 'OK'
             });
         }
     });
 
-    // Image preview
-    const imageInputs = document.querySelectorAll('input[type="file"]');
-    imageInputs.forEach(input => {
-        input.addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    // Create or update preview
-                    let preview = input.parentNode.querySelector('.image-preview');
-                    if (!preview) {
-                        preview = document.createElement('div');
-                        preview.className = 'image-preview mt-2';
-                        input.parentNode.appendChild(preview);
-                    }
-                    preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-width: 200px;">`;
-                };
-                reader.readAsDataURL(file);
-            }
+    // Preview options as user types
+    const tier1Options = document.querySelectorAll('[name^="tier1_options"]');
+    const tier2Options = document.querySelectorAll('[name^="tier2_options"]');
+    
+    function updatePreview(options, previewId) {
+        options.forEach((input, index) => {
+            input.addEventListener('input', function() {
+                console.log(`Option ${index}: ${this.value}`);
+            });
         });
-    });
+    }
+    
+    updatePreview(tier1Options, 'tier1-preview');
+    updatePreview(tier2Options, 'tier2-preview');
 });
+
+// Success/Error messages
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+@endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '{{ session('error') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+@endif
 </script>
 @endpush
 @endsection

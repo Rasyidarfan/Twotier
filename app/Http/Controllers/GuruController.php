@@ -44,7 +44,9 @@ class GuruController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('guru.exams.index', compact('exams'));
+        $subjects = Subject::where('is_active', true)->get();
+
+        return view('guru.exams.index', compact('exams', 'subjects'));
     }
 
     public function createExam()
@@ -173,7 +175,72 @@ class GuruController extends Controller
             ->latest()
             ->get();
 
-        return view('guru.exams.waiting-room', compact('exam', 'participants'));
+        $currentParticipants = $participants->count();
+        $completedParticipants = $participants->where('status', 'completed')->count();
+        $inProgressParticipants = $participants->where('status', 'in_progress')->count();
+        $waitingParticipants = $participants->where('status', 'waiting')->count();
+        
+        // Calculate average score from completed participants
+        $completedResults = ExamResult::where('exam_id', $exam->id)
+            ->where('status', 'completed')
+            ->get();
+        $averageScore = $completedResults->count() > 0 ? $completedResults->avg('total_score') : 0;
+
+        return view('guru.exams.waiting-room', compact('exam', 'participants', 'currentParticipants', 'completedParticipants', 'inProgressParticipants', 'waitingParticipants', 'averageScore'));
+    }
+
+    public function getParticipants(Exam $exam)
+    {
+        $this->authorize('view', $exam);
+
+        $participants = StudentExamSession::where('exam_id', $exam->id)
+            ->latest()
+            ->get()
+            ->map(function ($session) {
+                return [
+                    'id' => $session->id,
+                    'name' => $session->student_name,
+                    'email' => $session->student_identifier ?? 'N/A',
+                    'status' => $session->status,
+                    'started_at' => $session->started_at,
+                    'finished_at' => $session->finished_at,
+                    'progress' => $this->calculateProgress($session),
+                    'current_score' => $session->total_score ?? 0,
+                    'total_score' => $this->getTotalPossibleScore($session->exam_id),
+                ];
+            });
+
+        $statistics = [
+            'current' => $participants->count(),
+            'completed' => $participants->where('status', 'completed')->count(),
+            'waiting' => $participants->where('status', 'registered')->count(),
+            'in_progress' => $participants->where('status', 'in_progress')->count(),
+            'average_score' => ExamResult::where('exam_id', $exam->id)
+                ->where('status', 'completed')
+                ->avg('total_score') ?? 0
+        ];
+
+        return response()->json([
+            'participants' => $participants->values(),
+            'statistics' => $statistics
+        ]);
+    }
+
+    private function calculateProgress($session)
+    {
+        if ($session->status === 'registered') {
+            return 0;
+        }
+
+        $totalQuestions = ExamQuestion::where('exam_id', $session->exam_id)->count();
+        $answeredQuestions = StudentAnswer::where('session_id', $session->id)->count();
+
+        return $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
+    }
+
+    private function getTotalPossibleScore($examId)
+    {
+        return ExamQuestion::where('exam_id', $examId)->sum('points');
     }
 
     public function startExam(Exam $exam)
@@ -292,8 +359,12 @@ class GuruController extends Controller
 
         $subjects = Subject::where('is_active', true)->get();
         $chapters = Chapter::where('is_active', true)->get();
+        $activeQuestions = Question::where('is_active', true)->count();
+        $easyQuestions = Question::where('difficulty', 'mudah')->where('is_active', true)->count();
+        $mediumQuestions = Question::where('difficulty', 'sedang')->where('is_active', true)->count();
+        $hardQuestions = Question::where('difficulty', 'sulit')->where('is_active', true)->count();
 
-        return view('guru.questions.index', compact('questions', 'subjects', 'chapters'));
+        return view('guru.questions.index', compact('questions', 'subjects', 'chapters', 'activeQuestions', 'easyQuestions', 'mediumQuestions', 'hardQuestions'));
     }
 
     public function filterQuestions(Request $request)

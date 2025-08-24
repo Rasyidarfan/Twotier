@@ -117,13 +117,13 @@
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('guru.questions') }}" class="btn btn-success w-100">
+                        <a href="{{ route('guru.questions.index') }}" class="btn btn-success w-100">
                             <i class="bi bi-collection"></i>
                             Bank Soal
                         </a>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <a href="{{ route('guru.exams') }}" class="btn btn-info w-100">
+                        <a href="{{ route('guru.exams.index') }}" class="btn btn-info w-100">
                             <i class="bi bi-clipboard-check"></i>
                             Kelola Ujian
                         </a>
@@ -149,7 +149,7 @@
                     <i class="bi bi-clock-history"></i>
                     Ujian Terbaru
                 </h5>
-                <a href="{{ route('guru.exams') }}" class="btn btn-sm btn-outline-primary">
+                <a href="{{ route('guru.exams.index') }}" class="btn btn-sm btn-outline-primary">
                     Lihat Semua
                 </a>
             </div>

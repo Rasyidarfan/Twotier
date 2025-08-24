@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'إدارة الفصول')
+@section('title', 'Kelola Bab')
 
 @section('content')
 <div class="container-fluid">
@@ -9,16 +9,16 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-collection me-2"></i>
-                إدارة الفصول
+                Kelola Bab
                 @if(request('subject'))
-                    <small class="text-muted">- {{ $currentSubject->name ?? 'مادة غير محددة' }}</small>
+                    <small class="text-muted">- {{ $currentSubject->name ?? 'Mata Pelajaran Tidak Ditentukan' }}</small>
                 @endif
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('admin.subjects.index') }}">المواد</a></li>
-                    <li class="breadcrumb-item active">الفصول</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.subjects.index') }}">Mata Pelajaran</a></li>
+                    <li class="breadcrumb-item active">Bab</li>
                 </ol>
             </nav>
         </div>
@@ -26,12 +26,12 @@
             @if(request('subject'))
                 <a href="{{ route('admin.subjects.index') }}" class="btn btn-secondary me-2">
                     <i class="bi bi-arrow-left me-2"></i>
-                    العودة للمواد
+                    Kembali ke Mata Pelajaran
                 </a>
             @endif
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createChapterModal">
                 <i class="bi bi-plus me-2"></i>
-                إضافة فصل جديد
+                Tambah Bab Baru
             </button>
         </div>
     </div>
@@ -44,7 +44,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                إجمالي الفصول
+                                Total Bab
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $chapters->count() }}</div>
                         </div>
@@ -62,7 +62,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                الفصول النشطة
+                                Bab Aktif
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $chapters->where('status', 'active')->count() }}</div>
                         </div>
@@ -80,7 +80,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                إجمالي الأسئلة
+                                Total Soal
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalQuestions ?? 0 }}</div>
                         </div>
@@ -98,7 +98,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                متوسط الأسئلة/فصل
+                                Rata-rata Soal/Bab
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">
                                 {{ $chapters->count() > 0 ? round(($totalQuestions ?? 0) / $chapters->count(), 1) : 0 }}
@@ -118,7 +118,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-funnel me-2"></i>
-                البحث والتصفية
+                Pencarian dan Filter
             </h6>
         </div>
         <div class="card-body">
@@ -128,15 +128,15 @@
                 @endif
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="search" class="form-label">البحث</label>
+                        <label for="search" class="form-label">Pencarian</label>
                         <input type="text" class="form-control" id="search" name="search" 
-                               value="{{ request('search') }}" placeholder="ابحث عن فصل...">
+                               value="{{ request('search') }}" placeholder="Cari bab...">
                     </div>
                     @if(!request('subject'))
                         <div class="col-md-3 mb-3">
-                            <label for="subject_filter" class="form-label">المادة</label>
+                            <label for="subject_filter" class="form-label">Mata Pelajaran</label>
                             <select class="form-select" id="subject_filter" name="subject_filter">
-                                <option value="">جميع المواد</option>
+                                <option value="">Semua Mata Pelajaran</option>
                                 @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}" {{ request('subject_filter') == $subject->id ? 'selected' : '' }}>
                                         {{ $subject->name }}
@@ -146,20 +146,20 @@
                         </div>
                     @endif
                     <div class="col-md-2 mb-3">
-                        <label for="status" class="form-label">الحالة</label>
+                        <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="">جميع الحالات</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشط</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
+                            <option value="">Semua Status</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="sort" class="form-label">ترتيب حسب</label>
+                        <label for="sort" class="form-label">Urutkan berdasarkan</label>
                         <select class="form-select" id="sort" name="sort">
-                            <option value="order" {{ request('sort') == 'order' ? 'selected' : '' }}>الترتيب</option>
-                            <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>الاسم</option>
-                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>تاريخ الإنشاء</option>
-                            <option value="questions_count" {{ request('sort') == 'questions_count' ? 'selected' : '' }}>عدد الأسئلة</option>
+                            <option value="order" {{ request('sort') == 'order' ? 'selected' : '' }}>Urutan</option>
+                            <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nama</option>
+                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Tanggal Dibuat</option>
+                            <option value="questions_count" {{ request('sort') == 'questions_count' ? 'selected' : '' }}>Jumlah Soal</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
@@ -167,7 +167,7 @@
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search me-2"></i>
-                                بحث
+                                Cari
                             </button>
                         </div>
                     </div>
@@ -181,7 +181,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-table me-2"></i>
-                قائمة الفصول
+                Daftar Bab
             </h6>
         </div>
         <div class="card-body">
@@ -190,16 +190,16 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>الترتيب</th>
-                                <th>اسم الفصل</th>
+                                <th>Urutan</th>
+                                <th>Nama Bab</th>
                                 @if(!request('subject'))
-                                    <th>المادة</th>
+                                    <th>Mata Pelajaran</th>
                                 @endif
-                                <th>الوصف</th>
-                                <th>عدد الأسئلة</th>
-                                <th>الحالة</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th>الإجراءات</th>
+                                <th>Deskripsi</th>
+                                <th>Jumlah Soal</th>
+                                <th>Status</th>
+                                <th>Tanggal Dibuat</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="chaptersTableBody">
@@ -210,11 +210,11 @@
                                             <span class="badge bg-secondary me-2">{{ $chapter->order ?? 0 }}</span>
                                             <div class="btn-group-vertical btn-group-sm">
                                                 <button type="button" class="btn btn-outline-primary btn-sm" 
-                                                        onclick="moveChapter({{ $chapter->id }}, 'up')" title="تحريك لأعلى">
+                                                        onclick="moveChapter({{ $chapter->id }}, 'up')" title="Naik">
                                                     <i class="bi bi-arrow-up"></i>
                                                 </button>
                                                 <button type="button" class="btn btn-outline-primary btn-sm" 
-                                                        onclick="moveChapter({{ $chapter->id }}, 'down')" title="تحريك لأسفل">
+                                                        onclick="moveChapter({{ $chapter->id }}, 'down')" title="Turun">
                                                     <i class="bi bi-arrow-down"></i>
                                                 </button>
                                             </div>
@@ -235,7 +235,7 @@
                                     </td>
                                     @if(!request('subject'))
                                         <td>
-                                            <span class="badge bg-primary">{{ $chapter->subject->name ?? 'غير محدد' }}</span>
+                                            <span class="badge bg-primary">{{ $chapter->subject->name ?? 'Tidak Ditentukan' }}</span>
                                         </td>
                                     @endif
                                     <td>
@@ -244,7 +244,7 @@
                                                 {{ Str::limit($chapter->description, 50) }}
                                             </span>
                                         @else
-                                            <span class="text-muted">لا يوجد وصف</span>
+                                            <span class="text-muted">Tidak ada deskripsi</span>
                                         @endif
                                     </td>
                                     <td>
@@ -252,28 +252,28 @@
                                     </td>
                                     <td>
                                         @if($chapter->status == 'active')
-                                            <span class="badge bg-success">نشط</span>
+                                            <span class="badge bg-success">Aktif</span>
                                         @else
-                                            <span class="badge bg-secondary">غير نشط</span>
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
                                         @endif
                                     </td>
                                     <td>{{ $chapter->created_at->format('Y-m-d') }}</td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-sm btn-info" 
-                                                    onclick="viewChapter({{ $chapter->id }})" title="عرض">
+                                                    onclick="viewChapter({{ $chapter->id }})" title="Lihat">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-primary" 
-                                                    onclick="editChapter({{ $chapter->id }})" title="تعديل">
+                                                    onclick="editChapter({{ $chapter->id }})" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <a href="{{ route('admin.questions.index', ['chapter' => $chapter->id]) }}" 
-                                               class="btn btn-sm btn-success" title="إدارة الأسئلة">
+                                               class="btn btn-sm btn-success" title="Kelola Soal">
                                                 <i class="bi bi-question-circle"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-danger" 
-                                                    onclick="deleteChapter({{ $chapter->id }})" title="حذف">
+                                                    onclick="deleteChapter({{ $chapter->id }})" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -293,11 +293,11 @@
             @else
                 <div class="text-center py-4">
                     <i class="bi bi-collection fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-600">لا توجد فصول</h5>
-                    <p class="text-gray-500">لم يتم العثور على أي فصول. ابدأ بإضافة فصل جديد.</p>
+                    <h5 class="text-gray-600">Tidak Ada Bab</h5>
+                    <p class="text-gray-500">Tidak ditemukan bab apapun. Mulai dengan menambahkan bab baru.</p>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createChapterModal">
                         <i class="bi bi-plus me-2"></i>
-                        إضافة فصل جديد
+                        Tambah Bab Baru
                     </button>
                 </div>
             @endif
@@ -312,7 +312,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="createChapterModalLabel">
                     <i class="bi bi-plus-circle me-2"></i>
-                    إضافة فصل جديد
+                    Tambah Bab Baru
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -320,12 +320,12 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="subject_id" class="form-label">المادة <span class="text-danger">*</span></label>
+                        <label for="subject_id" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
                         <select class="form-select" id="subject_id" name="subject_id" required>
                             @if(request('subject'))
-                                <option value="{{ request('subject') }}" selected>{{ $currentSubject->name ?? 'مادة محددة' }}</option>
+                                <option value="{{ request('subject') }}" selected>{{ $currentSubject->name ?? 'Mata Pelajaran Dipilih' }}</option>
                             @else
-                                <option value="">اختر المادة</option>
+                                <option value="">Pilih Mata Pelajaran</option>
                                 @foreach($subjects as $subject)
                                     <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                                 @endforeach
@@ -333,40 +333,40 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="name" class="form-label">اسم الفصل <span class="text-danger">*</span></label>
+                        <label for="name" class="form-label">Nama Bab <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="code" class="form-label">رمز الفصل</label>
-                        <input type="text" class="form-control" id="code" name="code" placeholder="مثال: CH01">
+                        <label for="code" class="form-label">Kode Bab</label>
+                        <input type="text" class="form-control" id="code" name="code" placeholder="Contoh: BAB01">
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">الوصف</label>
+                        <label for="description" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="order" class="form-label">الترتيب</label>
+                                <label for="order" class="form-label">Urutan</label>
                                 <input type="number" class="form-control" id="order" name="order" min="1" value="1">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="status" class="form-label">الحالة</label>
+                                <label for="status" class="form-label">Status</label>
                                 <select class="form-select" id="status" name="status" required>
-                                    <option value="active">نشط</option>
-                                    <option value="inactive">غير نشط</option>
+                                    <option value="active">Aktif</option>
+                                    <option value="inactive">Tidak Aktif</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check me-2"></i>
-                        حفظ الفصل
+                        Simpan Bab
                     </button>
                 </div>
             </form>
@@ -381,7 +381,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editChapterModalLabel">
                     <i class="bi bi-pencil-square me-2"></i>
-                    تعديل الفصل
+                    Edit Bab
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -390,7 +390,7 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="edit_subject_id" class="form-label">المادة <span class="text-danger">*</span></label>
+                        <label for="edit_subject_id" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
                         <select class="form-select" id="edit_subject_id" name="subject_id" required>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}">{{ $subject->name }}</option>
@@ -398,40 +398,40 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_name" class="form-label">اسم الفصل <span class="text-danger">*</span></label>
+                        <label for="edit_name" class="form-label">Nama Bab <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_code" class="form-label">رمز الفصل</label>
+                        <label for="edit_code" class="form-label">Kode Bab</label>
                         <input type="text" class="form-control" id="edit_code" name="code">
                     </div>
                     <div class="mb-3">
-                        <label for="edit_description" class="form-label">الوصف</label>
+                        <label for="edit_description" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_order" class="form-label">الترتيب</label>
+                                <label for="edit_order" class="form-label">Urutan</label>
                                 <input type="number" class="form-control" id="edit_order" name="order" min="1">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_status" class="form-label">الحالة</label>
+                                <label for="edit_status" class="form-label">Status</label>
                                 <select class="form-select" id="edit_status" name="status" required>
-                                    <option value="active">نشط</option>
-                                    <option value="inactive">غير نشط</option>
+                                    <option value="active">Aktif</option>
+                                    <option value="inactive">Tidak Aktif</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check me-2"></i>
-                        حفظ التعديلات
+                        Simpan Perubahan
                     </button>
                 </div>
             </form>
@@ -446,7 +446,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="viewChapterModalLabel">
                     <i class="bi bi-eye me-2"></i>
-                    تفاصيل الفصل
+                    Detail Bab
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -454,7 +454,7 @@
                 <!-- Chapter details will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -479,10 +479,10 @@ function editChapter(id) {
         .catch(error => {
             console.error('Error:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل بيانات الفصل',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat data bab',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
@@ -494,38 +494,38 @@ function viewChapter(id) {
             const detailsHtml = `
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>اسم الفصل:</h6>
+                        <h6>Nama Bab:</h6>
                         <p>${chapter.name}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>المادة:</h6>
-                        <p>${chapter.subject ? chapter.subject.name : 'غير محدد'}</p>
+                        <h6>Mata Pelajaran:</h6>
+                        <p>${chapter.subject ? chapter.subject.name : 'Tidak Ditentukan'}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>رمز الفصل:</h6>
-                        <p>${chapter.code || 'غير محدد'}</p>
+                        <h6>Kode Bab:</h6>
+                        <p>${chapter.code || 'Tidak Ditentukan'}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>الترتيب:</h6>
+                        <h6>Urutan:</h6>
                         <p>${chapter.order || 0}</p>
                     </div>
                     <div class="col-12">
-                        <h6>الوصف:</h6>
-                        <p>${chapter.description || 'لا يوجد وصف'}</p>
+                        <h6>Deskripsi:</h6>
+                        <p>${chapter.description || 'Tidak ada deskripsi'}</p>
                     </div>
                     <div class="col-md-4">
-                        <h6>الحالة:</h6>
+                        <h6>Status:</h6>
                         <span class="badge bg-${chapter.status === 'active' ? 'success' : 'secondary'}">
-                            ${chapter.status === 'active' ? 'نشط' : 'غير نشط'}
+                            ${chapter.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
                         </span>
                     </div>
                     <div class="col-md-4">
-                        <h6>عدد الأسئلة:</h6>
+                        <h6>Jumlah Soal:</h6>
                         <p>${chapter.questions_count || 0}</p>
                     </div>
                     <div class="col-md-4">
-                        <h6>آخر تحديث:</h6>
-                        <p>${new Date(chapter.updated_at).toLocaleDateString('ar-SA')}</p>
+                        <h6>Terakhir Diperbarui:</h6>
+                        <p>${new Date(chapter.updated_at).toLocaleDateString('id-ID')}</p>
                     </div>
                 </div>
             `;
@@ -536,24 +536,24 @@ function viewChapter(id) {
         .catch(error => {
             console.error('Error:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل بيانات الفصل',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat data bab',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
 
 function deleteChapter(id) {
     Swal.fire({
-        title: 'تأكيد الحذف',
-        text: 'هل أنت متأكد من حذف هذا الفصل؟ سيتم حذف جميع الأسئلة المرتبطة به.',
+        title: 'Konfirmasi Hapus',
+        text: 'Apakah Anda yakin ingin menghapus bab ini? Semua soal yang terkait akan ikut terhapus.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، احذف',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');
@@ -584,20 +584,20 @@ function moveChapter(id, direction) {
             location.reload();
         } else {
             Swal.fire({
-                title: 'خطأ!',
-                text: data.message || 'حدث خطأ أثناء تحريك الفصل',
+                title: 'Error!',
+                text: data.message || 'Terjadi kesalahan saat memindahkan bab',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         }
     })
     .catch(error => {
         console.error('Error:', error);
         Swal.fire({
-            title: 'خطأ!',
-            text: 'حدث خطأ أثناء تحريك الفصل',
+            title: 'Error!',
+            text: 'Terjadi kesalahan saat memindahkan bab',
             icon: 'error',
-            confirmButtonText: 'موافق'
+            confirmButtonText: 'OK'
         });
     });
 }
@@ -610,10 +610,10 @@ document.getElementById('createChapterForm').addEventListener('submit', function
     if (!name || !subjectId) {
         e.preventDefault();
         Swal.fire({
-            title: 'خطأ!',
-            text: 'يرجى ملء جميع الحقول المطلوبة',
+            title: 'Error!',
+            text: 'Silakan isi semua field yang diperlukan',
             icon: 'error',
-            confirmButtonText: 'موافق'
+            confirmButtonText: 'OK'
         });
     }
 });
@@ -625,10 +625,10 @@ document.getElementById('editChapterForm').addEventListener('submit', function(e
     if (!name || !subjectId) {
         e.preventDefault();
         Swal.fire({
-            title: 'خطأ!',
-            text: 'يرجى ملء جميع الحقول المطلوبة',
+            title: 'Error!',
+            text: 'Silakan isi semua field yang diperlukan',
             icon: 'error',
-            confirmButtonText: 'موافق'
+            confirmButtonText: 'OK'
         });
     }
 });

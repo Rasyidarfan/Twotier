@@ -30,6 +30,53 @@ class Question extends Model
         'is_active' => 'boolean',
     ];
 
+    // Defensive accessors to handle malformed data
+    public function getTier1OptionsAttribute($value)
+    {
+        // If it's already an array, return it
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // If it's a string, try to decode it
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+            
+            // Fallback: split by comma if JSON decode fails
+            $fallback = explode(',', trim($value, '"'));
+            return count($fallback) > 1 ? array_map('trim', $fallback) : [];
+        }
+
+        // Return empty array as last resort
+        return [];
+    }
+
+    public function getTier2OptionsAttribute($value)
+    {
+        // If it's already an array, return it
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // If it's a string, try to decode it
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+            
+            // Fallback: split by comma if JSON decode fails
+            $fallback = explode(',', trim($value, '"'));
+            return count($fallback) > 1 ? array_map('trim', $fallback) : [];
+        }
+
+        // Return empty array as last resort
+        return [];
+    }
+
     public function chapter()
     {
         return $this->belongsTo(Chapter::class);

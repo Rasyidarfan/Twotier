@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'نتائج الامتحان')
+@section('title', 'Hasil Ujian')
 
 @section('content')
 <div class="container-fluid">
@@ -9,25 +9,25 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-graph-up me-2"></i>
-                نتائج الامتحان
+                Hasil Ujian
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item"><a href="{{ route('guru.exams.index') }}">الامتحانات</a></li>
-                    <li class="breadcrumb-item active">النتائج</li>
+                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('guru.exams.index') }}">Ujian</a></li>
+                    <li class="breadcrumb-item active">Hasil</li>
                 </ol>
             </nav>
         </div>
         <div>
             <a href="{{ route('guru.exams.index') }}" class="btn btn-secondary me-2">
                 <i class="bi bi-arrow-left me-2"></i>
-                العودة للامتحانات
+                Kembali ke Ujian
             </a>
             <div class="btn-group">
                 <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="bi bi-download me-2"></i>
-                    تصدير النتائج
+                    Ekspor Hasil
                 </button>
                 <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{{ route('guru.exams.export', ['exam' => $exam->id, 'format' => 'excel']) }}">
@@ -49,7 +49,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-info-circle me-2"></i>
-                معلومات الامتحان
+                Informasi Ujian
             </h6>
         </div>
         <div class="card-body">
@@ -61,17 +61,17 @@
                         <div class="col-md-6">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="bi bi-book me-2 text-info"></i>
-                                <span>{{ $exam->subject->name ?? 'غير محدد' }}</span>
+                                <span>{{ $exam->subject->name ?? 'Tidak Ditentukan' }}</span>
                             </div>
                             <div class="d-flex align-items-center mb-2">
                                 <i class="bi bi-clock me-2 text-warning"></i>
-                                <span>{{ $exam->duration }} دقيقة</span>
+                                <span>{{ $exam->duration }} menit</span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="bi bi-question-circle me-2 text-success"></i>
-                                <span>{{ $exam->questions->count() }} سؤال</span>
+                                <span>{{ $exam->questions->count() }} soal</span>
                             </div>
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-calendar me-2 text-primary"></i>
@@ -83,9 +83,9 @@
                 <div class="col-md-4">
                     <div class="text-center">
                         <h3 class="text-primary">{{ $exam->code }}</h3>
-                        <p class="text-muted">رمز الامتحان</p>
+                        <p class="text-muted">Kode Ujian</p>
                         <span class="badge bg-{{ $exam->status == 'completed' ? 'success' : 'secondary' }} fs-6">
-                            {{ $exam->status == 'completed' ? 'مكتمل' : $exam->status }}
+                            {{ $exam->status == 'completed' ? 'Selesai' : $exam->status }}
                         </span>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                إجمالي المشاركين
+                                Total Peserta
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalParticipants }}</div>
                         </div>
@@ -119,7 +119,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                معدل النجاح
+                                Tingkat Kelulusan
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($passRate, 1) }}%</div>
                         </div>
@@ -137,7 +137,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                متوسط الدرجات
+                                Nilai Rata-rata
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($averageScore, 1) }}%</div>
                         </div>
@@ -155,7 +155,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                أعلى درجة
+                                Nilai Tertinggi
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ number_format($highestScore, 1) }}%</div>
                         </div>
@@ -175,7 +175,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="bi bi-bar-chart me-2"></i>
-                        توزيع الدرجات
+                        Distribusi Nilai
                     </h6>
                 </div>
                 <div class="card-body">
@@ -188,7 +188,7 @@
                 <div class="card-header py-3">
                     <h6 class="m-0 font-weight-bold text-primary">
                         <i class="bi bi-pie-chart me-2"></i>
-                        نسب النجاح والرسوب
+                        Persentase Lulus & Gagal
                     </h6>
                 </div>
                 <div class="card-body">
@@ -203,7 +203,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-question-circle me-2"></i>
-                تحليل الأسئلة
+                Analisis Soal
             </h6>
         </div>
         <div class="card-body">
@@ -211,13 +211,13 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                            <th>رقم السؤال</th>
-                            <th>السؤال</th>
-                            <th>الصعوبة</th>
-                            <th>إجابات صحيحة</th>
-                            <th>إجابات خاطئة</th>
-                            <th>معدل النجاح</th>
-                            <th>الإجراءات</th>
+                        <th>No. Soal</th>
+                        <th>Soal</th>
+                        <th>Tingkat Kesulitan</th>
+                        <th>Jawaban Benar</th>
+                        <th>Jawaban Salah</th>
+                        <th>Tingkat Keberhasilan</th>
+                        <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -231,7 +231,7 @@
                                 </td>
                                 <td>
                                     <span class="badge bg-{{ $analysis['question']->difficulty == 'easy' ? 'success' : ($analysis['question']->difficulty == 'medium' ? 'warning' : 'danger') }}">
-                                        {{ $analysis['question']->difficulty == 'easy' ? 'سهل' : ($analysis['question']->difficulty == 'medium' ? 'متوسط' : 'صعب') }}
+                                        {{ $analysis['question']->difficulty == 'easy' ? 'Mudah' : ($analysis['question']->difficulty == 'medium' ? 'Sedang' : 'Sulit') }}
                                     </span>
                                 </td>
                                 <td>

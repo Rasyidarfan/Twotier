@@ -574,15 +574,22 @@
                         </div>
                         
                         <div class="options-container">
-                            @foreach($examQuestion->question->tier1_options as $optionIndex => $option)
-                                <div class="option-item tier1-option" 
-                                     data-question-id="{{ $examQuestion->question_id }}" 
-                                     data-option="{{ $optionIndex }}"
-                                     onclick="selectTier1Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
-                                    <div class="option-circle">{{ chr(65 + $optionIndex) }}</div>
-                                    <div class="option-text">{{ $option }}</div>
+                            @if(is_array($examQuestion->question->tier1_options) && count($examQuestion->question->tier1_options) > 0)
+                                @foreach($examQuestion->question->tier1_options as $optionIndex => $option)
+                                    <div class="option-item tier1-option" 
+                                         data-question-id="{{ $examQuestion->question_id }}" 
+                                         data-option="{{ $optionIndex }}"
+                                         onclick="selectTier1Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
+                                        <div class="option-circle">{{ chr(65 + $optionIndex) }}</div>
+                                        <div class="option-text">{{ $option }}</div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Error: Format opsi pertanyaan tidak valid. Silakan hubungi administrator.
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
 
@@ -598,15 +605,22 @@
                         </div>
                         
                         <div class="options-container">
-                            @foreach($examQuestion->question->tier2_options as $optionIndex => $option)
-                                <div class="option-item tier2-option" 
-                                     data-question-id="{{ $examQuestion->question_id }}" 
-                                     data-option="{{ $optionIndex }}"
-                                     onclick="selectTier2Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
-                                    <div class="option-circle">{{ $optionIndex + 1 }}</div>
-                                    <div class="option-text">{{ $option }}</div>
+                            @if(is_array($examQuestion->question->tier2_options) && count($examQuestion->question->tier2_options) > 0)
+                                @foreach($examQuestion->question->tier2_options as $optionIndex => $option)
+                                    <div class="option-item tier2-option" 
+                                         data-question-id="{{ $examQuestion->question_id }}" 
+                                         data-option="{{ $optionIndex }}"
+                                         onclick="selectTier2Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
+                                        <div class="option-circle">{{ $optionIndex + 1 }}</div>
+                                        <div class="option-text">{{ $option }}</div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="alert alert-danger">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Error: Format opsi alasan tidak valid. Silakan hubungi administrator.
                                 </div>
-                            @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>

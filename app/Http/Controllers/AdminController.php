@@ -108,13 +108,36 @@ class AdminController extends Controller
     }
 
     // Question Management
-    public function questions()
+    public function questions(Request $request)
     {
-        $questions = Question::with(['chapter.subject', 'creator'])
-            ->latest()
-            ->paginate(15);
+        $query = Question::with(['chapter.subject', 'creator']);
 
-        return view('admin.questions.index', compact('questions'));
+        // Handle filtering
+        if ($request->filled('subject_id')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('subject_id', $request->subject_id);
+            });
+        }
+
+        if ($request->filled('chapter_id')) {
+            $query->where('chapter_id', $request->chapter_id);
+        }
+
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+
+        if ($request->filled('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+
+        $questions = $query->latest()->paginate(15);
+
+        $subjects = Subject::where('is_active', true)->get();
+        $chapters = Chapter::where('is_active', true)->get();
+
+        return view('admin.questions.index', compact('questions', 'subjects', 'chapters'));
     }
 
     public function createQuestion()
@@ -153,7 +176,7 @@ class AdminController extends Controller
             'created_by' => auth()->id(),
         ]);
 
-        return redirect()->route('admin.questions')
+        return redirect()->route('admin.questions.index')
             ->with('success', 'Soal berhasil ditambahkan.');
     }
 
@@ -199,7 +222,7 @@ class AdminController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        return redirect()->route('admin.questions')
+        return redirect()->route('admin.questions.index')
             ->with('success', 'Soal berhasil diperbarui.');
     }
 
@@ -207,8 +230,48 @@ class AdminController extends Controller
     {
         $question->delete();
 
-        return redirect()->route('admin.questions')
+        return redirect()->route('admin.questions.index')
             ->with('success', 'Soal berhasil dihapus.');
+    }
+
+    public function filterQuestions(Request $request)
+    {
+        $query = Question::with(['chapter.subject', 'creator']);
+
+        // Handle filtering
+        if ($request->filled('subject_id')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('subject_id', $request->subject_id);
+            });
+        }
+
+        if ($request->filled('chapter_id')) {
+            $query->where('chapter_id', $request->chapter_id);
+        }
+
+        if ($request->filled('difficulty')) {
+            $query->where('difficulty', $request->difficulty);
+        }
+
+        if ($request->filled('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('tier1_question', 'like', "%{$search}%")
+                  ->orWhere('tier2_question', 'like', "%{$search}%");
+            });
+        }
+
+        $questions = $query->latest()->paginate(15);
+
+        $subjects = Subject::where('is_active', true)->get();
+        $chapters = Chapter::where('is_active', true)->get();
+
+        return view('admin.questions.index', compact('questions', 'subjects', 'chapters'));
     }
 
     // Subject Management

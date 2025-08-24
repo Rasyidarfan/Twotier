@@ -49,7 +49,7 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/users/{user}', [AdminController::class, 'deleteUser'])->name('users.delete');
         
         // Question management
-        Route::get('/questions', [AdminController::class, 'questions'])->name('questions');
+        Route::get('/questions', [AdminController::class, 'questions'])->name('questions.index');
         Route::get('/questions/create', [AdminController::class, 'createQuestion'])->name('questions.create');
         Route::post('/questions', [AdminController::class, 'storeQuestion'])->name('questions.store');
         Route::get('/questions/{question}', [AdminController::class, 'showQuestion'])->name('questions.show');
@@ -58,10 +58,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/questions/{question}', [AdminController::class, 'deleteQuestion'])->name('questions.delete');
         
         // Subject and Chapter management
-        Route::get('/subjects', [AdminController::class, 'subjects'])->name('subjects');
+        Route::get('/subjects', [AdminController::class, 'subjects'])->name('subjects.index');
         Route::post('/subjects', [AdminController::class, 'storeSubject'])->name('subjects.store');
-        Route::get('/chapters', [AdminController::class, 'chapters'])->name('chapters');
+        Route::get('/chapters', [AdminController::class, 'chapters'])->name('chapters.index');
         Route::post('/chapters', [AdminController::class, 'storeChapter'])->name('chapters.store');
+        
+        // Question filtering
+        Route::get('/questions/filter', [AdminController::class, 'filterQuestions'])->name('questions.filter');
     });
     
     // Guru routes
@@ -69,7 +72,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboard');
         
         // Exam management
-        Route::get('/exams', [GuruController::class, 'exams'])->name('exams');
+        Route::get('/exams', [GuruController::class, 'exams'])->name('exams.index');
         Route::get('/exams/create', [GuruController::class, 'createExam'])->name('exams.create');
         Route::post('/exams', [GuruController::class, 'storeExam'])->name('exams.store');
         Route::get('/exams/{exam}/edit', [GuruController::class, 'editExam'])->name('exams.edit');
@@ -77,9 +80,17 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('/exams/{exam}', [GuruController::class, 'deleteExam'])->name('exams.delete');
         
         // Exam control
-        Route::get('/exams/{exam}/waiting-room', [GuruController::class, 'waitingRoom'])->name('exams.waiting');
+        Route::get('/exams/{exam}/waiting-room', [GuruController::class, 'waitingRoom'])->name('exams.waiting-room');
+        Route::get('/exams/{exam}/participants', [GuruController::class, 'getParticipants'])->name('exams.participants');
         Route::post('/exams/{exam}/start', [GuruController::class, 'startExam'])->name('exams.start');
         Route::post('/exams/{exam}/finish', [GuruController::class, 'finishExam'])->name('exams.finish');
+        
+        // Additional waiting room functionality
+        Route::post('/exams/{exam}/extend-time', [GuruController::class, 'extendTime'])->name('exams.extend-time');
+        Route::post('/exams/{exam}/broadcast-message', [GuruController::class, 'broadcastMessage'])->name('exams.broadcast-message');
+        Route::post('/exams/{exam}/end', [GuruController::class, 'endExam'])->name('exams.end');
+        Route::get('/exams/{exam}/export-current-results', [GuruController::class, 'exportCurrentResults'])->name('exams.export-current-results');
+        Route::post('/exams/{exam}/participants/{participant}/kick', [GuruController::class, 'kickParticipant'])->name('exams.kick-participant');
         
         // Results
         Route::get('/exams/{exam}/results', [GuruController::class, 'examResults'])->name('exams.results');
@@ -87,6 +98,7 @@ Route::middleware(['auth'])->group(function () {
         
         // Question bank
         Route::get('/questions', [GuruController::class, 'questionBank'])->name('questions');
+        Route::get('/questions/index', [GuruController::class, 'questionBank'])->name('questions.index');
         Route::get('/questions/filter', [GuruController::class, 'filterQuestions'])->name('questions.filter');
     });
 });

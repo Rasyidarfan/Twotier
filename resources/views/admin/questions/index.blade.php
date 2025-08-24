@@ -245,7 +245,7 @@
 
     <!-- Filter Section -->
     <div class="filter-section">
-        <form method="GET" action="{{ route('admin.questions') }}">
+        <form method="GET" action="{{ route('admin.questions.index') }}">
             <div class="row align-items-end">
                 <div class="col-md-3">
                     <label class="form-label">Mata Pelajaran</label>
@@ -336,14 +336,21 @@
                     </div>
                     <div class="question-text">{{ $question->tier1_question }}</div>
                     <ul class="options-list">
-                        @foreach($question->tier1_options as $index => $option)
-                            <li class="option-item {{ $index == $question->tier1_correct_answer ? 'correct' : '' }}">
-                                {{ chr(65 + $index) }}. {{ $option }}
-                                @if($index == $question->tier1_correct_answer)
-                                    <i class="bi bi-check-circle ms-2"></i>
-                                @endif
+                        @if(is_array($question->tier1_options) && count($question->tier1_options) > 0)
+                            @foreach($question->tier1_options as $index => $option)
+                                <li class="option-item {{ $index == $question->tier1_correct_answer ? 'correct' : '' }}">
+                                    {{ chr(65 + $index) }}. {{ $option }}
+                                    @if($index == $question->tier1_correct_answer)
+                                        <i class="bi bi-check-circle ms-2"></i>
+                                    @endif
+                                </li>
+                            @endforeach
+                        @else
+                            <li class="option-item text-danger">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Error: Format opsi tidak valid
                             </li>
-                        @endforeach
+                        @endif
                     </ul>
                 </div>
 
@@ -355,14 +362,21 @@
                     </div>
                     <div class="question-text">{{ $question->tier2_question }}</div>
                     <ul class="options-list">
-                        @foreach($question->tier2_options as $index => $option)
-                            <li class="option-item {{ $index == $question->tier2_correct_answer ? 'correct' : '' }}">
-                                {{ $index + 1 }}. {{ $option }}
-                                @if($index == $question->tier2_correct_answer)
-                                    <i class="bi bi-check-circle ms-2"></i>
-                                @endif
+                        @if(is_array($question->tier2_options) && count($question->tier2_options) > 0)
+                            @foreach($question->tier2_options as $index => $option)
+                                <li class="option-item {{ $index == $question->tier2_correct_answer ? 'correct' : '' }}">
+                                    {{ $index + 1 }}. {{ $option }}
+                                    @if($index == $question->tier2_correct_answer)
+                                        <i class="bi bi-check-circle ms-2"></i>
+                                    @endif
+                                </li>
+                            @endforeach
+                        @else
+                            <li class="option-item text-danger">
+                                <i class="bi bi-exclamation-triangle"></i>
+                                Error: Format opsi tidak valid
                             </li>
-                        @endforeach
+                        @endif
                     </ul>
                 </div>
 

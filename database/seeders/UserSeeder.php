@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
         // Guru-guru yang akan membuat soal
         User::create([
             'name' => 'Ustadz Ahmad Fadhil',
-            'email' => 'ahmad.fadhil@madrasah.edu',
+            'email' => 'test@mail.com',
             'password' => Hash::make('patrickstar'),
             'role' => 'guru',
             'is_active' => true,

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'إدارة الأسئلة')
+@section('title', 'Kelola Soal')
 
 @section('content')
 <div class="container-fluid">
@@ -9,18 +9,18 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-question-circle me-2"></i>
-                إدارة الأسئلة
+                Kelola Soal
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item active">الأسئلة</li>
+                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Soal</li>
                 </ol>
             </nav>
         </div>
         <a href="{{ route('admin.questions.create') }}" class="btn btn-primary">
             <i class="bi bi-plus me-2"></i>
-            إضافة سؤال جديد
+            Tambah Soal Baru
         </a>
     </div>
 
@@ -32,7 +32,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                إجمالي الأسئلة
+                                Total Soal
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $questions->total() }}</div>
                         </div>
@@ -50,7 +50,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                الأسئلة النشطة
+                                Soal Aktif
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $activeQuestions }}</div>
                         </div>
@@ -68,7 +68,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                أسئلة سهلة
+                                Soal Mudah
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $easyQuestions }}</div>
                         </div>
@@ -86,7 +86,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                أسئلة صعبة
+                                Soal Sulit
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $hardQuestions }}</div>
                         </div>
@@ -104,21 +104,21 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-funnel me-2"></i>
-                البحث والتصفية
+                Pencarian & Filter
             </h6>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('guru.questions.index') }}">
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="search" class="form-label">البحث</label>
+                        <label for="search" class="form-label">Pencarian</label>
                         <input type="text" class="form-control" id="search" name="search" 
-                               value="{{ request('search') }}" placeholder="ابحث في نص السؤال...">
+                               value="{{ request('search') }}" placeholder="Cari dalam teks soal...">
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="subject_id" class="form-label">المادة</label>
+                        <label for="subject_id" class="form-label">Mata Pelajaran</label>
                         <select class="form-select" id="subject_id" name="subject_id">
-                            <option value="">جميع المواد</option>
+                            <option value="">Semua Mata Pelajaran</option>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
                                     {{ $subject->name }}
@@ -127,9 +127,9 @@
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="chapter_id" class="form-label">الفصل</label>
+                        <label for="chapter_id" class="form-label">Bab</label>
                         <select class="form-select" id="chapter_id" name="chapter_id">
-                            <option value="">جميع الفصول</option>
+                            <option value="">Semua Bab</option>
                             @foreach($chapters as $chapter)
                                 <option value="{{ $chapter->id }}" {{ request('chapter_id') == $chapter->id ? 'selected' : '' }}>
                                     {{ $chapter->name }}
@@ -138,20 +138,20 @@
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="difficulty" class="form-label">الصعوبة</label>
+                        <label for="difficulty" class="form-label">Tingkat Kesulitan</label>
                         <select class="form-select" id="difficulty" name="difficulty">
-                            <option value="">جميع المستويات</option>
-                            <option value="easy" {{ request('difficulty') == 'easy' ? 'selected' : '' }}>سهل</option>
-                            <option value="medium" {{ request('difficulty') == 'medium' ? 'selected' : '' }}>متوسط</option>
-                            <option value="hard" {{ request('difficulty') == 'hard' ? 'selected' : '' }}>صعب</option>
+                            <option value="">Semua Tingkat</option>
+                            <option value="easy" {{ request('difficulty') == 'easy' ? 'selected' : '' }}>Mudah</option>
+                            <option value="medium" {{ request('difficulty') == 'medium' ? 'selected' : '' }}>Sedang</option>
+                            <option value="hard" {{ request('difficulty') == 'hard' ? 'selected' : '' }}>Sulit</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="status" class="form-label">الحالة</label>
+                        <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="">جميع الحالات</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشط</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
+                            <option value="">Semua Status</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
                         </select>
                     </div>
                     <div class="col-md-1 mb-3">
@@ -172,28 +172,28 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-table me-2"></i>
-                قائمة الأسئلة
+                Daftar Soal
             </h6>
             <div>
                 <div class="btn-group me-2">
                     <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-gear me-2"></i>إجراءات مجمعة
+                        <i class="bi bi-gear me-2"></i>Aksi Massal
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="#" onclick="bulkAction('activate')">
-                            <i class="bi bi-check-circle me-2"></i>تفعيل المحدد
+                            <i class="bi bi-check-circle me-2"></i>Aktifkan yang Dipilih
                         </a></li>
                         <li><a class="dropdown-item" href="#" onclick="bulkAction('deactivate')">
-                            <i class="bi bi-x-circle me-2"></i>إلغاء تفعيل المحدد
+                            <i class="bi bi-x-circle me-2"></i>Nonaktifkan yang Dipilih
                         </a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item text-danger" href="#" onclick="bulkAction('delete')">
-                            <i class="bi bi-trash me-2"></i>حذف المحدد
+                            <i class="bi bi-trash me-2"></i>Hapus yang Dipilih
                         </a></li>
                     </ul>
                 </div>
                 <button type="button" class="btn btn-sm btn-success" onclick="exportQuestions()">
-                    <i class="bi bi-download me-2"></i>تصدير
+                    <i class="bi bi-download me-2"></i>Ekspor
                 </button>
             </div>
         </div>
@@ -206,14 +206,14 @@
                                 <th>
                                     <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
                                 </th>
-                                <th>السؤال</th>
-                                <th>المادة/الفصل</th>
-                                <th>الصعوبة</th>
-                                <th>النقاط</th>
-                                <th>الحالة</th>
-                                <th>الاستخدام</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th>الإجراءات</th>
+                                <th>Soal</th>
+                                <th>Mata Pelajaran/Bab</th>
+                                <th>Tingkat Kesulitan</th>
+                                <th>Poin</th>
+                                <th>Status</th>
+                                <th>Penggunaan</th>
+                                <th>Tanggal Dibuat</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -225,13 +225,13 @@
                                     <td>
                                         <div class="question-preview">
                                             <div class="tier1-preview mb-2">
-                                                <strong class="text-primary">المستوى الأول:</strong>
+                                                <strong class="text-primary">Tingkat Pertama:</strong>
                                                 <div class="text-truncate" style="max-width: 300px;" title="{{ $question->tier1_question }}">
                                                     {{ Str::limit($question->tier1_question, 80) }}
                                                 </div>
                                             </div>
                                             <div class="tier2-preview">
-                                                <strong class="text-success">المستوى الثاني:</strong>
+                                                <strong class="text-success">Tingkat Kedua:</strong>
                                                 <div class="text-truncate" style="max-width: 300px;" title="{{ $question->tier2_question }}">
                                                     {{ Str::limit($question->tier2_question, 80) }}
                                                 </div>
@@ -240,14 +240,14 @@
                                     </td>
                                     <td>
                                         <div>
-                                            <span class="badge bg-info mb-1">{{ $question->subject->name ?? 'غير محدد' }}</span>
+                                            <span class="badge bg-info mb-1">{{ $question->subject->name ?? 'Tidak Ditentukan' }}</span>
                                             <br>
-                                            <small class="text-muted">{{ $question->chapter->name ?? 'غير محدد' }}</small>
+                                            <small class="text-muted">{{ $question->chapter->name ?? 'Tidak Ditentukan' }}</small>
                                         </div>
                                     </td>
                                     <td>
                                         <span class="badge bg-{{ $question->difficulty == 'easy' ? 'success' : ($question->difficulty == 'medium' ? 'warning' : 'danger') }}">
-                                            {{ $question->difficulty == 'easy' ? 'سهل' : ($question->difficulty == 'medium' ? 'متوسط' : 'صعب') }}
+                                            {{ $question->difficulty == 'easy' ? 'Mudah' : ($question->difficulty == 'medium' ? 'Sedang' : 'Sulit') }}
                                         </span>
                                     </td>
                                     <td>
@@ -255,9 +255,9 @@
                                     </td>
                                     <td>
                                         @if($question->status == 'active')
-                                            <span class="badge bg-success">نشط</span>
+                                            <span class="badge bg-success">Aktif</span>
                                         @else
-                                            <span class="badge bg-secondary">غير نشط</span>
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
                                         @endif
                                     </td>
                                     <td>
@@ -276,15 +276,15 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-sm btn-info" 
-                                                    onclick="previewQuestion({{ $question->id }})" title="معاينة">
+                                                    onclick="previewQuestion({{ $question->id }})" title="Pratinjau">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             <a href="{{ route('admin.questions.edit', $question->id) }}" 
-                                               class="btn btn-sm btn-primary" title="تعديل">
+                                               class="btn btn-sm btn-primary" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-success" 
-                                                    onclick="duplicateQuestion({{ $question->id }})" title="نسخ">
+                                                    onclick="duplicateQuestion({{ $question->id }})" title="Salin">
                                                 <i class="bi bi-files"></i>
                                             </button>
                                             <div class="btn-group" role="group">
@@ -296,18 +296,18 @@
                                                     <li>
                                                         <button class="dropdown-item" onclick="toggleQuestionStatus({{ $question->id }})">
                                                             <i class="bi bi-{{ $question->status == 'active' ? 'x-circle' : 'check-circle' }} me-2"></i>
-                                                            {{ $question->status == 'active' ? 'إلغاء التفعيل' : 'تفعيل' }}
+                                                            {{ $question->status == 'active' ? 'Nonaktifkan' : 'Aktifkan' }}
                                                         </button>
                                                     </li>
                                                     <li>
                                                         <button class="dropdown-item" onclick="viewQuestionStats({{ $question->id }})">
-                                                            <i class="bi bi-graph-up me-2"></i>عرض الإحصائيات
+                                                            <i class="bi bi-graph-up me-2"></i>Lihat Statistik
                                                         </button>
                                                     </li>
                                                     <li><hr class="dropdown-divider"></li>
                                                     <li>
                                                         <button class="dropdown-item text-danger" onclick="deleteQuestion({{ $question->id }})">
-                                                            <i class="bi bi-trash me-2"></i>حذف السؤال
+                                                            <i class="bi bi-trash me-2"></i>Hapus Soal
                                                         </button>
                                                     </li>
                                                 </ul>
@@ -327,11 +327,11 @@
             @else
                 <div class="text-center py-4">
                     <i class="bi bi-question-circle fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-600">لا توجد أسئلة</h5>
-                    <p class="text-gray-500">لم يتم العثور على أي أسئلة مطابقة للمعايير المحددة.</p>
+                    <h5 class="text-gray-600">Tidak Ada Soal</h5>
+                    <p class="text-gray-500">Tidak ditemukan soal yang sesuai dengan kriteria yang ditentukan.</p>
                     <a href="{{ route('admin.questions.create') }}" class="btn btn-primary">
                         <i class="bi bi-plus me-2"></i>
-                        إضافة سؤال جديد
+                        Tambah Soal Baru
                     </a>
                 </div>
             @endif
@@ -346,7 +346,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="questionPreviewModalLabel">
                     <i class="bi bi-eye me-2"></i>
-                    معاينة السؤال
+                    Pratinjau Soal
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -354,7 +354,7 @@
                 <!-- Question preview will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -367,7 +367,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="questionStatsModalLabel">
                     <i class="bi bi-graph-up me-2"></i>
-                    إحصائيات السؤال
+                    Statistik Soal
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentChapterId = '{{ request("chapter_id") }}';
         
         // Clear chapters
-        chapterSelect.innerHTML = '<option value="">جميع الفصول</option>';
+        chapterSelect.innerHTML = '<option value="">Semua Bab</option>';
         
         if (subjectId) {
             fetch(`/guru/subjects/${subjectId}/chapters`)
@@ -435,10 +435,10 @@ function bulkAction(action) {
     
     if (selectedQuestions.length === 0) {
         Swal.fire({
-            title: 'تنبيه!',
-            text: 'يرجى اختيار أسئلة أولاً',
+            title: 'Peringatan!',
+            text: 'Silakan pilih soal terlebih dahulu',
             icon: 'warning',
-            confirmButtonText: 'موافق'
+            confirmButtonText: 'OK'
         });
         return;
     }
@@ -447,19 +447,19 @@ function bulkAction(action) {
     
     switch(action) {
         case 'activate':
-            title = 'تفعيل الأسئلة';
-            text = `هل تريد تفعيل ${selectedQuestions.length} سؤال؟`;
-            confirmText = 'نعم، فعل';
+            title = 'Aktifkan Soal';
+            text = `Apakah Anda ingin mengaktifkan ${selectedQuestions.length} soal?`;
+            confirmText = 'Ya, Aktifkan';
             break;
         case 'deactivate':
-            title = 'إلغاء تفعيل الأسئلة';
-            text = `هل تريد إلغاء تفعيل ${selectedQuestions.length} سؤال؟`;
-            confirmText = 'نعم، ألغ التفعيل';
+            title = 'Nonaktifkan Soal';
+            text = `Apakah Anda ingin menonaktifkan ${selectedQuestions.length} soal?`;
+            confirmText = 'Ya, Nonaktifkan';
             break;
         case 'delete':
-            title = 'حذف الأسئلة';
-            text = `هل أنت متأكد من حذف ${selectedQuestions.length} سؤال؟ هذا الإجراء لا يمكن التراجع عنه.`;
-            confirmText = 'نعم، احذف';
+            title = 'Hapus Soal';
+            text = `Apakah Anda yakin ingin menghapus ${selectedQuestions.length} soal? Tindakan ini tidak dapat dibatalkan.`;
+            confirmText = 'Ya, Hapus';
             break;
     }
     
@@ -469,7 +469,7 @@ function bulkAction(action) {
         icon: action === 'delete' ? 'warning' : 'question',
         showCancelButton: true,
         confirmButtonText: confirmText,
-        cancelButtonText: 'إلغاء',
+        cancelButtonText: 'Batal',
         confirmButtonColor: action === 'delete' ? '#d33' : '#3085d6'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -488,23 +488,23 @@ function bulkAction(action) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({
-                        title: 'تم!',
+                        title: 'Berhasil!',
                         text: data.message,
                         icon: 'success',
-                        confirmButtonText: 'موافق'
+                        confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload();
                     });
                 } else {
-                    throw new Error(data.message || 'حدث خطأ');
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
             })
             .catch(error => {
                 Swal.fire({
-                    title: 'خطأ!',
-                    text: error.message || 'حدث خطأ أثناء تنفيذ العملية',
+                    title: 'Error!',
+                    text: error.message || 'Terjadi kesalahan saat menjalankan operasi',
                     icon: 'error',
-                    confirmButtonText: 'موافق'
+                    confirmButtonText: 'OK'
                 });
             });
         }
@@ -520,10 +520,10 @@ function previewQuestion(questionId) {
                     <!-- Tier 1 Question -->
                     <div class="card mb-3">
                         <div class="card-header bg-primary text-white">
-                            <h6 class="mb-0">
-                                <i class="bi bi-1-circle me-2"></i>
-                                السؤال الأساسي (المستوى الأول)
-                            </h6>
+                        <h6 class="mb-0">
+                        <i class="bi bi-1-circle me-2"></i>
+                        Soal Utama (Tingkat Pertama)
+                        </h6>
                         </div>
                         <div class="card-body">
                             <p class="mb-3">${question.tier1_question}</p>
@@ -533,7 +533,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier1_correct_answer === 'a' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier1_correct_answer === 'a' ? 'text-success fw-bold' : ''}">
-                                            أ) ${question.tier1_option_a}
+                                            A) ${question.tier1_option_a}
                                         </label>
                                     </div>
                                 </div>
@@ -541,7 +541,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier1_correct_answer === 'b' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier1_correct_answer === 'b' ? 'text-success fw-bold' : ''}">
-                                            ب) ${question.tier1_option_b}
+                                            B) ${question.tier1_option_b}
                                         </label>
                                     </div>
                                 </div>
@@ -549,7 +549,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier1_correct_answer === 'c' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier1_correct_answer === 'c' ? 'text-success fw-bold' : ''}">
-                                            ج) ${question.tier1_option_c}
+                                            C) ${question.tier1_option_c}
                                         </label>
                                     </div>
                                 </div>
@@ -557,7 +557,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier1_correct_answer === 'd' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier1_correct_answer === 'd' ? 'text-success fw-bold' : ''}">
-                                            د) ${question.tier1_option_d}
+                                            D) ${question.tier1_option_d}
                                         </label>
                                     </div>
                                 </div>
@@ -568,10 +568,10 @@ function previewQuestion(questionId) {
                     <!-- Tier 2 Question -->
                     <div class="card mb-3">
                         <div class="card-header bg-success text-white">
-                            <h6 class="mb-0">
-                                <i class="bi bi-2-circle me-2"></i>
-                                سؤال التبرير (المستوى الثاني)
-                            </h6>
+                        <h6 class="mb-0">
+                        <i class="bi bi-2-circle me-2"></i>
+                        Soal Alasan (Tingkat Kedua)
+                        </h6>
                         </div>
                         <div class="card-body">
                             <p class="mb-3">${question.tier2_question}</p>
@@ -581,7 +581,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier2_correct_answer === 'a' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier2_correct_answer === 'a' ? 'text-success fw-bold' : ''}">
-                                            أ) ${question.tier2_option_a}
+                                            A) ${question.tier2_option_a}
                                         </label>
                                     </div>
                                 </div>
@@ -589,7 +589,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier2_correct_answer === 'b' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier2_correct_answer === 'b' ? 'text-success fw-bold' : ''}">
-                                            ب) ${question.tier2_option_b}
+                                            B) ${question.tier2_option_b}
                                         </label>
                                     </div>
                                 </div>
@@ -597,7 +597,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier2_correct_answer === 'c' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier2_correct_answer === 'c' ? 'text-success fw-bold' : ''}">
-                                            ج) ${question.tier2_option_c}
+                                            C) ${question.tier2_option_c}
                                         </label>
                                     </div>
                                 </div>
@@ -605,7 +605,7 @@ function previewQuestion(questionId) {
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" disabled ${question.tier2_correct_answer === 'd' ? 'checked' : ''}>
                                         <label class="form-check-label ${question.tier2_correct_answer === 'd' ? 'text-success fw-bold' : ''}">
-                                            د) ${question.tier2_option_d}
+                                            D) ${question.tier2_option_d}
                                         </label>
                                     </div>
                                 </div>
@@ -616,30 +616,30 @@ function previewQuestion(questionId) {
                     <!-- Question Info -->
                     <div class="card">
                         <div class="card-header">
-                            <h6 class="mb-0">
-                                <i class="bi bi-info-circle me-2"></i>
-                                معلومات السؤال
-                            </h6>
+                        <h6 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        Informasi Soal
+                        </h6>
                         </div>
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <p><strong>المادة:</strong> ${question.subject?.name || 'غير محدد'}</p>
-                                    <p><strong>الفصل:</strong> ${question.chapter?.name || 'غير محدد'}</p>
-                                    <p><strong>الصعوبة:</strong> 
+                                    <p><strong>Mata Pelajaran:</strong> ${question.subject?.name || 'Tidak Ditentukan'}</p>
+                                    <p><strong>Bab:</strong> ${question.chapter?.name || 'Tidak Ditentukan'}</p>
+                                    <p><strong>Tingkat Kesulitan:</strong> 
                                         <span class="badge bg-${question.difficulty === 'easy' ? 'success' : (question.difficulty === 'medium' ? 'warning' : 'danger')}">
-                                            ${question.difficulty === 'easy' ? 'سهل' : (question.difficulty === 'medium' ? 'متوسط' : 'صعب')}
+                                            ${question.difficulty === 'easy' ? 'Mudah' : (question.difficulty === 'medium' ? 'Sedang' : 'Sulit')}
                                         </span>
                                     </p>
                                 </div>
                                 <div class="col-md-6">
-                                    <p><strong>النقاط:</strong> ${question.points}</p>
-                                    <p><strong>الحالة:</strong> 
+                                    <p><strong>Poin:</strong> ${question.points}</p>
+                                    <p><strong>Status:</strong> 
                                         <span class="badge bg-${question.status === 'active' ? 'success' : 'secondary'}">
-                                            ${question.status === 'active' ? 'نشط' : 'غير نشط'}
+                                            ${question.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
                                         </span>
                                     </p>
-                                    <p><strong>تاريخ الإنشاء:</strong> ${new Date(question.created_at).toLocaleDateString('ar-SA')}</p>
+                                    <p><strong>Tanggal Dibuat:</strong> ${new Date(question.created_at).toLocaleDateString('id-ID')}</p>
                                 </div>
                             </div>
                         </div>
@@ -653,10 +653,10 @@ function previewQuestion(questionId) {
         .catch(error => {
             console.error('Error loading question:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل السؤال',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat soal',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
@@ -673,7 +673,7 @@ function viewQuestionStats(questionId) {
                                 <div class="card-body">
                                     <i class="bi bi-eye fa-2x text-primary mb-2"></i>
                                     <h4 class="text-primary">${stats.total_views || 0}</h4>
-                                    <p class="mb-0">مرات المشاهدة</p>
+                                    <p class="mb-0">Kali Dilihat</p>
                                 </div>
                             </div>
                         </div>
@@ -682,7 +682,7 @@ function viewQuestionStats(questionId) {
                                 <div class="card-body">
                                     <i class="bi bi-clipboard-check fa-2x text-success mb-2"></i>
                                     <h4 class="text-success">${stats.total_attempts || 0}</h4>
-                                    <p class="mb-0">مرات الإجابة</p>
+                                    <p class="mb-0">Kali Dijawab</p>
                                 </div>
                             </div>
                         </div>
@@ -691,7 +691,7 @@ function viewQuestionStats(questionId) {
                                 <div class="card-body">
                                     <i class="bi bi-check-circle fa-2x text-info mb-2"></i>
                                     <h4 class="text-info">${stats.correct_answers || 0}</h4>
-                                    <p class="mb-0">إجابات صحيحة</p>
+                                    <p class="mb-0">Jawaban Benar</p>
                                 </div>
                             </div>
                         </div>
@@ -700,7 +700,7 @@ function viewQuestionStats(questionId) {
                                 <div class="card-body">
                                     <i class="bi bi-percent fa-2x text-warning mb-2"></i>
                                     <h4 class="text-warning">${stats.success_rate || 0}%</h4>
-                                    <p class="mb-0">معدل النجاح</p>
+                                    <p class="mb-0">Tingkat Keberhasilan</p>
                                 </div>
                             </div>
                         </div>
@@ -710,7 +710,7 @@ function viewQuestionStats(questionId) {
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h6 class="mb-0">الاستخدام في الامتحانات</h6>
+                                    <h6 class="mb-0">Penggunaan dalam Ujian</h6>
                                 </div>
                                 <div class="card-body">
                                     ${stats.exams && stats.exams.length > 0 ? 
@@ -720,7 +720,7 @@ function viewQuestionStats(questionId) {
                                                 <small class="text-muted">${new Date(exam.created_at).toLocaleDateString('ar-SA')}</small>
                                             </div>
                                         `).join('') : 
-                                        '<p class="text-muted">لم يتم استخدام هذا السؤال في أي امتحان بعد</p>'
+                                        '<p class="text-muted">Soal ini belum digunakan dalam ujian apapun</p>'
                                     }
                                 </div>
                             </div>
@@ -728,11 +728,11 @@ function viewQuestionStats(questionId) {
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header">
-                                    <h6 class="mb-0">أداء الطلاب</h6>
+                                    <h6 class="mb-0">Performa Siswa</h6>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <label class="form-label">المستوى الأول</label>
+                                        <label class="form-label">Tingkat Pertama</label>
                                         <div class="progress">
                                             <div class="progress-bar bg-primary" style="width: ${stats.tier1_success_rate || 0}%">
                                                 ${stats.tier1_success_rate || 0}%
@@ -740,7 +740,7 @@ function viewQuestionStats(questionId) {
                                         </div>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">المستوى الثاني</label>
+                                        <label class="form-label">Tingkat Kedua</label>
                                         <div class="progress">
                                             <div class="progress-bar bg-success" style="width: ${stats.tier2_success_rate || 0}%">
                                                 ${stats.tier2_success_rate || 0}%
@@ -760,22 +760,22 @@ function viewQuestionStats(questionId) {
         .catch(error => {
             console.error('Error loading question stats:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل إحصائيات السؤال',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat statistik soal',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
 
 function duplicateQuestion(questionId) {
     Swal.fire({
-        title: 'نسخ السؤال',
-        text: 'هل تريد إنشاء نسخة من هذا السؤال؟',
+        title: 'Salin Soal',
+        text: 'Apakah Anda ingin membuat salinan dari soal ini?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'نعم، انسخ',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: 'Ya, Salin',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/guru/questions/${questionId}/duplicate`, {
@@ -789,23 +789,23 @@ function duplicateQuestion(questionId) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({
-                        title: 'تم!',
-                        text: 'تم نسخ السؤال بنجاح',
+                        title: 'Berhasil!',
+                        text: 'Soal berhasil disalin',
                         icon: 'success',
-                        confirmButtonText: 'موافق'
+                        confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload();
                     });
                 } else {
-                    throw new Error(data.message || 'حدث خطأ');
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
             })
             .catch(error => {
                 Swal.fire({
-                    title: 'خطأ!',
-                    text: error.message || 'حدث خطأ أثناء نسخ السؤال',
+                    title: 'Error!',
+                    text: error.message || 'Terjadi kesalahan saat menyalin soal',
                     icon: 'error',
-                    confirmButtonText: 'موافق'
+                    confirmButtonText: 'OK'
                 });
             });
         }
@@ -824,35 +824,35 @@ function toggleQuestionStatus(questionId) {
     .then(data => {
         if (data.success) {
             Swal.fire({
-                title: 'تم!',
+                title: 'Berhasil!',
                 text: data.message,
                 icon: 'success',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             }).then(() => {
                 location.reload();
             });
         } else {
-            throw new Error(data.message || 'حدث خطأ');
+            throw new Error(data.message || 'Terjadi kesalahan');
         }
     })
     .catch(error => {
         Swal.fire({
-            title: 'خطأ!',
-            text: error.message || 'حدث خطأ أثناء تغيير حالة السؤال',
+            title: 'Error!',
+            text: error.message || 'Terjadi kesalahan saat mengubah status soal',
             icon: 'error',
-            confirmButtonText: 'موافق'
+            confirmButtonText: 'OK'
         });
     });
 }
 
 function deleteQuestion(questionId) {
     Swal.fire({
-        title: 'حذف السؤال',
-        text: 'هل أنت متأكد من حذف هذا السؤال؟ هذا الإجراء لا يمكن التراجع عنه.',
+        title: 'Hapus Soal',
+        text: 'Apakah Anda yakin ingin menghapus soal ini? Tindakan ini tidak dapat dibatalkan.',
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'نعم، احذف',
-        cancelButtonText: 'إلغاء',
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
         confirmButtonColor: '#d33'
     }).then((result) => {
         if (result.isConfirmed) {
@@ -867,23 +867,23 @@ function deleteQuestion(questionId) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({
-                        title: 'تم!',
-                        text: 'تم حذف السؤال بنجاح',
+                        title: 'Berhasil!',
+                        text: 'Soal berhasil dihapus',
                         icon: 'success',
-                        confirmButtonText: 'موافق'
+                        confirmButtonText: 'OK'
                     }).then(() => {
                         location.reload();
                     });
                 } else {
-                    throw new Error(data.message || 'حدث خطأ');
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
             })
             .catch(error => {
                 Swal.fire({
-                    title: 'خطأ!',
-                    text: error.message || 'حدث خطأ أثناء حذف السؤال',
+                    title: 'Error!',
+                    text: error.message || 'Terjadi kesalahan saat menghapus soal',
                     icon: 'error',
-                    confirmButtonText: 'موافق'
+                    confirmButtonText: 'OK'
                 });
             });
         }
@@ -894,14 +894,14 @@ function exportQuestions() {
     const selectedQuestions = Array.from(document.querySelectorAll('.question-checkbox:checked')).map(cb => cb.value);
     
     Swal.fire({
-        title: 'تصدير الأسئلة',
+        title: 'Ekspor Soal',
         text: selectedQuestions.length > 0 ? 
-            `هل تريد تصدير ${selectedQuestions.length} سؤال محدد؟` : 
-            'هل تريد تصدير جميع الأسئلة؟',
+            `Apakah Anda ingin mengekspor ${selectedQuestions.length} soal yang dipilih?` : 
+            'Apakah Anda ingin mengekspor semua soal?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'نعم، صدر',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: 'Ya, Ekspor',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');

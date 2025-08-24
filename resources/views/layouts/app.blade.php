@@ -153,17 +153,17 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.questions*') ? 'active' : '' }}" href="{{ route('admin.questions') }}">
+                                    <a class="nav-link {{ request()->routeIs('admin.questions*') ? 'active' : '' }}" href="{{ route('admin.questions.index') }}">
                                         <i class="bi bi-question-circle"></i> Kelola Soal
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.subjects*') ? 'active' : '' }}" href="{{ route('admin.subjects') }}">
+                                    <a class="nav-link {{ request()->routeIs('admin.subjects*') ? 'active' : '' }}" href="{{ route('admin.subjects.index') }}">
                                         <i class="bi bi-book"></i> Mata Pelajaran
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('admin.chapters*') ? 'active' : '' }}" href="{{ route('admin.chapters') }}">
+                                    <a class="nav-link {{ request()->routeIs('admin.chapters*') ? 'active' : '' }}" href="{{ route('admin.chapters.index') }}">
                                         <i class="bi bi-bookmark"></i> Bab Materi
                                     </a>
                                 </li>
@@ -176,12 +176,12 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('guru.exams*') ? 'active' : '' }}" href="{{ route('guru.exams') }}">
+                                    <a class="nav-link {{ request()->routeIs('guru.exams*') ? 'active' : '' }}" href="{{ route('guru.exams.index') }}">
                                         <i class="bi bi-clipboard-check"></i> Kelola Ujian
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a class="nav-link {{ request()->routeIs('guru.questions*') ? 'active' : '' }}" href="{{ route('guru.questions') }}">
+                                    <a class="nav-link {{ request()->routeIs('guru.questions*') ? 'active' : '' }}" href="{{ route('guru.questions.index') }}">
                                         <i class="bi bi-collection"></i> Bank Soal
                                     </a>
                                 </li>

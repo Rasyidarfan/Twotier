@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'إدارة المواد')
+@section('title', 'Kelola Mata Pelajaran')
 
 @section('content')
 <div class="container-fluid">
@@ -9,18 +9,18 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-book me-2"></i>
-                إدارة المواد
+                Kelola Mata Pelajaran
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item active">المواد</li>
+                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Mata Pelajaran</li>
                 </ol>
             </nav>
         </div>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSubjectModal">
             <i class="bi bi-plus me-2"></i>
-            إضافة مادة جديدة
+            Tambah Mata Pelajaran Baru
         </button>
     </div>
 
@@ -32,7 +32,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                إجمالي المواد
+                                Total Mata Pelajaran
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $subjects->count() }}</div>
                         </div>
@@ -50,9 +50,9 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                المواد النشطة
+                                Mata Pelajaran Aktif
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $subjects->where('status', 'active')->count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $subjects->where('is_active', true)->count() }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-check-circle-fill fa-2x text-gray-300"></i>
@@ -68,9 +68,9 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                إجمالي الفصول
+                                Total Bab
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalChapters ?? 0 }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $subjects->sum('chapters_count') ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-collection-fill fa-2x text-gray-300"></i>
@@ -86,9 +86,9 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                إجمالي الأسئلة
+                                Total Soal
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalQuestions ?? 0 }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ \App\Models\Question::count() ?? 0 }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-question-circle-fill fa-2x text-gray-300"></i>
@@ -104,32 +104,31 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-funnel me-2"></i>
-                البحث والتصفية
+                Pencarian dan Filter
             </h6>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('admin.subjects.index') }}">
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="search" class="form-label">البحث</label>
+                        <label for="search" class="form-label">Pencarian</label>
                         <input type="text" class="form-control" id="search" name="search" 
-                               value="{{ request('search') }}" placeholder="ابحث عن مادة...">
+                               value="{{ request('search') }}" placeholder="Cari mata pelajaran...">
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="status" class="form-label">الحالة</label>
+                        <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="">جميع الحالات</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشط</option>
-                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>غير نشط</option>
+                            <option value="">Semua Status</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Tidak Aktif</option>
                         </select>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="sort" class="form-label">ترتيب حسب</label>
+                        <label for="sort" class="form-label">Urutkan berdasarkan</label>
                         <select class="form-select" id="sort" name="sort">
-                            <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>الاسم</option>
-                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>تاريخ الإنشاء</option>
-                            <option value="chapters_count" {{ request('sort') == 'chapters_count' ? 'selected' : '' }}>عدد الفصول</option>
-                            <option value="questions_count" {{ request('sort') == 'questions_count' ? 'selected' : '' }}>عدد الأسئلة</option>
+                            <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nama</option>
+                            <option value="created_at" {{ request('sort') == 'created_at' ? 'selected' : '' }}>Tanggal Dibuat</option>
+                            <option value="chapters_count" {{ request('sort') == 'chapters_count' ? 'selected' : '' }}>Jumlah Bab</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
@@ -137,7 +136,7 @@
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search me-2"></i>
-                                بحث
+                                Cari
                             </button>
                         </div>
                     </div>
@@ -151,7 +150,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-table me-2"></i>
-                قائمة المواد
+                Daftar Mata Pelajaran
             </h6>
         </div>
         <div class="card-body">
@@ -160,20 +159,20 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>الرقم</th>
-                                <th>اسم المادة</th>
-                                <th>الوصف</th>
-                                <th>عدد الفصول</th>
-                                <th>عدد الأسئلة</th>
-                                <th>الحالة</th>
-                                <th>تاريخ الإنشاء</th>
-                                <th>الإجراءات</th>
+                                <th>No</th>
+                                <th>Nama Mata Pelajaran</th>
+                                <th>Kode</th>
+                                <th>Deskripsi</th>
+                                <th>Jumlah Bab</th>
+                                <th>Status</th>
+                                <th>Tanggal Dibuat</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($subjects as $subject)
+                            @foreach($subjects as $index => $subject)
                                 <tr>
-                                    <td>{{ $subject->id }}</td>
+                                    <td>{{ $index + 1 }}</td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="avatar-sm bg-primary rounded-circle d-flex align-items-center justify-content-center me-2">
@@ -181,11 +180,15 @@
                                             </div>
                                             <div>
                                                 <h6 class="mb-0">{{ $subject->name }}</h6>
-                                                @if($subject->code)
-                                                    <small class="text-muted">{{ $subject->code }}</small>
-                                                @endif
                                             </div>
                                         </div>
+                                    </td>
+                                    <td>
+                                        @if($subject->code)
+                                            <span class="badge bg-secondary">{{ $subject->code }}</span>
+                                        @else
+                                            <span class="text-muted">-</span>
+                                        @endif
                                     </td>
                                     <td>
                                         @if($subject->description)
@@ -193,39 +196,40 @@
                                                 {{ Str::limit($subject->description, 50) }}
                                             </span>
                                         @else
-                                            <span class="text-muted">لا يوجد وصف</span>
+                                            <span class="text-muted">Tidak ada deskripsi</span>
                                         @endif
                                     </td>
                                     <td>
                                         <span class="badge bg-info">{{ $subject->chapters_count ?? 0 }}</span>
                                     </td>
                                     <td>
-                                        <span class="badge bg-warning">{{ $subject->questions_count ?? 0 }}</span>
-                                    </td>
-                                    <td>
-                                        @if($subject->status == 'active')
-                                            <span class="badge bg-success">نشط</span>
+                                        @if($subject->is_active)
+                                            <span class="badge bg-success">Aktif</span>
                                         @else
-                                            <span class="badge bg-secondary">غير نشط</span>
+                                            <span class="badge bg-secondary">Tidak Aktif</span>
                                         @endif
                                     </td>
-                                    <td>{{ $subject->created_at->format('Y-m-d') }}</td>
+                                    <td>{{ $subject->created_at ? $subject->created_at->format('d M Y') : '-' }}</td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-sm btn-info" 
-                                                    onclick="viewSubject({{ $subject->id }})" title="عرض">
+                                                    onclick="viewSubject({{ $subject->id }})" title="Lihat">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             <button type="button" class="btn btn-sm btn-primary" 
-                                                    onclick="editSubject({{ $subject->id }})" title="تعديل">
+                                                    onclick="editSubject({{ $subject->id }})" title="Edit">
                                                 <i class="bi bi-pencil"></i>
                                             </button>
                                             <a href="{{ route('admin.chapters.index', ['subject' => $subject->id]) }}" 
-                                               class="btn btn-sm btn-success" title="إدارة الفصول">
+                                               class="btn btn-sm btn-warning" title="Kelola Bab">
                                                 <i class="bi bi-collection"></i>
                                             </a>
+                                            <a href="{{ route('admin.questions.index', ['subject' => $subject->id]) }}" 
+                                               class="btn btn-sm btn-success" title="Kelola Soal">
+                                                <i class="bi bi-question-circle"></i>
+                                            </a>
                                             <button type="button" class="btn btn-sm btn-danger" 
-                                                    onclick="deleteSubject({{ $subject->id }})" title="حذف">
+                                                    onclick="deleteSubject({{ $subject->id }})" title="Hapus">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         </div>
@@ -245,11 +249,11 @@
             @else
                 <div class="text-center py-4">
                     <i class="bi bi-book fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-600">لا توجد مواد</h5>
-                    <p class="text-gray-500">لم يتم العثور على أي مواد. ابدأ بإضافة مادة جديدة.</p>
+                    <h5 class="text-gray-600">Belum Ada Mata Pelajaran</h5>
+                    <p class="text-gray-500">Belum ada mata pelajaran yang ditambahkan. Mulai dengan menambahkan mata pelajaran baru.</p>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createSubjectModal">
                         <i class="bi bi-plus me-2"></i>
-                        إضافة مادة جديدة
+                        Tambah Mata Pelajaran Baru
                     </button>
                 </div>
             @endif
@@ -264,7 +268,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="createSubjectModalLabel">
                     <i class="bi bi-plus-circle me-2"></i>
-                    إضافة مادة جديدة
+                    Tambah Mata Pelajaran Baru
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -272,30 +276,30 @@
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="name" class="form-label">اسم المادة <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="name" name="name" required>
+                        <label for="name" class="form-label">Nama Mata Pelajaran <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control" id="name" name="name" required placeholder="Contoh: Bahasa Arab">
                     </div>
                     <div class="mb-3">
-                        <label for="code" class="form-label">رمز المادة</label>
-                        <input type="text" class="form-control" id="code" name="code" placeholder="مثال: MATH101">
+                        <label for="code" class="form-label">Kode Mata Pelajaran</label>
+                        <input type="text" class="form-control" id="code" name="code" placeholder="Contoh: ARAB01">
                     </div>
                     <div class="mb-3">
-                        <label for="description" class="form-label">الوصف</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                        <label for="description" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="Deskripsi singkat mata pelajaran..."></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="status" class="form-label">الحالة</label>
-                        <select class="form-select" id="status" name="status" required>
-                            <option value="active">نشط</option>
-                            <option value="inactive">غير نشط</option>
+                        <label for="is_active" class="form-label">Status</label>
+                        <select class="form-select" id="is_active" name="is_active" required>
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check me-2"></i>
-                        حفظ المادة
+                        Simpan Mata Pelajaran
                     </button>
                 </div>
             </form>
@@ -310,7 +314,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="editSubjectModalLabel">
                     <i class="bi bi-pencil-square me-2"></i>
-                    تعديل المادة
+                    Edit Mata Pelajaran
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -319,30 +323,30 @@
                 @method('PUT')
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label for="edit_name" class="form-label">اسم المادة <span class="text-danger">*</span></label>
+                        <label for="edit_name" class="form-label">Nama Mata Pelajaran <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="edit_name" name="name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_code" class="form-label">رمز المادة</label>
+                        <label for="edit_code" class="form-label">Kode Mata Pelajaran</label>
                         <input type="text" class="form-control" id="edit_code" name="code">
                     </div>
                     <div class="mb-3">
-                        <label for="edit_description" class="form-label">الوصف</label>
+                        <label for="edit_description" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="edit_status" class="form-label">الحالة</label>
-                        <select class="form-select" id="edit_status" name="status" required>
-                            <option value="active">نشط</option>
-                            <option value="inactive">غير نشط</option>
+                        <label for="edit_is_active" class="form-label">Status</label>
+                        <select class="form-select" id="edit_is_active" name="is_active" required>
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
                         </select>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check me-2"></i>
-                        حفظ التعديلات
+                        Simpan Perubahan
                     </button>
                 </div>
             </form>
@@ -357,7 +361,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="viewSubjectModalLabel">
                     <i class="bi bi-eye me-2"></i>
-                    تفاصيل المادة
+                    Detail Mata Pelajaran
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -365,7 +369,7 @@
                 <!-- Subject details will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -380,7 +384,7 @@ function editSubject(id) {
             document.getElementById('edit_name').value = subject.name;
             document.getElementById('edit_code').value = subject.code || '';
             document.getElementById('edit_description').value = subject.description || '';
-            document.getElementById('edit_status').value = subject.status;
+            document.getElementById('edit_is_active').value = subject.is_active ? '1' : '0';
             document.getElementById('editSubjectForm').action = `/admin/subjects/${id}`;
             
             new bootstrap.Modal(document.getElementById('editSubjectModal')).show();
@@ -388,10 +392,10 @@ function editSubject(id) {
         .catch(error => {
             console.error('Error:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل بيانات المادة',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat data mata pelajaran',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
@@ -403,38 +407,38 @@ function viewSubject(id) {
             const detailsHtml = `
                 <div class="row">
                     <div class="col-md-6">
-                        <h6>اسم المادة:</h6>
+                        <h6>Nama Mata Pelajaran:</h6>
                         <p>${subject.name}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>رمز المادة:</h6>
-                        <p>${subject.code || 'غير محدد'}</p>
+                        <h6>Kode Mata Pelajaran:</h6>
+                        <p>${subject.code || 'Tidak ada kode'}</p>
                     </div>
                     <div class="col-12">
-                        <h6>الوصف:</h6>
-                        <p>${subject.description || 'لا يوجد وصف'}</p>
+                        <h6>Deskripsi:</h6>
+                        <p>${subject.description || 'Tidak ada deskripsi'}</p>
                     </div>
                     <div class="col-md-4">
-                        <h6>الحالة:</h6>
-                        <span class="badge bg-${subject.status === 'active' ? 'success' : 'secondary'}">
-                            ${subject.status === 'active' ? 'نشط' : 'غير نشط'}
+                        <h6>Status:</h6>
+                        <span class="badge bg-${subject.is_active ? 'success' : 'secondary'}">
+                            ${subject.is_active ? 'Aktif' : 'Tidak Aktif'}
                         </span>
                     </div>
                     <div class="col-md-4">
-                        <h6>عدد الفصول:</h6>
+                        <h6>Jumlah Bab:</h6>
                         <p>${subject.chapters_count || 0}</p>
                     </div>
                     <div class="col-md-4">
-                        <h6>عدد الأسئلة:</h6>
-                        <p>${subject.questions_count || 0}</p>
+                        <h6>Jumlah Soal:</h6>
+                        <p>0</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>تاريخ الإنشاء:</h6>
-                        <p>${new Date(subject.created_at).toLocaleDateString('ar-SA')}</p>
+                        <h6>Tanggal Dibuat:</h6>
+                        <p>${new Date(subject.created_at).toLocaleDateString('id-ID')}</p>
                     </div>
                     <div class="col-md-6">
-                        <h6>آخر تحديث:</h6>
-                        <p>${new Date(subject.updated_at).toLocaleDateString('ar-SA')}</p>
+                        <h6>Terakhir Diupdate:</h6>
+                        <p>${new Date(subject.updated_at).toLocaleDateString('id-ID')}</p>
                     </div>
                 </div>
             `;
@@ -445,24 +449,24 @@ function viewSubject(id) {
         .catch(error => {
             console.error('Error:', error);
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل بيانات المادة',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat data mata pelajaran',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }
 
 function deleteSubject(id) {
     Swal.fire({
-        title: 'تأكيد الحذف',
-        text: 'هل أنت متأكد من حذف هذه المادة؟ سيتم حذف جميع الفصول والأسئلة المرتبطة بها.',
+        title: 'Konfirmasi Hapus',
+        text: 'Apakah Anda yakin ingin menghapus mata pelajaran ini? Semua bab dan soal terkait akan ikut terhapus.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         cancelButtonColor: '#3085d6',
-        confirmButtonText: 'نعم، احذف',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: 'Ya, Hapus!',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             const form = document.createElement('form');
@@ -484,10 +488,10 @@ document.getElementById('createSubjectForm').addEventListener('submit', function
     if (!name) {
         e.preventDefault();
         Swal.fire({
-            title: 'خطأ!',
-            text: 'يرجى إدخال اسم المادة',
-            icon: 'error',
-            confirmButtonText: 'موافق'
+            title: 'Peringatan!',
+            text: 'Nama mata pelajaran wajib diisi',
+            icon: 'warning',
+            confirmButtonText: 'OK'
         });
     }
 });
@@ -497,13 +501,34 @@ document.getElementById('editSubjectForm').addEventListener('submit', function(e
     if (!name) {
         e.preventDefault();
         Swal.fire({
-            title: 'خطأ!',
-            text: 'يرجى إدخال اسم المادة',
-            icon: 'error',
-            confirmButtonText: 'موافق'
+            title: 'Peringatan!',
+            text: 'Nama mata pelajaran wajib diisi',
+            icon: 'warning',
+            confirmButtonText: 'OK'
         });
     }
 });
+
+// Success/Error messages
+@if(session('success'))
+    Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: '{{ session('success') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+@endif
+
+@if(session('error'))
+    Swal.fire({
+        icon: 'error',
+        title: 'Gagal!',
+        text: '{{ session('error') }}',
+        timer: 3000,
+        showConfirmButton: false
+    });
+@endif
 </script>
 @endpush
 @endsection

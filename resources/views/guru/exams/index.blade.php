@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'إدارة الامتحانات')
+@section('title', 'Kelola Ujian')
 
 @section('content')
 <div class="container-fluid">
@@ -9,18 +9,18 @@
         <div>
             <h1 class="h3 mb-0 text-gray-800">
                 <i class="bi bi-clipboard-check me-2"></i>
-                إدارة الامتحانات
+                Kelola Ujian
             </h1>
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">لوحة التحكم</a></li>
-                    <li class="breadcrumb-item active">الامتحانات</li>
+                    <li class="breadcrumb-item"><a href="{{ route('guru.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Ujian</li>
                 </ol>
             </nav>
         </div>
         <a href="{{ route('guru.exams.create') }}" class="btn btn-primary">
             <i class="bi bi-plus me-2"></i>
-            إنشاء امتحان جديد
+            Buat Ujian Baru
         </a>
     </div>
 
@@ -32,7 +32,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                إجمالي الامتحانات
+                                Total Ujian
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $exams->count() }}</div>
                         </div>
@@ -50,7 +50,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                الامتحانات النشطة
+                                Ujian Aktif
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $exams->where('status', 'active')->count() }}</div>
                         </div>
@@ -68,7 +68,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
-                                الامتحانات المكتملة
+                                Ujian Selesai
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $exams->where('status', 'completed')->count() }}</div>
                         </div>
@@ -86,7 +86,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                إجمالي المشاركين
+                                Total Peserta
                             </div>
                             <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $totalParticipants ?? 0 }}</div>
                         </div>
@@ -104,31 +104,31 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-funnel me-2"></i>
-                البحث والتصفية
+                Pencarian & Filter
             </h6>
         </div>
         <div class="card-body">
             <form method="GET" action="{{ route('guru.exams.index') }}">
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="search" class="form-label">البحث</label>
+                        <label for="search" class="form-label">Pencarian</label>
                         <input type="text" class="form-control" id="search" name="search" 
-                               value="{{ request('search') }}" placeholder="ابحث عن امتحان...">
+                               value="{{ request('search') }}" placeholder="Cari ujian...">
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="status" class="form-label">الحالة</label>
+                        <label for="status" class="form-label">Status</label>
                         <select class="form-select" id="status" name="status">
-                            <option value="">جميع الحالات</option>
-                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>مسودة</option>
-                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>نشط</option>
-                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>مكتمل</option>
-                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>ملغي</option>
+                            <option value="">Semua Status</option>
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draf</option>
+                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
+                            <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
+                            <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Dibatalkan</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
-                        <label for="subject" class="form-label">المادة</label>
+                        <label for="subject" class="form-label">Mata Pelajaran</label>
                         <select class="form-select" id="subject" name="subject">
-                            <option value="">جميع المواد</option>
+                            <option value="">Semua Mata Pelajaran</option>
                             @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}" {{ request('subject') == $subject->id ? 'selected' : '' }}>
                                     {{ $subject->name }}
@@ -137,12 +137,12 @@
                         </select>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="date_range" class="form-label">فترة التاريخ</label>
+                        <label for="date_range" class="form-label">Rentang Tanggal</label>
                         <select class="form-select" id="date_range" name="date_range">
-                            <option value="">جميع التواريخ</option>
-                            <option value="today" {{ request('date_range') == 'today' ? 'selected' : '' }}>اليوم</option>
-                            <option value="week" {{ request('date_range') == 'week' ? 'selected' : '' }}>هذا الأسبوع</option>
-                            <option value="month" {{ request('date_range') == 'month' ? 'selected' : '' }}>هذا الشهر</option>
+                            <option value="">Semua Tanggal</option>
+                            <option value="today" {{ request('date_range') == 'today' ? 'selected' : '' }}>Hari Ini</option>
+                            <option value="week" {{ request('date_range') == 'week' ? 'selected' : '' }}>Minggu Ini</option>
+                            <option value="month" {{ request('date_range') == 'month' ? 'selected' : '' }}>Bulan Ini</option>
                         </select>
                     </div>
                     <div class="col-md-2 mb-3">
@@ -150,7 +150,7 @@
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 <i class="bi bi-search me-2"></i>
-                                بحث
+                                Cari
                             </button>
                         </div>
                     </div>
@@ -164,7 +164,7 @@
         <div class="card-header py-3">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-table me-2"></i>
-                قائمة الامتحانات
+                Daftar Ujian
             </h6>
         </div>
         <div class="card-body">
@@ -173,14 +173,14 @@
                     <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                         <thead>
                             <tr>
-                                <th>عنوان الامتحان</th>
-                                <th>المادة</th>
-                                <th>عدد الأسئلة</th>
-                                <th>المدة</th>
-                                <th>المشاركين</th>
-                                <th>الحالة</th>
-                                <th>تاريخ البدء</th>
-                                <th>الإجراءات</th>
+                                <th>Judul Ujian</th>
+                                <th>Mata Pelajaran</th>
+                                <th>Jumlah Soal</th>
+                                <th>Durasi</th>
+                                <th>Peserta</th>
+                                <th>Status</th>
+                                <th>Tanggal Mulai</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -198,14 +198,14 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <span class="badge bg-info">{{ $exam->subject->name ?? 'غير محدد' }}</span>
+                                        <span class="badge bg-info">{{ $exam->subject->name ?? 'Tidak Ditentukan' }}</span>
                                     </td>
                                     <td>
                                         <span class="badge bg-secondary">{{ $exam->questions_count ?? 0 }}</span>
                                     </td>
                                     <td>
                                         <i class="bi bi-clock me-1"></i>
-                                        {{ $exam->duration }} دقيقة
+                                        {{ $exam->duration }} menit
                                     </td>
                                     <td>
                                         <span class="badge bg-warning">{{ $exam->participants_count ?? 0 }}</span>
@@ -213,52 +213,52 @@
                                     <td>
                                         @switch($exam->status)
                                             @case('draft')
-                                                <span class="badge bg-secondary">مسودة</span>
+                                                <span class="badge bg-secondary">Draf</span>
                                                 @break
                                             @case('active')
-                                                <span class="badge bg-success">نشط</span>
+                                                <span class="badge bg-success">Aktif</span>
                                                 @break
                                             @case('completed')
-                                                <span class="badge bg-primary">مكتمل</span>
+                                                <span class="badge bg-primary">Selesai</span>
                                                 @break
                                             @case('cancelled')
-                                                <span class="badge bg-danger">ملغي</span>
+                                                <span class="badge bg-danger">Dibatalkan</span>
                                                 @break
                                             @default
-                                                <span class="badge bg-light">غير محدد</span>
+                                                <span class="badge bg-light">Tidak Ditentukan</span>
                                         @endswitch
                                     </td>
                                     <td>
                                         @if($exam->start_time)
                                             {{ $exam->start_time->format('Y-m-d H:i') }}
                                         @else
-                                            <span class="text-muted">غير محدد</span>
+                                            <span class="text-muted">Tidak Ditentukan</span>
                                         @endif
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
                                             <button type="button" class="btn btn-sm btn-info" 
-                                                    onclick="viewExam({{ $exam->id }})" title="عرض">
+                                                    onclick="viewExam({{ $exam->id }})" title="Lihat">
                                                 <i class="bi bi-eye"></i>
                                             </button>
                                             
                                             @if($exam->status == 'draft')
                                                 <a href="{{ route('guru.exams.edit', $exam->id) }}" 
-                                                   class="btn btn-sm btn-primary" title="تعديل">
+                                                   class="btn btn-sm btn-primary" title="Edit">
                                                     <i class="bi bi-pencil"></i>
                                                 </a>
                                             @endif
                                             
                                             @if($exam->status == 'active')
                                                 <a href="{{ route('guru.exams.waiting-room', $exam->id) }}" 
-                                                   class="btn btn-sm btn-success" title="غرفة الانتظار">
+                                                   class="btn btn-sm btn-success" title="Ruang Tunggu">
                                                     <i class="bi bi-door-open"></i>
                                                 </a>
                                             @endif
                                             
                                             @if(in_array($exam->status, ['completed', 'active']))
                                                 <a href="{{ route('guru.exams.results', $exam->id) }}" 
-                                                   class="btn btn-sm btn-warning" title="النتائج">
+                                                   class="btn btn-sm btn-warning" title="Hasil">
                                                     <i class="bi bi-graph-up"></i>
                                                 </a>
                                             @endif
@@ -272,7 +272,7 @@
                                                     @if($exam->status == 'draft')
                                                         <li>
                                                             <button class="dropdown-item" onclick="activateExam({{ $exam->id }})">
-                                                                <i class="bi bi-play me-2"></i>تفعيل الامتحان
+                                                                <i class="bi bi-play me-2"></i>Aktifkan Ujian
                                                             </button>
                                                         </li>
                                                     @endif
@@ -280,14 +280,14 @@
                                                     @if($exam->status == 'active')
                                                         <li>
                                                             <button class="dropdown-item" onclick="completeExam({{ $exam->id }})">
-                                                                <i class="bi bi-check-circle me-2"></i>إنهاء الامتحان
+                                                                <i class="bi bi-check-circle me-2"></i>Akhiri Ujian
                                                             </button>
                                                         </li>
                                                     @endif
                                                     
                                                     <li>
                                                         <button class="dropdown-item" onclick="duplicateExam({{ $exam->id }})">
-                                                            <i class="bi bi-files me-2"></i>نسخ الامتحان
+                                                            <i class="bi bi-files me-2"></i>Gandakan Ujian
                                                         </button>
                                                     </li>
                                                     
@@ -296,7 +296,7 @@
                                                     @if($exam->status == 'draft')
                                                         <li>
                                                             <button class="dropdown-item text-danger" onclick="deleteExam({{ $exam->id }})">
-                                                                <i class="bi bi-trash me-2"></i>حذف الامتحان
+                                                                <i class="bi bi-trash me-2"></i>Hapus Ujian
                                                             </button>
                                                         </li>
                                                     @endif
@@ -319,11 +319,11 @@
             @else
                 <div class="text-center py-4">
                     <i class="bi bi-clipboard-check fa-3x text-gray-300 mb-3"></i>
-                    <h5 class="text-gray-600">لا توجد امتحانات</h5>
-                    <p class="text-gray-500">لم يتم العثور على أي امتحانات. ابدأ بإنشاء امتحان جديد.</p>
+                    <h5 class="text-gray-600">Tidak Ada Ujian</h5>
+                    <p class="text-gray-500">Belum ada ujian yang ditemukan. Mulai dengan membuat ujian baru.</p>
                     <a href="{{ route('guru.exams.create') }}" class="btn btn-primary">
                         <i class="bi bi-plus me-2"></i>
-                        إنشاء امتحان جديد
+                        Buat Ujian Baru
                     </a>
                 </div>
             @endif
@@ -338,7 +338,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" id="viewExamModalLabel">
                     <i class="bi bi-eye me-2"></i>
-                    تفاصيل الامتحان
+                    Detail Ujian
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -346,7 +346,7 @@
                 <!-- Exam details will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
