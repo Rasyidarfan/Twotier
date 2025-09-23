@@ -64,7 +64,7 @@
                             <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
                                 Bab Aktif
                             </div>
-                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $chapters->where('status', 'active')->count() }}</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ $chapters->where('is_active', true)->count() }}</div>
                         </div>
                         <div class="col-auto">
                             <i class="bi bi-check-circle-fill fa-2x text-gray-300"></i>
@@ -251,7 +251,7 @@
                                         <span class="badge bg-warning">{{ $chapter->questions_count ?? 0 }}</span>
                                     </td>
                                     <td>
-                                        @if($chapter->status == 'active')
+                                        @if($chapter->is_active)
                                             <span class="badge bg-success">Aktif</span>
                                         @else
                                             <span class="badge bg-secondary">Tidak Aktif</span>
@@ -353,10 +353,10 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-select" id="status" name="status" required>
-                                    <option value="active">Aktif</option>
-                                    <option value="inactive">Tidak Aktif</option>
+                                <label for="is_active" class="form-label">Status</label>
+                                <select class="form-select" id="is_active" name="is_active" required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
                                 </select>
                             </div>
                         </div>
@@ -418,10 +418,10 @@
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label for="edit_status" class="form-label">Status</label>
-                                <select class="form-select" id="edit_status" name="status" required>
-                                    <option value="active">Aktif</option>
-                                    <option value="inactive">Tidak Aktif</option>
+                                <label for="edit_is_active" class="form-label">Status</label>
+                                <select class="form-select" id="edit_is_active" name="is_active" required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
                                 </select>
                             </div>
                         </div>
@@ -471,7 +471,7 @@ function editChapter(id) {
             document.getElementById('edit_code').value = chapter.code || '';
             document.getElementById('edit_description').value = chapter.description || '';
             document.getElementById('edit_order').value = chapter.order || 1;
-            document.getElementById('edit_status').value = chapter.status;
+            document.getElementById('edit_is_active').value = chapter.is_active ? '1' : '0';
             document.getElementById('editChapterForm').action = `/admin/chapters/${id}`;
             
             new bootstrap.Modal(document.getElementById('editChapterModal')).show();
@@ -515,8 +515,8 @@ function viewChapter(id) {
                     </div>
                     <div class="col-md-4">
                         <h6>Status:</h6>
-                        <span class="badge bg-${chapter.status === 'active' ? 'success' : 'secondary'}">
-                            ${chapter.status === 'active' ? 'Aktif' : 'Tidak Aktif'}
+                        <span class="badge bg-${chapter.is_active ? 'success' : 'secondary'}">
+                            ${chapter.is_active ? 'Aktif' : 'Tidak Aktif'}
                         </span>
                     </div>
                     <div class="col-md-4">

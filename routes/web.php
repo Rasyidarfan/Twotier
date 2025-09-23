@@ -71,8 +71,18 @@ Route::middleware(['auth'])->group(function () {
         // Subject and Chapter management
         Route::get('/subjects', [AdminController::class, 'subjects'])->name('subjects.index');
         Route::post('/subjects', [AdminController::class, 'storeSubject'])->name('subjects.store');
+        Route::get('/subjects/{subject}', [AdminController::class, 'showSubject'])->name('subjects.show');
+        Route::get('/subjects/{subject}/edit', [AdminController::class, 'editSubject'])->name('subjects.edit');
+        Route::put('/subjects/{subject}', [AdminController::class, 'updateSubject'])->name('subjects.update');
+        Route::delete('/subjects/{subject}', [AdminController::class, 'deleteSubject'])->name('subjects.delete');
+
         Route::get('/chapters', [AdminController::class, 'chapters'])->name('chapters.index');
         Route::post('/chapters', [AdminController::class, 'storeChapter'])->name('chapters.store');
+        Route::get('/chapters/{chapter}', [AdminController::class, 'showChapter'])->name('chapters.show');
+        Route::get('/chapters/{chapter}/edit', [AdminController::class, 'editChapter'])->name('chapters.edit');
+        Route::put('/chapters/{chapter}', [AdminController::class, 'updateChapter'])->name('chapters.update');
+        Route::delete('/chapters/{chapter}', [AdminController::class, 'deleteChapter'])->name('chapters.delete');
+        Route::post('/chapters/{chapter}/move', [AdminController::class, 'moveChapter'])->name('chapters.move');
         
         // Question filtering
         Route::get('/questions/filter', [AdminController::class, 'filterQuestions'])->name('questions.filter');

@@ -294,13 +294,98 @@ class AdminController extends Controller
         return back()->with('success', 'Mata pelajaran berhasil ditambahkan.');
     }
 
-    // Chapter Management
-    public function chapters()
+    public function showSubject(Subject $subject)
     {
-        $chapters = Chapter::with('subject')->latest()->get();
+        $subject->load('chapters');
+        return response()->json($subject);
+    }
+
+    public function editSubject(Subject $subject)
+    {
+        return response()->json($subject);
+    }
+
+    public function updateSubject(Request $request, Subject $subject)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'code' => 'required|string|max:10|unique:subjects,code,' . $subject->id,
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
+        ]);
+
+        $subject->update([
+            'name' => $request->name,
+            'code' => $request->code,
+            'description' => $request->description,
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return back()->with('success', 'Mata pelajaran berhasil diperbarui.');
+    }
+
+    public function deleteSubject(Subject $subject)
+    {
+        // Check if subject has chapters or questions
+        if ($subject->chapters()->count() > 0) {
+            return back()->with('error', 'Tidak dapat menghapus mata pelajaran yang memiliki bab.');
+        }
+
+        $subject->delete();
+
+        return back()->with('success', 'Mata pelajaran berhasil dihapus.');
+    }
+
+    // Chapter Management
+    public function chapters(Request $request)
+    {
+        $query = Chapter::with('subject')->withCount('questions');
+
+        // Apply filters if needed
+        if ($request->filled('subject')) {
+            $query->where('subject_id', $request->subject);
+        }
+
+        if ($request->filled('subject_filter')) {
+            $query->where('subject_id', $request->subject_filter);
+        }
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->filled('status')) {
+            $isActive = $request->status === 'active';
+            $query->where('is_active', $isActive);
+        }
+
+        // Apply sorting
+        $sortBy = $request->get('sort', 'order');
+        if ($sortBy === 'order') {
+            $query->orderBy('order', 'asc');
+        } elseif ($sortBy === 'name') {
+            $query->orderBy('name', 'asc');
+        } elseif ($sortBy === 'created_at') {
+            $query->latest();
+        } elseif ($sortBy === 'questions_count') {
+            $query->orderBy('questions_count', 'desc');
+        } else {
+            $query->orderBy('order', 'asc');
+        }
+
+        $chapters = $query->get();
         $subjects = Subject::where('is_active', true)->get();
-        
-        return view('admin.chapters.index', compact('chapters', 'subjects'));
+
+        // Calculate additional data
+        $totalQuestions = $chapters->sum('questions_count');
+
+        // Get current subject if filtering by subject
+        $currentSubject = null;
+        if ($request->filled('subject')) {
+            $currentSubject = Subject::find($request->subject);
+        }
+
+        return view('admin.chapters.index', compact('chapters', 'subjects', 'totalQuestions', 'currentSubject'));
     }
 
     public function storeChapter(Request $request)
@@ -317,5 +402,90 @@ class AdminController extends Controller
         Chapter::create($request->all());
 
         return back()->with('success', 'Bab berhasil ditambahkan.');
+    }
+
+    public function showChapter(Chapter $chapter)
+    {
+        $chapter->load(['subject', 'questions']);
+        $chapter->questions_count = $chapter->questions()->count();
+        return response()->json($chapter);
+    }
+
+    public function editChapter(Chapter $chapter)
+    {
+        $chapter->load('subject');
+        return response()->json($chapter);
+    }
+
+    public function updateChapter(Request $request, Chapter $chapter)
+    {
+        $request->validate([
+            'subject_id' => 'required|exists:subjects,id',
+            'name' => 'required|string|max:255',
+            'grade' => 'required|string|max:10',
+            'semester' => 'required|in:gasal,genap',
+            'description' => 'nullable|string',
+            'order' => 'nullable|integer|min:0',
+            'is_active' => 'boolean',
+        ]);
+
+        $chapter->update([
+            'subject_id' => $request->subject_id,
+            'name' => $request->name,
+            'grade' => $request->grade,
+            'semester' => $request->semester,
+            'description' => $request->description,
+            'order' => $request->order,
+            'is_active' => $request->boolean('is_active'),
+        ]);
+
+        return back()->with('success', 'Bab berhasil diperbarui.');
+    }
+
+    public function deleteChapter(Chapter $chapter)
+    {
+        // Check if chapter has questions
+        if ($chapter->questions()->count() > 0) {
+            return back()->with('error', 'Tidak dapat menghapus bab yang memiliki soal.');
+        }
+
+        $chapter->delete();
+
+        return back()->with('success', 'Bab berhasil dihapus.');
+    }
+
+    public function moveChapter(Request $request, Chapter $chapter)
+    {
+        $request->validate([
+            'direction' => 'required|in:up,down'
+        ]);
+
+        $direction = $request->direction;
+        $currentOrder = $chapter->order ?? 0;
+
+        if ($direction === 'up') {
+            // Find chapter with order immediately above current
+            $swapChapter = Chapter::where('subject_id', $chapter->subject_id)
+                ->where('order', '<', $currentOrder)
+                ->orderBy('order', 'desc')
+                ->first();
+        } else {
+            // Find chapter with order immediately below current
+            $swapChapter = Chapter::where('subject_id', $chapter->subject_id)
+                ->where('order', '>', $currentOrder)
+                ->orderBy('order', 'asc')
+                ->first();
+        }
+
+        if ($swapChapter) {
+            // Swap orders
+            $tempOrder = $chapter->order;
+            $chapter->update(['order' => $swapChapter->order]);
+            $swapChapter->update(['order' => $tempOrder]);
+
+            return response()->json(['success' => true, 'message' => 'Urutan bab berhasil diubah.']);
+        }
+
+        return response()->json(['success' => false, 'message' => 'Tidak dapat memindahkan bab.']);
     }
 }
