@@ -336,6 +336,17 @@ class AdminController extends Controller
         return back()->with('success', 'Mata pelajaran berhasil dihapus.');
     }
 
+    public function getSubjectChapters(Subject $subject)
+    {
+        $chapters = $subject->chapters()
+            ->where('is_active', true)
+            ->orderBy('order', 'asc')
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'grade', 'semester']);
+
+        return response()->json($chapters);
+    }
+
     // Chapter Management
     public function chapters(Request $request)
     {

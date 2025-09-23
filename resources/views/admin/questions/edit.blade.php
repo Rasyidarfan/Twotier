@@ -357,22 +357,50 @@ document.addEventListener('DOMContentLoaded', function() {
         chapterSelect.innerHTML = '<option value="">Pilih Bab</option>';
         
         if (subjectId) {
+            // Show loading state
+            chapterSelect.innerHTML = '<option value="">Memuat bab...</option>';
+            chapterSelect.disabled = true;
+
             fetch(`/admin/subjects/${subjectId}/chapters`)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(chapters => {
-                    chapters.forEach(chapter => {
-                        const option = document.createElement('option');
-                        option.value = chapter.id;
-                        option.textContent = chapter.name;
-                        if (chapter.id == currentChapterId) {
-                            option.selected = true;
-                        }
-                        chapterSelect.appendChild(option);
-                    });
+                    chapterSelect.innerHTML = '<option value="">Pilih Bab</option>';
+                    chapterSelect.disabled = false;
+
+                    if (chapters.length > 0) {
+                        chapters.forEach(chapter => {
+                            const option = document.createElement('option');
+                            option.value = chapter.id;
+                            option.textContent = `${chapter.name} (Kelas ${chapter.grade} - ${chapter.semester === 'gasal' ? 'Gasal' : 'Genap'})`;
+                            if (chapter.id == currentChapterId) {
+                                option.selected = true;
+                            }
+                            chapterSelect.appendChild(option);
+                        });
+                    } else {
+                        chapterSelect.innerHTML = '<option value="">Tidak ada bab tersedia untuk mata pelajaran ini</option>';
+                    }
                 })
                 .catch(error => {
                     console.error('Error loading chapters:', error);
+                    chapterSelect.innerHTML = '<option value="">Error memuat bab - silakan refresh halaman</option>';
+                    chapterSelect.disabled = false;
+
+                    // Show user-friendly error message
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'Gagal memuat daftar bab. Silakan refresh halaman atau coba lagi.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
                 });
+        } else {
+            chapterSelect.disabled = false;
         }
     });
 

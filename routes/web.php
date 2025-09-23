@@ -75,6 +75,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/subjects/{subject}/edit', [AdminController::class, 'editSubject'])->name('subjects.edit');
         Route::put('/subjects/{subject}', [AdminController::class, 'updateSubject'])->name('subjects.update');
         Route::delete('/subjects/{subject}', [AdminController::class, 'deleteSubject'])->name('subjects.delete');
+        Route::get('/subjects/{subject}/chapters', [AdminController::class, 'getSubjectChapters'])->name('subjects.chapters');
 
         Route::get('/chapters', [AdminController::class, 'chapters'])->name('chapters.index');
         Route::post('/chapters', [AdminController::class, 'storeChapter'])->name('chapters.store');
