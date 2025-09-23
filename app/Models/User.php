@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role',
         'is_active',
+        'timezone',
     ];
 
     protected $hidden = [
@@ -54,5 +55,47 @@ class User extends Authenticatable
     public function createdExams()
     {
         return $this->hasMany(Exam::class, 'created_by');
+    }
+
+    // Timezone helper methods
+    public function getUserTimezone()
+    {
+        return $this->timezone ?? 'Asia/Jakarta';
+    }
+
+    public function convertToUserTime($datetime, $format = 'Y-m-d H:i:s')
+    {
+        if (!$datetime) {
+            return null;
+        }
+
+        if (is_string($datetime)) {
+            $datetime = \Carbon\Carbon::parse($datetime);
+        }
+
+        return $datetime->setTimezone($this->getUserTimezone())->format($format);
+    }
+
+    public function convertToUserTimeCarbon($datetime)
+    {
+        if (!$datetime) {
+            return null;
+        }
+
+        if (is_string($datetime)) {
+            $datetime = \Carbon\Carbon::parse($datetime);
+        }
+
+        return $datetime->setTimezone($this->getUserTimezone());
+    }
+
+    // Get available timezones for Indonesia
+    public static function getIndonesianTimezones()
+    {
+        return [
+            'Asia/Jakarta' => 'WIB (Waktu Indonesia Barat)',
+            'Asia/Makassar' => 'WITA (Waktu Indonesia Tengah)', 
+            'Asia/Jayapura' => 'WIT (Waktu Indonesia Timur)',
+        ];
     }
 }

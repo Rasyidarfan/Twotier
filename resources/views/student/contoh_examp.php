@@ -407,22 +407,22 @@
             {
                 id: 1,
                 tier1: {
-                    question: "أي الضمائر التالية هو ضمير منفصل؟",
+                    question: "Manakah di antara kata ganti berikut yang merupakan kata ganti terpisah?",
                     options: [
-                        "أ. -هُ",
-                        "ب. -كَ",
-                        "ج. -أنا",
-                        "د. -ي"
+                        "A. -nya",
+                        "B. -mu",
+                        "C. -saya",
+                        "D. -ku"
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الأول:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal pertama:",
                     options: [
-                        "أ. لأنه يتصل بالكلمة.",
-                        "ب. لأنه يدل على الملكية.",
-                        "ج. لأنه يأتي منفصلاً عن الكلمة.",
-                        "د. لأنه يدل على المتكلم."
+                        "A. Karena terhubung dengan kata.",
+                        "B. Karena menunjukkan kepemilikan.",
+                        "C. Karena muncul terpisah dari kata.",
+                        "D. Karena menunjukkan pembicara."
                     ],
                     answer: null
                 },
@@ -431,22 +431,22 @@
             {
                 id: 2,
                 tier1: {
-                    question: "أي الضمائر التالية هو ضمير متصل؟",
+                    question: "Manakah di antara kata ganti berikut yang merupakan kata ganti terhubung?",
                     options: [
-                        "أ. -أنتَ",
-                        "ب. -هُنَّ",
-                        "ج. -هُمَا",
-                        "د. -كُم"
+                        "A. -engkau",
+                        "B. -mereka (perempuan)",
+                        "C. -mereka (dua orang)",
+                        "D. -kamu (jamak)"
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الثاني:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal kedua:",
                     options: [
-                        "أ. لأنه يأتي منفصلاً.",
-                        "ب. لأنه يتصل بالفعل أو الاسم.",
-                        "ج. لأنه يستخدم للغائب.",
-                        "د. لأنه يستخدم للمخاطب."
+                        "A. Karena muncul terpisah.",
+                        "B. Karena terhubung dengan kata kerja atau kata benda.",
+                        "C. Karena digunakan untuk orang ketiga.",
+                        "D. Karena digunakan untuk orang yang diajak bicara."
                     ],
                     answer: null
                 },
@@ -455,22 +455,22 @@
             {
                 id: 3,
                 tier1: {
-                    question: "في جملة \"كتابُكَ جديدٌ\"، ما نوع الضمير \"كَ\"؟",
+                    question: "Dalam kalimat \"bukumu baru\", jenis kata ganti apakah \"mu\"?",
                     options: [
-                        "أ. ضمير منفصل.",
-                        "ب. ضمير متصل.",
-                        "ج. ضمير مستتر.",
-                        "د. اسم ظاهر."
+                        "A. Kata ganti terpisah.",
+                        "B. Kata ganti terhubung.",
+                        "C. Kata ganti tersirat.",
+                        "D. Kata benda."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الثالث:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal ketiga:",
                     options: [
-                        "أ. لأنه يدل على المخاطب منفصلاً.",
-                        "ب. لأنه اتصل بالاسم \"كتابُ\".",
-                        "ج. لأنه غير ظاهر في الجملة.",
-                        "د. لأنه ليس ضميراً."
+                        "A. Karena menunjukkan orang yang diajak bicara secara terpisah.",
+                        "B. Karena terhubung dengan kata benda \"buku\".",
+                        "C. Karena tidak terlihat dalam kalimat.",
+                        "D. Karena bukan kata ganti."
                     ],
                     answer: null
                 },
@@ -479,22 +479,22 @@
             {
                 id: 4,
                 tier1: {
-                    question: "في جملة \"هُوَ طالبٌ مجتهدٌ\"، ما نوع الضمير \"هُوَ\"؟",
+                    question: "Dalam kalimat \"Dia siswa yang rajin\", jenis kata ganti apakah \"Dia\"?",
                     options: [
-                        "أ. ضمير متصل.",
-                        "ب. ضمير منفصل.",
-                        "ج. ضمير مستتر.",
-                        "د. اسم إشارة."
+                        "A. Kata ganti terhubung.",
+                        "B. Kata ganti terpisah.",
+                        "C. Kata ganti tersirat.",
+                        "D. Kata tunjuk."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الرابع:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal keempat:",
                     options: [
-                        "أ. لأنه اتصل بالفعل \"طالبٌ\".",
-                        "ب. لأنه جاء منفصلاً عن الكلمة.",
-                        "ج. لأنه غير ظاهر في الجملة.",
-                        "د. لأنه يدل على الإشارة."
+                        "A. Karena terhubung dengan kata kerja \"siswa\".",
+                        "B. Karena muncul terpisah dari kata.",
+                        "C. Karena tidak terlihat dalam kalimat.",
+                        "D. Karena menunjukkan arah pandangan."
                     ],
                     answer: null
                 },
@@ -503,22 +503,22 @@
             {
                 id: 5,
                 tier1: {
-                    question: "أي الجمل التالية تحتوي على ضمير متصل يدل على الملكية؟",
+                    question: "Manakah di antara kalimat berikut yang mengandung kata ganti terhubung yang menunjukkan kepemilikan?",
                     options: [
-                        "أ. أنتَ طالبٌ.",
-                        "ب. كتابُهُ جميلٌ.",
-                        "ج. هُم طلابٌ.",
-                        "د. هي معلمةٌ."
+                        "A. Kamu seorang siswa.",
+                        "B. Bukunya indah.",
+                        "C. Mereka para siswa.",
+                        "D. Dia seorang guru."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الخامس:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal kelima:",
                     options: [
-                        "أ. لأن الضمير جاء منفصلاً.",
-                        "ب. لأن الضمير اتصل بالاسم ودل على ملكية.",
-                        "ج. لأن الضمير يدل على جمع الغائبين.",
-                        "د. لأن الضمير يدل على المفردة الغائبة."
+                        "A. Karena kata ganti muncul terpisah.",
+                        "B. Karena kata ganti terhubung dengan kata benda dan menunjukkan kepemilikan.",
+                        "C. Karena kata ganti menunjukkan jamak orang ketiga.",
+                        "D. Karena kata ganti menunjukkan tunggal orang ketiga."
                     ],
                     answer: null
                 },
@@ -527,22 +527,22 @@
             {
                 id: 6,
                 tier1: {
-                    question: "أي الكلمات التالية هي اسم نكرة؟",
+                    question: "Manakah di antara kata-kata berikut yang merupakan kata benda tanpa artikel?",
                     options: [
-                        "أ. الكتاب",
-                        "ب. المدرسة",
-                        "ج. قلم",
-                        "د. البيت"
+                        "A. Buku",
+                        "B. Sekolah",
+                        "C. Pensil",
+                        "D. Rumah"
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الأول:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal pertama:",
                     options: [
-                        "أ. لأنه معرف بأل التعريف.",
-                        "ب. لأنه يدل على شيء معين.",
-                        "ج. لأنه يدل على شيء غير معين.",
-                        "د. لأنه اسم علم."
+                        "A. Karena mengandung artikel 'al'.",
+                        "B. Karena menunjukkan sesuatu yang spesifik.",
+                        "C. Karena menunjukkan sesuatu yang tidak spesifik.",
+                        "D. Karena merupakan nama orang."
                     ],
                     answer: null
                 },
@@ -551,22 +551,22 @@
             {
                 id: 7,
                 tier1: {
-                    question: "أي الكلمات التالية هي اسم معرفة؟",
+                    question: "Manakah di antara kata-kata berikut yang merupakan kata benda dengan artikel?",
                     options: [
-                        "أ. رجل",
-                        "ب. مدينة",
-                        "ج. الشمس",
-                        "د. بيت"
+                        "A. Orang",
+                        "B. Kota",
+                        "C. Matahari",
+                        "D. Gedung"
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الثاني:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal kedua:",
                     options: [
-                        "أ. لأنه لا يحتوي على أل التعريف.",
-                        "ب. لأنه يدل على شيء غير محدد.",
-                        "ج. لأنه يحتوي على أل التعريف.",
-                        "د. لأنه اسم نكرة."
+                        "A. Karena tidak mengandung artikel 'al'.",
+                        "B. Karena menunjukkan sesuatu yang tidak ditentukan.",
+                        "C. Karena mengandung artikel 'al'.",
+                        "D. Karena merupakan kata benda tanpa artikel."
                     ],
                     answer: null
                 },
@@ -575,22 +575,22 @@
             {
                 id: 8,
                 tier1: {
-                    question: "في جملة \"قرأتُ كتابًا\"، ما نوع كلمة \"كتابًا\"؟",
+                    question: "Dalam kalimat \"Saya membaca sebuah buku\", jenis kata apakah \"buku\"?",
                     options: [
-                        "أ. اسم معرفة.",
-                        "ب. اسم نكرة.",
-                        "ج. اسم علم.",
-                        "د. اسم إشارة."
+                        "A. Kata benda dengan artikel.",
+                        "B. Kata benda tanpa artikel.",
+                        "C. Nama orang.",
+                        "D. Kata tunjuk."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الثالث:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal ketiga:",
                     options: [
-                        "أ. لأنه يحتوي على أل التعريف.",
-                        "ب. لأنه لا يحتوي على أل التعريف ويدل على كتاب غير محدد.",
-                        "ج. لأنه اسم شخص.",
-                        "د. لأنه يدل على شيء محدد بالاشارة."
+                        "A. Karena mengandung artikel 'al'.",
+                        "B. Karena tidak mengandung artikel 'al' dan menunjukkan buku yang tidak spesifik.",
+                        "C. Karena merupakan nama orang.",
+                        "D. Karena menunjukkan sesuatu yang spesifik dengan tunjukan."
                     ],
                     answer: null
                 },
@@ -599,22 +599,22 @@
             {
                 id: 9,
                 tier1: {
-                    question: "في جملة \"زار المعلمُ المدرسةَ\"، ما نوع كلمة \"المدرسةَ\"؟",
+                    question: "Dalam kalimat \"Guru mengunjungi sekolah\", jenis kata apakah \"sekolah\"?",
                     options: [
-                        "أ. اسم نكرة.",
-                        "ب. اسم معرفة.",
-                        "ج. اسم موصول.",
-                        "د. اسم استفهام."
+                        "A. Kata benda tanpa artikel.",
+                        "B. Kata benda dengan artikel.",
+                        "C. Kata penghubung.",
+                        "D. Kata tanya."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الرابع:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal keempat:",
                     options: [
-                        "أ. لأنه لا يحتوي على أل التعريف.",
-                        "ب. لأنه يحتوي على أل التعريف ويدل على مدرسة محددة.",
-                        "ج. لأنه يصل بين جملتين.",
-                        "د. لأنه يستخدم للسؤال."
+                        "A. Karena tidak mengandung artikel 'al'.",
+                        "B. Karena mengandung artikel 'al' dan menunjukkan sekolah yang spesifik.",
+                        "C. Karena menghubungkan dua kalimat.",
+                        "D. Karena digunakan untuk bertanya."
                     ],
                     answer: null
                 },
@@ -623,22 +623,22 @@
             {
                 id: 10,
                 tier1: {
-                    question: "أي الجمل التالية تحتوي على اسم معرفة؟",
+                    question: "Manakah di antara kalimat berikut yang mengandung kata benda dengan artikel?",
                     options: [
-                        "أ. اشتريتُ سيارةً.",
-                        "ب. في البيتِ ضيفٌ.",
-                        "ج. جاء الطالبُ.",
-                        "د. رأيتُ رجلاً."
+                        "A. Saya membeli sebuah mobil.",
+                        "B. Di rumah ada tamu.",
+                        "C. Siswa datang.",
+                        "D. Saya melihat seorang pria."
                     ],
                     answer: null
                 },
                 tier2: {
-                    question: "اختر السبب الصحيح لاختيارك في السؤال الخامس:",
+                    question: "Pilih alasan yang benar untuk pilihan Anda pada soal kelima:",
                     options: [
-                        "أ. لأن كلمة \"سيارة\" نكرة.",
-                        "ب. لأن كلمة \"ضيف\" نكرة.",
-                        "ج. لأن كلمة \"الطالب\" معرفة بأل التعريف.",
-                        "د. لأن كلمة \"رجلاً\" نكرة."
+                        "A. Karena kata \"mobil\" tanpa artikel.",
+                        "B. Karena kata \"tamu\" tanpa artikel.",
+                        "C. Karena kata \"siswa\" dengan artikel.",
+                        "D. Karena kata \"pria\" tanpa artikel."
                     ],
                     answer: null
                 },
@@ -707,7 +707,7 @@
                     optionElement.className = `option${question.tier1.answer === optionIndex ? ' selected' : ''}`;
                     optionElement.onclick = () => selectTier1Option(question.id, optionIndex);
                     
-                    // Get the option letter (أ, ب, ج, د)
+                    // Get the option letter (A, B, C, D)
                     const optionLetter = option.substring(0, option.indexOf('.'));
                     // Trim any whitespace from the option text
                     const optionText = option.substring(option.indexOf('.') + 1).trim();
@@ -739,7 +739,7 @@
                     optionElement.className = `option${question.tier2.answer === optionIndex ? ' selected' : ''}`;
                     optionElement.onclick = () => selectTier2Option(question.id, optionIndex);
                     
-                    // Get the option letter (أ, ب, ج, د)
+                    // Get the option letter (A, B, C, D)
                     const optionLetter = option.substring(0, option.indexOf('.'));
                     const optionText = option.substring(option.indexOf('.') + 1);
                     

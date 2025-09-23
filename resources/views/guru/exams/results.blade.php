@@ -65,13 +65,13 @@
                             </div>
                             <div class="d-flex align-items-center mb-2">
                                 <i class="bi bi-clock me-2 text-warning"></i>
-                                <span>{{ $exam->duration }} menit</span>
+                                <span>{{ $exam->duration_minutes }} menit</span>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="d-flex align-items-center mb-2">
                                 <i class="bi bi-question-circle me-2 text-success"></i>
-                                <span>{{ $exam->questions->count() }} soal</span>
+                                <span>{{ $exam->examQuestions->count() }} soal</span>
                             </div>
                             <div class="d-flex align-items-center">
                                 <i class="bi bi-calendar me-2 text-primary"></i>
@@ -250,7 +250,7 @@
                                 </td>
                                 <td>
                                     <button type="button" class="btn btn-sm btn-info" 
-                                            onclick="viewQuestionDetails({{ $analysis['question']->id }})" title="تفاصيل السؤال">
+                                            onclick="viewQuestionDetails({{ $analysis['question']->id }})" title="Detail Soal">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </td>
@@ -267,22 +267,22 @@
         <div class="card-header py-3 d-flex justify-content-between align-items-center">
             <h6 class="m-0 font-weight-bold text-primary">
                 <i class="bi bi-table me-2"></i>
-                نتائج المشاركين
+                Hasil Peserta
             </h6>
             <div>
                 <div class="btn-group me-2">
                     <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="bi bi-funnel me-2"></i>تصفية
+                        <i class="bi bi-funnel me-2"></i>Filter
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#" onclick="filterResults('all')">جميع النتائج</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterResults('passed')">الناجحون فقط</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterResults('failed')">الراسبون فقط</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="filterResults('completed')">المكتملون فقط</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterResults('all')">Semua Hasil</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterResults('passed')">Yang Lulus</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterResults('failed')">Yang Tidak Lulus</a></li>
+                        <li><a class="dropdown-item" href="#" onclick="filterResults('completed')">Yang Selesai</a></li>
                     </ul>
                 </div>
                 <button type="button" class="btn btn-sm btn-info" onclick="refreshResults()">
-                    <i class="bi bi-arrow-clockwise me-2"></i>تحديث
+                    <i class="bi bi-arrow-clockwise me-2"></i>Refresh
                 </button>
             </div>
         </div>
@@ -291,14 +291,14 @@
                 <table class="table table-hover" id="resultsTable">
                     <thead>
                         <tr>
-                            <th>الطالب</th>
-                            <th>وقت البدء</th>
-                            <th>وقت الانتهاء</th>
-                            <th>المدة المستغرقة</th>
-                            <th>الدرجة</th>
-                            <th>النسبة المئوية</th>
-                            <th>الحالة</th>
-                            <th>الإجراءات</th>
+                            <th>Siswa</th>
+                            <th>Waktu Mulai</th>
+                            <th>Waktu Selesai</th>
+                            <th>Durasi</th>
+                            <th>Nilai</th>
+                            <th>Persentase</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="resultsTableBody">
@@ -319,7 +319,7 @@
                                 <td>{{ $result->completed_at ? $result->completed_at->format('Y-m-d H:i:s') : '-' }}</td>
                                 <td>
                                     @if($result->started_at && $result->completed_at)
-                                        {{ $result->started_at->diffInMinutes($result->completed_at) }} دقيقة
+                                        {{ $result->started_at->diffInMinutes($result->completed_at) }} menit
                                     @else
                                         -
                                     @endif
@@ -343,28 +343,28 @@
                                 </td>
                                 <td>
                                     @if($result->status == 'completed')
-                                        @if($result->percentage >= $exam->passing_score)
-                                            <span class="badge bg-success">ناجح</span>
+                                        @if($result->percentage >= 60)
+                                            <span class="badge bg-success">Lulus</span>
                                         @else
-                                            <span class="badge bg-danger">راسب</span>
+                                            <span class="badge bg-danger">Tidak Lulus</span>
                                         @endif
                                     @else
-                                        <span class="badge bg-warning">{{ $result->status == 'in_progress' ? 'جاري' : 'غير مكتمل' }}</span>
+                                        <span class="badge bg-warning">{{ $result->status == 'in_progress' ? 'Sedang Berjalan' : 'Belum Selesai' }}</span>
                                     @endif
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
                                         <button type="button" class="btn btn-sm btn-info" 
-                                                onclick="viewDetailedResult({{ $result->id }})" title="عرض التفاصيل">
+                                                onclick="viewDetailedResult({{ $result->id }})" title="Lihat Detail">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                         <button type="button" class="btn btn-sm btn-primary" 
-                                                onclick="downloadResultPDF({{ $result->id }})" title="تحميل PDF">
+                                                onclick="downloadResultPDF({{ $result->id }})" title="Download PDF">
                                             <i class="bi bi-file-earmark-pdf"></i>
                                         </button>
                                         @if($result->status == 'completed')
                                             <button type="button" class="btn btn-sm btn-success" 
-                                                    onclick="sendResultEmail({{ $result->id }})" title="إرسال النتيجة بالإيميل">
+                                                    onclick="sendResultEmail({{ $result->id }})" title="Kirim Hasil via Email">
                                                 <i class="bi bi-envelope"></i>
                                             </button>
                                         @endif
@@ -397,7 +397,7 @@ function initializeScoresChart() {
         data: {
             labels: ['0-20%', '21-40%', '41-60%', '61-80%', '81-100%'],
             datasets: [{
-                label: 'عدد الطلاب',
+                label: 'Jumlah Siswa',
                 data: scoresData,
                 backgroundColor: [
                     'rgba(220, 53, 69, 0.8)',
@@ -443,7 +443,7 @@ function initializePassFailChart() {
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['ناجح', 'راسب'],
+            labels: ['Lulus', 'Tidak Lulus'],
             datasets: [{
                 data: [passedCount, failedCount],
                 backgroundColor: [
@@ -508,12 +508,12 @@ function downloadResultPDF(resultId) {
 
 function sendResultEmail(resultId) {
     Swal.fire({
-        title: 'إرسال النتيجة بالإيميل',
-        text: 'هل تريد إرسال النتيجة للطالب عبر البريد الإلكتروني؟',
+        title: 'Kirim Hasil via Email',
+        text: 'Apakah Anda ingin mengirim hasil ujian kepada siswa melalui email?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'نعم، أرسل',
-        cancelButtonText: 'إلغاء'
+        confirmButtonText: 'Ya, Kirim',
+        cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
             fetch(`/guru/exam-results/${resultId}/send-email`, {
@@ -527,21 +527,21 @@ function sendResultEmail(resultId) {
             .then(data => {
                 if (data.success) {
                     Swal.fire({
-                        title: 'تم!',
-                        text: 'تم إرسال النتيجة بالإيميل بنجاح',
+                        title: 'Berhasil!',
+                        text: 'Hasil ujian berhasil dikirim melalui email',
                         icon: 'success',
-                        confirmButtonText: 'موافق'
+                        confirmButtonText: 'OK'
                     });
                 } else {
-                    throw new Error(data.message || 'حدث خطأ');
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
             })
             .catch(error => {
                 Swal.fire({
-                    title: 'خطأ!',
-                    text: error.message || 'حدث خطأ أثناء إرسال الإيميل',
+                    title: 'Error!',
+                    text: error.message || 'Terjadi kesalahan saat mengirim email',
                     icon: 'error',
-                    confirmButtonText: 'موافق'
+                    confirmButtonText: 'OK'
                 });
             });
         }
@@ -554,43 +554,43 @@ function viewQuestionDetails(questionId) {
         .then(data => {
             let html = `
                 <div class="text-start">
-                    <h6>السؤال الأساسي:</h6>
+                    <h6>Soal Utama:</h6>
                     <p>${data.question.tier1_question}</p>
-                    <h6>الخيارات:</h6>
+                    <h6>Pilihan Jawaban:</h6>
                     <ul>
-                        <li class="${data.question.tier1_correct_answer === 'a' ? 'text-success fw-bold' : ''}">أ) ${data.question.tier1_option_a}</li>
-                        <li class="${data.question.tier1_correct_answer === 'b' ? 'text-success fw-bold' : ''}">ب) ${data.question.tier1_option_b}</li>
-                        <li class="${data.question.tier1_correct_answer === 'c' ? 'text-success fw-bold' : ''}">ج) ${data.question.tier1_option_c}</li>
-                        <li class="${data.question.tier1_correct_answer === 'd' ? 'text-success fw-bold' : ''}">د) ${data.question.tier1_option_d}</li>
+                        <li class="${data.question.tier1_correct_answer === 'a' ? 'text-success fw-bold' : ''}">A) ${data.question.tier1_option_a}</li>
+                        <li class="${data.question.tier1_correct_answer === 'b' ? 'text-success fw-bold' : ''}">B) ${data.question.tier1_option_b}</li>
+                        <li class="${data.question.tier1_correct_answer === 'c' ? 'text-success fw-bold' : ''}">C) ${data.question.tier1_option_c}</li>
+                        <li class="${data.question.tier1_correct_answer === 'd' ? 'text-success fw-bold' : ''}">D) ${data.question.tier1_option_d}</li>
                     </ul>
-                    <h6>سؤال التبرير:</h6>
+                    <h6>Soal Penjelasan:</h6>
                     <p>${data.question.tier2_question}</p>
-                    <h6>خيارات التبرير:</h6>
+                    <h6>Pilihan Penjelasan:</h6>
                     <ul>
-                        <li class="${data.question.tier2_correct_answer === 'a' ? 'text-success fw-bold' : ''}">أ) ${data.question.tier2_option_a}</li>
-                        <li class="${data.question.tier2_correct_answer === 'b' ? 'text-success fw-bold' : ''}">ب) ${data.question.tier2_option_b}</li>
-                        <li class="${data.question.tier2_correct_answer === 'c' ? 'text-success fw-bold' : ''}">ج) ${data.question.tier2_option_c}</li>
-                        <li class="${data.question.tier2_correct_answer === 'd' ? 'text-success fw-bold' : ''}">د) ${data.question.tier2_option_d}</li>
+                        <li class="${data.question.tier2_correct_answer === 'a' ? 'text-success fw-bold' : ''}">A) ${data.question.tier2_option_a}</li>
+                        <li class="${data.question.tier2_correct_answer === 'b' ? 'text-success fw-bold' : ''}">B) ${data.question.tier2_option_b}</li>
+                        <li class="${data.question.tier2_correct_answer === 'c' ? 'text-success fw-bold' : ''}">C) ${data.question.tier2_option_c}</li>
+                        <li class="${data.question.tier2_correct_answer === 'd' ? 'text-success fw-bold' : ''}">D) ${data.question.tier2_option_d}</li>
                     </ul>
                     <hr>
-                    <h6>إحصائيات الإجابات:</h6>
+                    <h6>Statistik Jawaban:</h6>
                     <div class="row">
                         <div class="col-6">
-                            <small class="text-muted">المستوى الأول:</small>
+                            <small class="text-muted">Level 1:</small>
                             <ul class="list-unstyled">
-                                <li>أ: ${data.tier1_stats.a || 0} إجابة</li>
-                                <li>ب: ${data.tier1_stats.b || 0} إجابة</li>
-                                <li>ج: ${data.tier1_stats.c || 0} إجابة</li>
-                                <li>د: ${data.tier1_stats.d || 0} إجابة</li>
+                                <li>A: ${data.tier1_stats.a || 0} jawaban</li>
+                                <li>B: ${data.tier1_stats.b || 0} jawaban</li>
+                                <li>C: ${data.tier1_stats.c || 0} jawaban</li>
+                                <li>D: ${data.tier1_stats.d || 0} jawaban</li>
                             </ul>
                         </div>
                         <div class="col-6">
-                            <small class="text-muted">المستوى الثاني:</small>
+                            <small class="text-muted">Level 2:</small>
                             <ul class="list-unstyled">
-                                <li>أ: ${data.tier2_stats.a || 0} إجابة</li>
-                                <li>ب: ${data.tier2_stats.b || 0} إجابة</li>
-                                <li>ج: ${data.tier2_stats.c || 0} إجابة</li>
-                                <li>د: ${data.tier2_stats.d || 0} إجابة</li>
+                                <li>A: ${data.tier2_stats.a || 0} jawaban</li>
+                                <li>B: ${data.tier2_stats.b || 0} jawaban</li>
+                                <li>C: ${data.tier2_stats.c || 0} jawaban</li>
+                                <li>D: ${data.tier2_stats.d || 0} jawaban</li>
                             </ul>
                         </div>
                     </div>
@@ -598,18 +598,18 @@ function viewQuestionDetails(questionId) {
             `;
             
             Swal.fire({
-                title: 'تحليل السؤال',
+                title: 'Analisis Soal',
                 html: html,
                 width: '800px',
-                confirmButtonText: 'إغلاق'
+                confirmButtonText: 'Tutup'
             });
         })
         .catch(error => {
             Swal.fire({
-                title: 'خطأ!',
-                text: 'حدث خطأ أثناء تحميل تحليل السؤال',
+                title: 'Error!',
+                text: 'Terjadi kesalahan saat memuat analisis soal',
                 icon: 'error',
-                confirmButtonText: 'موافق'
+                confirmButtonText: 'OK'
             });
         });
 }

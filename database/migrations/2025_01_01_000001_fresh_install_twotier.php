@@ -23,10 +23,12 @@ return new class extends Migration
         
         // Get all table names
         $tables = DB::select('SHOW TABLES');
-        $databaseName = env('DB_DATABASE');
         
         foreach ($tables as $table) {
-            $tableName = $table->{"Tables_in_{$databaseName}"};
+            // Convert stdClass to array and get the first value
+            $tableArray = (array) $table;
+            $tableName = reset($tableArray);
+            
             // Skip the migrations table
             if ($tableName === 'migrations') {
                 continue;

@@ -671,19 +671,19 @@ function previewQuestion(questionId) {
                         <p>${question.tier1_question}</p>
                         <h6>Pilihan:</h6>
                         <ul>
-                            <li>أ) ${question.tier1_option_a}</li>
-                            <li>ب) ${question.tier1_option_b}</li>
-                            <li>ج) ${question.tier1_option_c}</li>
-                            <li>د) ${question.tier1_option_d}</li>
+                            <li>A) ${question.tier1_option_a}</li>
+                            <li>B) ${question.tier1_option_b}</li>
+                            <li>C) ${question.tier1_option_c}</li>
+                            <li>D) ${question.tier1_option_d}</li>
                         </ul>
                         <h6>Soal Justifikasi:</h6>
                         <p>${question.tier2_question}</p>
                         <h6>Pilihan Justifikasi:</h6>
                         <ul>
-                            <li>أ) ${question.tier2_option_a}</li>
-                            <li>ب) ${question.tier2_option_b}</li>
-                            <li>ج) ${question.tier2_option_c}</li>
-                            <li>د) ${question.tier2_option_d}</li>
+                            <li>A) ${question.tier2_option_a}</li>
+                            <li>B) ${question.tier2_option_b}</li>
+                            <li>C) ${question.tier2_option_c}</li>
+                            <li>D) ${question.tier2_option_d}</li>
                         </ul>
                     </div>
                 `,

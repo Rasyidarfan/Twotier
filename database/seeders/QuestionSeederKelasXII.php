@@ -38,7 +38,7 @@ class QuestionSeederKelasXII extends Seeder
                     'يلعبُ',
                     'بالكرةِ',
                     'لا شيء'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // الصغيرُ
                 'tier2_question' => 'لماذا اخترت تلك الكلمة؟',
                 'tier2_options' => json_encode([
@@ -47,7 +47,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأنها فعل مضارع',
                     'لأنها حرف جر',
                     'لأنها اسم معرفة'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لأنها تصف اسمًا آخر وتتبعه في الإعراب
                 'difficulty' => 'sulit',
                 'created_by' => 4, // Ustadz Muhammad Ridwan
@@ -61,7 +61,7 @@ class QuestionSeederKelasXII extends Seeder
                     'جميلاً',
                     'يحلقُ',
                     'في السماءِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // جميلاً
                 'tier2_question' => 'ما هي وظيفة الكلمة التي حددتها؟',
                 'tier2_options' => json_encode([
@@ -70,7 +70,7 @@ class QuestionSeederKelasXII extends Seeder
                     'صفة للاسم الذي قبله',
                     'ظرف مكان',
                     'فعل'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // صفة للاسم الذي قبله
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -84,7 +84,7 @@ class QuestionSeederKelasXII extends Seeder
                     'كتابُ الطالبِ',
                     'لا يوجد إضافة',
                     'هذا'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // كتابُ الطالبِ
                 'tier2_question' => 'ما السبب في اختيارك؟',
                 'tier2_options' => json_encode([
@@ -93,7 +93,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأنها حرف',
                     'لأنها تدل على ملكية',
                     'لأنها تعرب مضاف إليه'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لأنها اسم يضاف إلى اسم آخر لتوضيحه
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -107,7 +107,7 @@ class QuestionSeederKelasXII extends Seeder
                     'مفتوحٌ',
                     'بابُ البيتِ',
                     'لا يوجد'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // البيتِ
                 'tier2_question' => 'لماذا تعرب الكلمة مضافًا إليه؟',
                 'tier2_options' => json_encode([
@@ -116,7 +116,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأنها اسم يأتي بعد المضاف لتوضيحه',
                     'لأنها فعل',
                     'لأنها حرف جر'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لأنها اسم يأتي بعد المضاف لتوضيحه
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -130,7 +130,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الدرسَ',
                     'كتبَ الدرسُ',
                     'لا شيء'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 0, // كتبَ
                 'tier2_question' => 'لماذا هو فعل مبني للمعلوم؟',
                 'tier2_options' => json_encode([
@@ -139,7 +139,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأنه يدل على حدث في الماضي',
                     'لأنه فعل أمر',
                     'لأنه فعل مضارع'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لأن فاعله مذكور ومعروف
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -153,7 +153,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الكتابَ',
                     'يقرأُ الكتابَ',
                     'لا شيء'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 0, // يقرأُ
                 'tier2_question' => 'ما علامة بناء الفعل؟',
                 'tier2_options' => json_encode([
@@ -162,7 +162,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الكسرة',
                     'السكون',
                     'لا تتغير'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 0, // الضمة
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -176,7 +176,7 @@ class QuestionSeederKelasXII extends Seeder
                     'كَتَبَ',
                     'الطالبُ',
                     'لا شيء'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 0, // كُتِبَ
                 'tier2_question' => 'ما الفرق بينه وبين الفعل المبني للمعلوم؟',
                 'tier2_options' => json_encode([
@@ -185,7 +185,7 @@ class QuestionSeederKelasXII extends Seeder
                     'فاعله غير مذكور أو مجهول',
                     'يدل على المستقبل',
                     'في صيغة أمر'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // فاعله غير مذكور أو مجهول
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -199,7 +199,7 @@ class QuestionSeederKelasXII extends Seeder
                     'كلَّ',
                     'يومٍ',
                     'يكتبُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 0, // يُكْتَبُ
                 'tier2_question' => 'كيف يتم صياغة الفعل المبني للمجهول المضارع؟',
                 'tier2_options' => json_encode([
@@ -208,7 +208,7 @@ class QuestionSeederKelasXII extends Seeder
                     'بكسر الحرف الأول وضم ما قبل الآخر',
                     'بوضع سكون على الآخر',
                     'بقلب حرف العلة'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // بضم الحرف الأول وفتح ما قبل الآخر
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -222,7 +222,7 @@ class QuestionSeederKelasXII extends Seeder
                     'أكبرُ',
                     'من',
                     'ذلك'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // أكبرُ
                 'tier2_question' => 'ما معنى الكلمة التي اخترتها؟',
                 'tier2_options' => json_encode([
@@ -231,7 +231,7 @@ class QuestionSeederKelasXII extends Seeder
                     'Lebih besar',
                     'Dari',
                     'Itu'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // Lebih besar
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -245,7 +245,7 @@ class QuestionSeederKelasXII extends Seeder
                     'أفضلُ',
                     'من',
                     'الأحمرِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // أفضلُ
                 'tier2_question' => 'ما وزن اسم التفضيل؟',
                 'tier2_options' => json_encode([
@@ -254,7 +254,7 @@ class QuestionSeederKelasXII extends Seeder
                     'أفعل',
                     'يفعل',
                     'فعل'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // أفعل
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -282,7 +282,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الْمَدْرَسَةُ',
                     'الْقَلَمُ',
                     'الْبَيْتُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // الْأَخُ
                 'tier2_question' => 'لِمَاذَا اخْتَرْتَ هذه الإجابة؟',
                 'tier2_options' => json_encode([
@@ -291,7 +291,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لِأَنَّهَا مِنْ الْأَسْمَاءِ الْمُعْرَبَةِ بِالْحُرُوفِ',
                     'لِأَنَّهَا تَجْمَعُ جَمْعَ مُؤَنَّثٍ سَالِمٍ',
                     'لِأَنَّهَا تَنْتَهِي بِتَاءٍ مَرْبُوطَةٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لِأَنَّهَا مِنْ الْأَسْمَاءِ الْمُعْرَبَةِ بِالْحُرُوفِ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -305,7 +305,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الْأَخُ',
                     'الْأَخَوَاتُ',
                     'الْأَخَوِينَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // الْأَخُ
                 'tier2_question' => 'لِمَاذَا تُعْرَبُ بِالْوَاوِ فِي حَالَةِ الرَّفْعِ؟',
                 'tier2_options' => json_encode([
@@ -314,7 +314,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لِأَنَّهُ مُثَنَّى',
                     'لِأَنَّهُ اسْمٌ مُنَوَّنٌ',
                     'لِأَنَّهُ جَمْعُ تَكْسِيرٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ مِنَ الْأَسْمَاءِ الْخَمْسَةِ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -328,7 +328,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الدَّرْسَ',
                     'فِي',
                     'الْـ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // يَكْتُبُونَ
                 'tier2_question' => 'لِمَاذَا هَذَا الْفِعْلُ مِنَ الْأَفْعَالِ الْخَمْسَةِ؟',
                 'tier2_options' => json_encode([
@@ -337,7 +337,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لِأَنَّهُ فِعْلٌ أَمْرٍ',
                     'لِأَنَّهُ مُفْرَدٌ مُذَكَّرٌ',
                     'لِأَنَّهُ مَبْنِيٌّ عَلَى الْفَتْحِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ مُضَارِعٌ اتَّصَلَ بِوَاوِ الْجَمَاعَةِ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -351,7 +351,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الضَّمَّةُ',
                     'السُّكُونُ',
                     'التَّنْوِينُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // الضَّمَّةُ
                 'tier2_question' => 'لِمَاذَا يُرْفَعُ الْفِعْلُ الْمُضَارِعُ؟',
                 'tier2_options' => json_encode([
@@ -360,7 +360,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لِأَنَّهُ فِعْلٌ مَاضٍ',
                     'لِأَنَّهُ يَدُلُّ عَلَى الْمُسْتَقْبَلِ',
                     'لِأَنَّهُ مَبْنِيٌّ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 0, // لِأَنَّهُ لَمْ يَدْخُلْ عَلَيْهِ نَاصِبٌ وَلَا جَازِمٌ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -374,7 +374,7 @@ class QuestionSeederKelasXII extends Seeder
                     'يُهْمِلَ',
                     'وَاجِبَهُ',
                     'لا يوجد'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // يُهْمِلَ
                 'tier2_question' => 'مَا الَّذِي نَصَبَ الْفِعْلَ الْمُضَارِعَ؟',
                 'tier2_options' => json_encode([
@@ -383,7 +383,7 @@ class QuestionSeederKelasXII extends Seeder
                     'وَاجِبَهُ',
                     'لَا نَاصِبَ لَهُ',
                     'الْفَتْحَةُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لَنْ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -397,7 +397,7 @@ class QuestionSeederKelasXII extends Seeder
                     'يَنَمْ',
                     'مُبَكِّرًا',
                     'لا يوجد'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // يَنَمْ
                 'tier2_question' => 'مَا الَّذِي جَزَمَ الْفِعْلَ الْمُضَارِعَ؟',
                 'tier2_options' => json_encode([
@@ -406,7 +406,7 @@ class QuestionSeederKelasXII extends Seeder
                     'مُبَكِّرًا',
                     'لَا جَازِمَ لَهُ',
                     'السُّكُونُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لَمْ
                 'difficulty' => 'sulit',
                 'created_by' => 4,
@@ -420,7 +420,7 @@ class QuestionSeederKelasXII extends Seeder
                     'إِلَى',
                     'الْمَدْرَسَةِ',
                     'لا يوجد'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 3, // الْمَدْرَسَةِ
                 'tier2_question' => 'مَا الَّذِي جَرَّ الِاسْمَ؟',
                 'tier2_options' => json_encode([
@@ -429,7 +429,7 @@ class QuestionSeederKelasXII extends Seeder
                     'إِلَى',
                     'لَا جَارَّ لَهُ',
                     'الْكَسْرَةُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // إِلَى
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -443,7 +443,7 @@ class QuestionSeederKelasXII extends Seeder
                     'تركيب عطفي',
                     'تركيب بدلي',
                     'تركيب ظرفي'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // تركيب وصفي
                 'tier2_question' => 'لماذا يسمى تركيبًا وصفيًا؟',
                 'tier2_options' => json_encode([
@@ -452,7 +452,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأن الكلمتين مرتبطتان بواو العطف',
                     'لأن الكلمة الثانية بدل من الأولى',
                     'لأن الكلمة الثانية ظرف'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لأن الكلمة الثانية تصف الأولى
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -466,7 +466,7 @@ class QuestionSeederKelasXII extends Seeder
                     'أَوْ',
                     'ثُمَّ',
                     'لَكِنْ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // أَوْ
                 'tier2_question' => 'ما معنى التنويع في حروف العطف؟',
                 'tier2_options' => json_encode([
@@ -475,7 +475,7 @@ class QuestionSeederKelasXII extends Seeder
                     'الاختيار بين شيئين أو أكثر',
                     'الترتيب مع التعقيب',
                     'الاستدراك'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // الاختيار بين شيئين أو أكثر
                 'difficulty' => 'sedang',
                 'created_by' => 4,
@@ -489,7 +489,7 @@ class QuestionSeederKelasXII extends Seeder
                     'تركيب إسنادي',
                     'تركيب عطفي',
                     'تركيب مزجي'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // تركيب إسنادي
                 'tier2_question' => 'لماذا يسمى تركيبًا إسناديًا؟',
                 'tier2_options' => json_encode([
@@ -498,7 +498,7 @@ class QuestionSeederKelasXII extends Seeder
                     'لأنه يتكون من مسند ومسند إليه',
                     'لأنه يتكون من معطوف ومعطوف عليه',
                     'لأنه يتكون من كلمتين مدموجتين'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لأنه يتكون من مسند ومسند إليه
                 'difficulty' => 'sedang',
                 'created_by' => 4,

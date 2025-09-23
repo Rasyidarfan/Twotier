@@ -1,1038 +1,747 @@
-@extends('layouts.app')
+@extends('layouts.student')
 
 @section('title', 'Ujian - ' . $exam->title)
 
-@push('styles')
-<style>
-    :root {
-        --primary-color: #6777ef;
-        --secondary-color: #e3eaff;
-        --success-color: #47c363;
-        --danger-color: #fc544b;
-        --warning-color: #ffa426;
-        --info-color: #3abaf4;
-        --light-color: #f8f9fa;
-        --dark-color: #343a40;
-    }
-
-    body {
-        background-color: #f4f6f9;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    .exam-wrapper {
-        display: flex;
-        flex-direction: row-reverse;
-        max-width: 1400px;
-        margin: 0 auto;
-        padding: 20px;
-        gap: 20px;
-    }
-
-    .exam-container {
-        flex: 1;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-    }
-
-    .nav-container {
-        width: 280px;
-        background-color: #fff;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        padding: 20px;
-        height: fit-content;
-        position: sticky;
-        top: 20px;
-    }
-
-    .exam-header {
-        background: linear-gradient(135deg, var(--primary-color), #5a67d8);
-        color: white;
-        padding: 20px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 15px;
-    }
-
-    .exam-title {
-        flex: 1;
-        min-width: 200px;
-    }
-
-    .exam-title h4 {
-        margin: 0 0 5px 0;
-        font-size: 1.3rem;
-        font-weight: 600;
-    }
-
-    .exam-title p {
-        margin: 0;
-        opacity: 0.9;
-        font-size: 0.9rem;
-    }
-
-    .timer-container {
-        display: flex;
-        align-items: center;
-        background-color: rgba(255, 255, 255, 0.2);
-        padding: 10px 15px;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-
-    .timer-container i {
-        margin-right: 8px;
-    }
-
-    .timer-container.warning {
-        background-color: var(--warning-color);
-        animation: pulse 1s infinite;
-    }
-
-    .timer-container.danger {
-        background-color: var(--danger-color);
-        animation: pulse 0.5s infinite;
-    }
-
-    @keyframes pulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.7; }
-    }
-
-    .font-controls {
-        display: flex;
-        gap: 5px;
-    }
-
-    .font-btn {
-        background-color: rgba(255, 255, 255, 0.2);
-        color: white;
-        border: none;
-        width: 35px;
-        height: 35px;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: all 0.2s;
-    }
-
-    .font-btn:hover {
-        background-color: rgba(255, 255, 255, 0.3);
-    }
-
-    .progress-info {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .progress-bar-container {
-        width: 120px;
-        height: 8px;
-        background-color: rgba(255, 255, 255, 0.3);
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .progress-bar {
-        height: 100%;
-        background-color: var(--success-color);
-        transition: width 0.3s ease;
-    }
-
-    .progress-text {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-
-    .exam-content {
-        height: calc(100vh - 200px);
-        overflow-y: auto;
-        padding: 0;
-    }
-
-    .question-container {
-        padding: 30px;
-        border-bottom: 1px solid #eee;
-        display: none;
-    }
-
-    .question-container.active {
-        display: block;
-        animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    .question-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .question-number {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: var(--primary-color);
-    }
-
-    .question-badge {
-        background-color: var(--secondary-color);
-        color: var(--primary-color);
-        padding: 5px 12px;
-        border-radius: 15px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .flag-btn {
-        background: none;
-        border: none;
-        color: #ccc;
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: color 0.2s;
-    }
-
-    .flag-btn.flagged {
-        color: var(--warning-color);
-    }
-
-    .tier-section {
-        margin-bottom: 30px;
-    }
-
-    .tier-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    .tier-title.tier1 {
-        color: var(--primary-color);
-    }
-
-    .tier-title.tier2 {
-        color: var(--success-color);
-    }
-
-    .tier-icon {
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: 600;
-    }
-
-    .tier1 .tier-icon {
-        background-color: var(--primary-color);
-    }
-
-    .tier2 .tier-icon {
-        background-color: var(--success-color);
-    }
-
-    .question-text {
-        background-color: #f8f9ff;
-        padding: 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-size: 1.1rem;
-        line-height: 1.6;
-        text-align: right;
-        direction: rtl;
-        border-right: 4px solid var(--primary-color);
-    }
-
-    .tier2 .question-text {
-        background-color: #f0fff4;
-        border-right-color: var(--success-color);
-    }
-
-    .options-container {
-        display: grid;
-        gap: 12px;
-    }
-
-    .option-item {
-        border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 15px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        text-align: right;
-        direction: rtl;
-    }
-
-    .option-item:hover {
-        border-color: var(--primary-color);
-        background-color: var(--secondary-color);
-    }
-
-    .option-item.selected {
-        border-color: var(--primary-color);
-        background-color: var(--secondary-color);
-        box-shadow: 0 2px 8px rgba(103, 119, 239, 0.2);
-    }
-
-    .option-circle {
-        width: 35px;
-        height: 35px;
-        border-radius: 50%;
-        background-color: #f1f3f4;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: #666;
-        flex-shrink: 0;
-    }
-
-    .option-item.selected .option-circle {
-        background-color: var(--primary-color);
-        color: white;
-    }
-
-    .option-text {
-        flex: 1;
-        font-size: 1rem;
-        line-height: 1.5;
-    }
-
-    .tier2-section {
-        opacity: 0.5;
-        pointer-events: none;
-        transition: all 0.3s ease;
-    }
-
-    .tier2-section.enabled {
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .exam-footer {
-        padding: 20px 30px;
-        background-color: #f8f9fa;
-        border-top: 1px solid #dee2e6;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .nav-btn {
-        background-color: var(--info-color);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.2s;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-        background-color: #2c9ad1;
-        transform: translateY(-1px);
-    }
-
-    .nav-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-
-    .save-btn {
-        background-color: var(--success-color);
-    }
-
-    .save-btn:hover:not(:disabled) {
-        background-color: #3ea356;
-    }
-
-    .finish-btn {
-        background-color: var(--danger-color);
-    }
-
-    .finish-btn:hover {
-        background-color: #e03c3c;
-    }
-
-    /* Navigation Sidebar */
-    .nav-title {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: #333;
-        text-align: center;
-        padding-bottom: 15px;
-        border-bottom: 2px solid #f0f0f0;
-    }
-
-    .nav-grid {
-        display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
-        margin-bottom: 25px;
-    }
-
-    .nav-item {
-        width: 40px;
-        height: 40px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 6px;
-        background-color: var(--light-color);
-        color: var(--dark-color);
-        cursor: pointer;
-        font-weight: 600;
-        border: 2px solid #dee2e6;
-        transition: all 0.2s;
-    }
-
-    .nav-item:hover {
-        border-color: var(--primary-color);
-        transform: translateY(-1px);
-    }
-
-    .nav-item.active {
-        background-color: var(--primary-color);
-        color: white;
-        border-color: var(--primary-color);
-    }
-
-    .nav-item.answered {
-        background-color: var(--success-color);
-        color: white;
-        border-color: var(--success-color);
-    }
-
-    .nav-item.flagged {
-        background-color: var(--warning-color);
-        color: white;
-        border-color: var(--warning-color);
-    }
-
-    .submit-section {
-        text-align: center;
-    }
-
-    .submit-btn {
-        width: 100%;
-        padding: 15px;
-        background-color: var(--danger-color);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .submit-btn:hover {
-        background-color: #e03c3c;
-        transform: translateY(-1px);
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .exam-wrapper {
-            flex-direction: column;
-            padding: 10px;
-        }
-
-        .nav-container {
-            width: 100%;
-            order: -1;
-            position: static;
-        }
-
-        .exam-header {
-            flex-direction: column;
-            text-align: center;
-        }
-
-        .exam-content {
-            height: auto;
-            max-height: 60vh;
-        }
-
-        .question-container {
-            padding: 20px;
-        }
-    }
-
-    /* Custom Scrollbar */
-    .exam-content::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .exam-content::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 3px;
-    }
-
-    .exam-content::-webkit-scrollbar-thumb {
-        background: var(--primary-color);
-        border-radius: 3px;
-    }
-
-    .exam-content::-webkit-scrollbar-thumb:hover {
-        background: #5a67d8;
-    }
-</style>
-@endpush
+@php
+    $arabicLetters = ['أ', 'ب', 'ج', 'د', 'هـ'];
+@endphp
 
 @section('content')
-<div class="exam-wrapper">
-    <!-- Main Exam Container -->
-    <div class="exam-container">
-        <!-- Exam Header -->
-        <div class="exam-header">
-            <div class="exam-title">
-                <h4>{{ $exam->title }}</h4>
-                <p>{{ $exam->subject->name }} - Kelas {{ $exam->grade }} {{ ucfirst($exam->semester) }}</p>
+<div class="exam-container">
+    <!-- Header -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="exam-navbar">
+        <div class="container-fluid">
+            <div class="d-flex align-items-center">
+                <h5 class="navbar-brand mb-0">{{ $exam->title }}</h5>
+                <span class="badge bg-light text-dark ms-2">{{ $session->student_name }}</span>
             </div>
             
-            <div class="font-controls">
-                <button class="font-btn" onclick="changeFontSize(false)" title="Perkecil Font">
-                    <i class="fas fa-minus"></i>
-                </button>
-                <button class="font-btn" onclick="changeFontSize(true)" title="Perbesar Font">
-                    <i class="fas fa-plus"></i>
-                </button>
-            </div>
-            
-            <div class="timer-container" id="timer-display">
-                <i class="fas fa-clock"></i>
-                <span id="time-remaining">{{ gmdate('H:i:s', $timeRemaining) }}</span>
-            </div>
-            
-            <div class="progress-info">
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="progress-bar" style="width: {{ ($answeredCount / $examQuestions->count()) * 100 }}%"></div>
+            <div class="d-flex align-items-center d-none d-lg-flex">
+                <!-- Progress -->
+                <div class="me-4">
+                    <small class="text-light">Progress:</small>
+                    <div class="progress" style="width: 150px; height: 6px;">
+                        <div class="progress-bar" id="progress-bar" role="progressbar" style="width: {{ $progress }}%"></div>
+                    </div>
+                    <small class="text-light" id="progress-text">{{ $progress }}%</small>
                 </div>
-                <div class="progress-text">
-                    <span id="answered-count">{{ $answeredCount }}</span> / {{ $examQuestions->count() }}
+                
+                <!-- Timer -->
+                <div class="me-4">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-clock me-2"></i>
+                        <div>
+                            <div class="fw-bold" id="timer">00:00:00</div>
+                            <small class="opacity-75">Sisa waktu</small>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Finish Button -->
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finishExamModal">
+                    <i class="bi bi-check-lg"></i> إنهاء
+                </button>
             </div>
         </div>
+    </nav>
 
-        <!-- Exam Content -->
-        <div class="exam-content">
-            @foreach($examQuestions as $index => $examQuestion)
-                <div class="question-container {{ $index === $currentQuestionIndex ? 'active' : '' }}" 
-                     data-question-index="{{ $index }}" 
-                     data-question-id="{{ $examQuestion->question_id }}">
-                    
-                    <!-- Question Header -->
-                    <div class="question-header">
-                        <div class="question-number">
-                            <i class="fas fa-question-circle"></i>
-                            Soal {{ $index + 1 }} dari {{ $examQuestions->count() }}
-                        </div>
-                        <div class="question-badge">{{ $examQuestion->question->chapter->name }}</div>
-                        <button class="flag-btn" onclick="toggleFlag({{ $index }})" title="Tandai Soal">
-                            <i class="fas fa-flag"></i>
-                        </button>
+    <!-- Main Content -->
+    <div class="container-fluid" style="margin-top: 80px; padding-bottom: 100px;">
+        <div class="row">
+            <!-- Questions Navigation Sidebar -->
+            <div class="col-lg-2 d-none d-lg-block">
+                <div class="card sticky-top" style="top: 90px;">
+                    <div class="card-header">
+                        <h6 class="mb-0">تنقل الأسئلة</h6>
                     </div>
-
-                    <!-- Tier 1 Section -->
-                    <div class="tier-section">
-                        <div class="tier-title tier1">
-                            <div class="tier-icon">1</div>
-                            <span>Pertanyaan Utama</span>
-                        </div>
-                        
-                        <div class="question-text">
-                            {{ $examQuestion->question->tier1_question }}
-                        </div>
-                        
-                        <div class="options-container">
-                            @if(is_array($examQuestion->question->tier1_options) && count($examQuestion->question->tier1_options) > 0)
-                                @foreach($examQuestion->question->tier1_options as $optionIndex => $option)
-                                    <div class="option-item tier1-option" 
-                                         data-question-id="{{ $examQuestion->question_id }}" 
-                                         data-option="{{ $optionIndex }}"
-                                         onclick="selectTier1Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
-                                        <div class="option-circle">{{ chr(65 + $optionIndex) }}</div>
-                                        <div class="option-text">{{ $option }}</div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="alert alert-danger">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Error: Format opsi pertanyaan tidak valid. Silakan hubungi administrator.
+                    <div class="card-body">
+                        <div class="row g-2" id="question-nav">
+                            @foreach($questions as $index => $question)
+                                <div class="col-4">
+                                    <button class="btn btn-outline-secondary btn-sm w-100 question-nav-btn" 
+                                            data-question="{{ $index + 1 }}" 
+                                            onclick="goToQuestion({{ $index + 1 }})">
+                                        {{ $index + 1 }}
+                                    </button>
                                 </div>
-                            @endif
+                            @endforeach
                         </div>
-                    </div>
-
-                    <!-- Tier 2 Section -->
-                    <div class="tier-section tier2-section" id="tier2-{{ $examQuestion->question_id }}">
-                        <div class="tier-title tier2">
-                            <div class="tier-icon">2</div>
-                            <span>Alasan Pemilihan Jawaban</span>
-                        </div>
-                        
-                        <div class="question-text">
-                            {{ $examQuestion->question->tier2_question }}
-                        </div>
-                        
-                        <div class="options-container">
-                            @if(is_array($examQuestion->question->tier2_options) && count($examQuestion->question->tier2_options) > 0)
-                                @foreach($examQuestion->question->tier2_options as $optionIndex => $option)
-                                    <div class="option-item tier2-option" 
-                                         data-question-id="{{ $examQuestion->question_id }}" 
-                                         data-option="{{ $optionIndex }}"
-                                         onclick="selectTier2Option({{ $examQuestion->question_id }}, {{ $optionIndex }})">
-                                        <div class="option-circle">{{ $optionIndex + 1 }}</div>
-                                        <div class="option-text">{{ $option }}</div>
-                                    </div>
-                                @endforeach
-                            @else
-                                <div class="alert alert-danger">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Error: Format opsi alasan tidak valid. Silakan hubungi administrator.
-                                </div>
-                            @endif
+                        <div class="mt-3">
+                            <small class="text-muted">
+                                <span class="badge bg-success me-1"></span> مجاب<br>
+                                <span class="badge bg-warning me-1"></span> غير مكتمل<br>
+                                <span class="badge bg-secondary me-1"></span> غير مجاب
+                            </small>
                         </div>
                     </div>
                 </div>
-            @endforeach
-        </div>
-
-        <!-- Exam Footer -->
-        <div class="exam-footer">
-            <button class="nav-btn" id="prev-btn" onclick="navigateQuestion(-1)">
-                <i class="fas fa-arrow-left"></i>
-                Sebelumnya
-            </button>
-            
-            <div class="footer-center">
-                <button class="nav-btn save-btn" id="save-btn" onclick="saveCurrentAnswer()" disabled>
-                    <i class="fas fa-save"></i>
-                    Simpan Jawaban
-                </button>
             </div>
-            
-            <div class="footer-right">
-                @if($currentQuestionIndex === $examQuestions->count() - 1)
-                    <button class="nav-btn finish-btn" onclick="showFinishModal()">
-                        <i class="fas fa-flag-checkered"></i>
-                        Selesai Ujian
-                    </button>
-                @else
-                    <button class="nav-btn" id="next-btn" onclick="navigateQuestion(1)">
-                        Selanjutnya
-                        <i class="fas fa-arrow-right"></i>
-                    </button>
-                @endif
+
+            <!-- Questions Content -->
+            <div class="col-lg-10">
+                @foreach($questions as $index => $question)
+                    <div class="question-container" id="question-{{ $index + 1 }}" style="display: {{ $index === 0 ? 'block' : 'none' }};">
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">
+                                        السؤال {{ $index + 1 }} من {{ $questions->count() }}
+                                    </h5>
+                                    <div class="d-lg-none">
+                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" data-bs-target="#questionNavOffcanvas">
+                                            <i class="bi bi-list"></i> تنقل
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Tier 1 Question -->
+                                <div class="tier-section mb-4">
+                                    <div class="tier-header bg-primary text-white p-3 rounded-top">
+                                        <h6 class="mb-0"><i class="bi bi-layers"></i>المستوى الأول</h6>
+                                    </div>
+                                    <div class="tier-content border rounded-bottom p-3">
+                                        <div class="question-text mb-3">
+                                            {!! $question->tier1_question !!}
+                                        </div>
+                                        <div class="options">
+                                            @php
+                                                $tier1Options = is_string($question->tier1_options) ? 
+                                                    json_decode($question->tier1_options, true) : 
+                                                    $question->tier1_options;
+                                            @endphp
+                                            @if(is_array($tier1Options))
+                                                @foreach($tier1Options as $optionIndex => $option)
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input tier1-option" 
+                                                               type="radio" 
+                                                               name="tier1_q{{ $question->id }}" 
+                                                               value="{{ $optionIndex }}" 
+                                                               id="tier1_q{{ $question->id }}_{{ $optionIndex }}"
+                                                               data-question-id="{{ $question->id }}"
+                                                               data-tier="1">
+                                                        <label class="form-check-label" for="tier1_q{{ $question->id }}_{{ $optionIndex }}">
+                                                            {{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}. {{ $option }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Tier 2 Question -->
+                                <div class="tier-section">
+                                    <div class="tier-header bg-success text-white p-3 rounded-top">
+                                        <h6 class="mb-0"><i class="bi bi-layers"></i>المستوى الثاني</h6>
+                                    </div>
+                                    <div class="tier-content border rounded-bottom p-3">
+                                        <div class="question-text mb-3">
+                                            {!! $question->tier2_question !!}
+                                        </div>
+                                        <div class="options">
+                                            @php
+                                                $tier2Options = is_string($question->tier2_options) ? 
+                                                    json_decode($question->tier2_options, true) : 
+                                                    $question->tier2_options;
+                                            @endphp
+                                            @if(is_array($tier2Options))
+                                                @foreach($tier2Options as $optionIndex => $option)
+                                                    <div class="form-check mb-2">
+                                                        <input class="form-check-input tier2-option" 
+                                                               type="radio" 
+                                                               name="tier2_q{{ $question->id }}" 
+                                                               value="{{ $optionIndex }}" 
+                                                               id="tier2_q{{ $question->id }}_{{ $optionIndex }}"
+                                                               data-question-id="{{ $question->id }}"
+                                                               data-tier="2">
+                                                        <label class="form-check-label" for="tier2_q{{ $question->id }}_{{ $optionIndex }}">
+                                                            {{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}. {{ $option }}
+                                                        </label>
+                                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation Buttons -->
+                                <div class="d-flex justify-content-between mt-4">
+                                    <div>
+                                        @if($index > 0)
+                                            <button class="btn btn-outline-secondary" onclick="goToQuestion({{ $index }})">
+                                                <i class="bi bi-chevron-left"></i> السابق
+                                            </button>
+                                        @endif
+                                    </div>
+                                    <div>
+                                        @if($index < $questions->count() - 1)
+                                            <button class="btn btn-primary" onclick="goToQuestion({{ $index + 2 }})">
+                                                التالي <i class="bi bi-chevron-right"></i>
+                                            </button>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             </div>
         </div>
     </div>
 
-    <!-- Navigation Sidebar -->
-    <div class="nav-container">
-        <div class="nav-title">
-            <i class="fas fa-list"></i>
-            Navigasi Soal
+    <!-- Mobile Navigation Offcanvas -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="questionNavOffcanvas">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">تنقل الأسئلة</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
         </div>
-        
-        <div class="nav-grid" id="question-navigator">
-            @foreach($examQuestions as $index => $examQuestion)
-                <div class="nav-item {{ $index === $currentQuestionIndex ? 'active' : '' }}" 
-                     data-question-index="{{ $index }}"
-                     onclick="navigateToQuestion({{ $index }})"
-                     title="Soal {{ $index + 1 }}">
-                    {{ $index + 1 }}
+        <div class="offcanvas-body">
+            <div class="row g-2" id="mobile-question-nav">
+                @foreach($questions as $index => $question)
+                    <div class="col-4">
+                        <button class="btn btn-outline-secondary btn-sm w-100 question-nav-btn" 
+                                data-question="{{ $index + 1 }}" 
+                                onclick="goToQuestion({{ $index + 1 }}); bootstrap.Offcanvas.getInstance(document.getElementById('questionNavOffcanvas')).hide();">
+                            {{ $index + 1 }}
+                        </button>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    </div>
+
+    <!-- Status Bar (Mobile) -->
+    <div class="d-lg-none fixed-bottom bg-white border-top p-3">
+        <div class="row align-items-center">
+            <div class="col-4">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-clock me-2"></i>
+                    <div>
+                        <div class="fw-bold small" id="mobile-timer">00:00:00</div>
+                    </div>
                 </div>
-            @endforeach
-        </div>
-        
-        <div class="submit-section">
-            <button class="submit-btn" onclick="showFinishModal()">
-                <i class="fas fa-paper-plane"></i>
-                Kumpulkan Ujian
-            </button>
+            </div>
+            <div class="col-4 text-center">
+                <div class="progress" style="height: 4px;">
+                    <div class="progress-bar" id="mobile-progress-bar" style="width: {{ $progress }}%"></div>
+                </div>
+                <small id="mobile-progress-text">{{ $progress }}%</small>
+            </div>
+            <div class="col-4 text-end">
+                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#finishExamModal">
+                    إنهاء
+                </button>
+            </div>
         </div>
     </div>
 </div>
 
 <!-- Finish Exam Modal -->
-<div class="modal fade" id="finishExamModal" tabindex="-1">
+<div class="modal fade" id="finishExamModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">
-                    <i class="fas fa-flag-checkered"></i>
-                    Selesai Ujian
-                </h5>
+                <h5 class="modal-title">إنهاء الامتحان</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="text-center mb-3">
-                    <i class="fas fa-question-circle text-warning" style="font-size: 3rem;"></i>
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    <strong>هل أنت متأكد من إنهاء الامتحان؟</strong>
                 </div>
-                <p class="text-center mb-3">Apakah Anda yakin ingin menyelesaikan ujian?</p>
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i>
-                    Anda telah menjawab <strong><span id="final-answered-count">{{ $answeredCount }}</span></strong> 
-                    dari <strong>{{ $examQuestions->count() }}</strong> soal.
+                <div class="mb-3">
+                    <p>حالة أداءك:</p>
+                    <ul>
+                        <li>إجمالي الأسئلة: <strong>{{ $questions->count() }}</strong></li>
+                        <li>الأسئلة المجابة بالكامل: <strong><span id="answered-questions">0</span></strong></li>
+                        <li>التقدم: <strong><span id="current-progress">{{ $progress }}%</span></strong></li>
+                        <li>الوقت المتبقي: <strong><span id="remaining-time">-</span></strong></li>
+                    </ul>
                 </div>
-                <p class="text-muted small text-center">
-                    Setelah dikumpulkan, Anda tidak dapat mengubah jawaban lagi.
-                </p>
+                <p class="text-muted">بعد إنهاء الامتحان، لا يمكنك تغيير الإجابات.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times"></i>
-                    Batal
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إلغاء</button>
+                <button type="button" class="btn btn-warning" onclick="finishExam()">
+                    <i class="bi bi-check-lg"></i> نعم، إنهاء الامتحان
                 </button>
-                <form method="POST" action="{{ route('exam.finish', $session) }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-paper-plane"></i>
-                        Ya, Kumpulkan Ujian
-                    </button>
-                </form>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Auto-save indicator -->
+<div id="save-indicator" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
+    <div class="toast" id="saveToast" role="alert">
+        <div class="toast-body">
+            <i class="bi bi-check-circle text-success"></i> تم حفظ الإجابة
+        </div>
+    </div>
+</div>
+
 @endsection
 
 @push('scripts')
 <script>
-// Global variables
-let currentQuestionIndex = {{ $currentQuestionIndex }};
-let totalQuestions = {{ $examQuestions->count() }};
-let timeRemaining = {{ $timeRemaining }};
-let answeredCount = {{ $answeredCount }};
-let sessionId = {{ $session->id }};
-let examQuestions = @json($examQuestions->pluck('question_id'));
-let questionFlags = {};
-let fontSize = 16;
+const sessionId = {{ $session->id }};
+const totalQuestions = {{ $questions->count() }};
+let currentQuestion = 1;
+let remainingTime = 0; // Will be set by server
+let timerInterval;
+let heartbeatInterval;
+let autoSaveTimeout;
+let isTimerStarted = false;
 
-// Timer functionality
-function updateTimer() {
-    if (timeRemaining <= 0) {
-        clearInterval(timerInterval);
-        alert('Waktu ujian telah habis! Ujian akan diselesaikan secara otomatis.');
-        document.querySelector('#finishExamModal form').submit();
-        return;
-    }
+// Existing answers
+const existingAnswers = @json($existingAnswers);
+
+$(document).ready(function() {
+    initializeExam();
+    loadExistingAnswers();
+    bindEvents();
     
-    timeRemaining--;
-    const hours = Math.floor(timeRemaining / 3600);
-    const minutes = Math.floor((timeRemaining % 3600) / 60);
-    const seconds = timeRemaining % 60;
+    // Start timer with a small delay to ensure DOM is ready
+    setTimeout(function() {
+        markPageLoadedAndStartTimer();
+        startHeartbeat();
+    }, 100);
+});
+
+function initializeExam() {
+    // Initialize question navigation
+    updateQuestionNavigation();
     
-    const timeDisplay = document.getElementById('time-remaining');
-    const timerContainer = document.getElementById('timer-display');
-    
-    timeDisplay.textContent = 
-        String(hours).padStart(2, '0') + ':' + 
-        String(minutes).padStart(2, '0') + ':' + 
-        String(seconds).padStart(2, '0');
-    
-    // Change timer color based on remaining time
-    timerContainer.classList.remove('warning', 'danger');
-    if (timeRemaining < 300) { // 5 minutes
-        timerContainer.classList.add('danger');
-    } else if (timeRemaining < 600) { // 10 minutes
-        timerContainer.classList.add('warning');
+    // Set focus to first unanswered question
+    const firstUnanswered = findFirstUnansweredQuestion();
+    if (firstUnanswered > 0) {
+        goToQuestion(firstUnanswered);
     }
 }
 
-// Start timer
-const timerInterval = setInterval(updateTimer, 1000);
-
-// Font size control
-function changeFontSize(increase) {
-    if (increase) {
-        fontSize = Math.min(24, fontSize + 2);
-    } else {
-        fontSize = Math.max(12, fontSize - 2);
-    }
+function loadExistingAnswers() {
+    // Load existing answers from server data
+    Object.keys(existingAnswers).forEach(questionId => {
+        const answer = existingAnswers[questionId];
+        if (answer && answer.tier1_answer !== null && answer.tier1_answer !== undefined) {
+            $(`input[name="tier1_q${questionId}"][value="${answer.tier1_answer}"]`).prop('checked', true);
+        }
+        
+        if (answer && answer.tier2_answer !== null && answer.tier2_answer !== undefined) {
+            $(`input[name="tier2_q${questionId}"][value="${answer.tier2_answer}"]`).prop('checked', true);
+        }
+    });
     
-    document.querySelectorAll('.question-text, .option-text').forEach(element => {
-        element.style.fontSize = fontSize + 'px';
+    updateProgress();
+    updateQuestionNavigation();
+}
+
+function markPageLoadedAndStartTimer() {
+    // Mark page as loaded and get server-based timer
+    $.post(`/api/student/sessions/${sessionId}/page-loaded`, {
+        _token: $('meta[name="csrf-token"]').attr('content')
+    }).done(function(response) {
+        if (response.success) {
+            // Set remaining time from server
+            remainingTime = response.remaining_time;
+            isTimerStarted = true;
+            startServerBasedTimer();
+            console.log(`Timer started with ${remainingTime} seconds remaining`);
+        }
+    }).fail(function(xhr) {
+        console.error('Failed to start timer:', xhr.responseJSON?.message || 'Unknown error');
+        // Don't start client timer if server call fails
     });
 }
 
-// Question navigation
-function navigateToQuestion(index) {
-    if (index < 0 || index >= totalQuestions) return;
-    
-    // Hide current question
-    document.querySelectorAll('.question-container').forEach(container => {
-        container.classList.remove('active');
+function bindEvents() {
+    // Handle answer selection
+    $('.tier1-option, .tier2-option').on('change', function() {
+        saveAnswer(this);
     });
+    
+    // Prevent accidental page leave
+    window.addEventListener('beforeunload', function(e) {
+        e.preventDefault();
+        e.returnValue = 'Apakah Anda yakin ingin meninggalkan halaman ujian?';
+    });
+    
+    // Handle visibility change (tab switch detection)
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+            console.log('Tab switched - this might be logged for monitoring');
+        }
+    });
+}
+
+function goToQuestion(questionNumber) {
+    // Hide all questions
+    $('.question-container').hide();
     
     // Show target question
-    const targetQuestion = document.querySelector(`[data-question-index="${index}"]`);
-    if (targetQuestion) {
-        targetQuestion.classList.add('active');
-    }
+    $(`#question-${questionNumber}`).show();
+    
+    // Update current question
+    currentQuestion = questionNumber;
     
     // Update navigation
-    document.querySelectorAll('.nav-item').forEach(item => {
-        item.classList.remove('active');
-    });
+    updateQuestionNavigation();
     
-    const navItem = document.querySelector(`[data-question-index="${index}"]`);
-    if (navItem) {
-        navItem.classList.add('active');
-    }
-    
-    currentQuestionIndex = index;
-    updateNavigationButtons();
-    checkCurrentAnswers();
+    // Scroll to top
+    $('html, body').animate({ scrollTop: 0 }, 300);
 }
 
-function navigateQuestion(direction) {
-    const newIndex = currentQuestionIndex + direction;
-    navigateToQuestion(newIndex);
+function findFirstUnansweredQuestion() {
+    for (let i = 1; i <= totalQuestions; i++) {
+        const questionId = $(`#question-${i} input[data-tier="1"]`).first().data('question-id');
+        if (questionId) {
+            const tier1Answered = $(`input[name="tier1_q${questionId}"]:checked`).length > 0;
+            const tier2Answered = $(`input[name="tier2_q${questionId}"]:checked`).length > 0;
+            
+            if (!tier1Answered || !tier2Answered) {
+                return i;
+            }
+        }
+    }
+    return 1;
 }
 
-function updateNavigationButtons() {
-    const prevBtn = document.getElementById('prev-btn');
-    const nextBtn = document.getElementById('next-btn');
+function saveAnswer(element) {
+    const questionId = $(element).data('question-id');
+    const tier = $(element).data('tier');
+    const value = $(element).val();
     
-    if (prevBtn) prevBtn.disabled = currentQuestionIndex === 0;
-    if (nextBtn) nextBtn.disabled = currentQuestionIndex === totalQuestions - 1;
+    // Clear any existing timeout
+    if (autoSaveTimeout) {
+        clearTimeout(autoSaveTimeout);
+    }
+    
+    // Set new timeout for auto-save
+    autoSaveTimeout = setTimeout(() => {
+        submitAnswer(questionId);
+    }, 1000); // Save 1 second after user stops changing answers
 }
 
-// Answer selection
-function selectTier1Option(questionId, optionIndex) {
-    // Remove selection from other tier1 options for this question
-    document.querySelectorAll(`[data-question-id="${questionId}"].tier1-option`).forEach(option => {
-        option.classList.remove('selected');
-    });
+function submitAnswer(questionId) {
+    const tier1Answer = $(`input[name="tier1_q${questionId}"]:checked`).val();
+    const tier2Answer = $(`input[name="tier2_q${questionId}"]:checked`).val();
     
-    // Select current option
-    const selectedOption = document.querySelector(`[data-question-id="${questionId}"].tier1-option[data-option="${optionIndex}"]`);
-    if (selectedOption) {
-        selectedOption.classList.add('selected');
-    }
-    
-    // Enable tier 2
-    const tier2Section = document.getElementById(`tier2-${questionId}`);
-    if (tier2Section) {
-        tier2Section.classList.add('enabled');
-    }
-    
-    checkCurrentAnswers();
-}
-
-function selectTier2Option(questionId, optionIndex) {
-    // Remove selection from other tier2 options for this question
-    document.querySelectorAll(`[data-question-id="${questionId}"].tier2-option`).forEach(option => {
-        option.classList.remove('selected');
-    });
-    
-    // Select current option
-    const selectedOption = document.querySelector(`[data-question-id="${questionId}"].tier2-option[data-option="${optionIndex}"]`);
-    if (selectedOption) {
-        selectedOption.classList.add('selected');
-    }
-    
-    checkCurrentAnswers();
-}
-
-// Check if current question is fully answered
-function checkCurrentAnswers() {
-    const questionId = examQuestions[currentQuestionIndex];
-    const tier1Selected = document.querySelector(`[data-question-id="${questionId}"].tier1-option.selected`);
-    const tier2Selected = document.querySelector(`[data-question-id="${questionId}"].tier2-option.selected`);
-    
-    const saveBtn = document.getElementById('save-btn');
-    if (saveBtn) {
-        saveBtn.disabled = !(tier1Selected && tier2Selected);
-    }
-}
-
-// Save current answer
-function saveCurrentAnswer() {
-    const questionId = examQuestions[currentQuestionIndex];
-    const tier1Selected = document.querySelector(`[data-question-id="${questionId}"].tier1-option.selected`);
-    const tier2Selected = document.querySelector(`[data-question-id="${questionId}"].tier2-option.selected`);
-    
-    if (!tier1Selected || !tier2Selected) {
-        alert('Silakan pilih jawaban untuk kedua pertanyaan!');
-        return;
-    }
-    
-    const tier1Answer = tier1Selected.getAttribute('data-option');
-    const tier2Answer = tier2Selected.getAttribute('data-option');
-    
-    // Disable save button and show loading
-    const saveBtn = document.getElementById('save-btn');
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-    
-    // Send AJAX request
-    fetch(`/exam/answer/${sessionId}`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        },
-        body: JSON.stringify({
+    // Only submit if both tiers are answered
+    if (tier1Answer !== undefined && tier2Answer !== undefined) {
+        $.post(`/exam/answer/${sessionId}`, {
             question_id: questionId,
-            tier1_answer: parseInt(tier1Answer),
-            tier2_answer: parseInt(tier2Answer)
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Mark question as answered
-            const navItem = document.querySelector(`.nav-item[data-question-index="${currentQuestionIndex}"]`);
-            if (navItem) {
-                navItem.classList.add('answered');
-            }
-            
-            // Update answered count
-            answeredCount++;
-            document.getElementById('answered-count').textContent = answeredCount;
-            document.getElementById('final-answered-count').textContent = answeredCount;
-            
-            // Update progress bar
-            const progress = (answeredCount / totalQuestions) * 100;
-            document.getElementById('progress-bar').style.width = progress + '%';
-            
-            // Reset save button
-            saveBtn.innerHTML = '<i class="fas fa-check"></i> Tersimpan';
-            saveBtn.classList.add('btn-success');
-            
-            // Auto navigate to next question after 1 second
-            setTimeout(() => {
-                if (currentQuestionIndex < totalQuestions - 1) {
-                    navigateToQuestion(currentQuestionIndex + 1);
+            tier1_answer: tier1Answer,
+            tier2_answer: tier2Answer,
+            _token: $('meta[name="csrf-token"]').attr('content')
+        }).done(function(response) {
+            if (response.success) {
+                showSaveIndicator();
+                updateProgressFromResponse(response);
+                updateQuestionNavigation();
+                
+                // Update remaining time from server
+                if (response.remaining_time !== undefined) {
+                    remainingTime = response.remaining_time;
+                    updateTimerDisplay();
                 }
-                saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Jawaban';
-                saveBtn.classList.remove('btn-success');
-                saveBtn.disabled = true;
-            }, 1500);
-        } else {
-            alert('Gagal menyimpan jawaban. Silakan coba lagi.');
-            saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Jawaban';
-            saveBtn.disabled = false;
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Terjadi kesalahan. Silakan coba lagi.');
-        saveBtn.innerHTML = '<i class="fas fa-save"></i> Simpan Jawaban';
-        saveBtn.disabled = false;
-    });
-}
-
-// Toggle flag for question
-function toggleFlag(questionIndex) {
-    const flagBtn = document.querySelector(`[data-question-index="${questionIndex}"] .flag-btn`);
-    const navItem = document.querySelector(`.nav-item[data-question-index="${questionIndex}"]`);
-    
-    if (questionFlags[questionIndex]) {
-        // Remove flag
-        delete questionFlags[questionIndex];
-        flagBtn.classList.remove('flagged');
-        navItem.classList.remove('flagged');
-    } else {
-        // Add flag
-        questionFlags[questionIndex] = true;
-        flagBtn.classList.add('flagged');
-        navItem.classList.add('flagged');
+                console.log(response);
+            }
+        }).fail(function(xhr) {
+            if (xhr.status === 400) {
+                const response = xhr.responseJSON;
+                if (response.message.includes('tidak valid') || response.message.includes('berakhir')) {
+                    alert('Sesi ujian berakhir. Anda akan diarahkan ke halaman hasil.');
+                    window.location.href = `/exam/result/${sessionId}`;
+                }
+            }
+        });
     }
 }
 
-// Show finish modal
-function showFinishModal() {
-    const modal = new bootstrap.Modal(document.getElementById('finishExamModal'));
-    modal.show();
+function updateProgressFromResponse(response) {
+    if (response.progress !== undefined) {
+        const progress = response.progress;
+        $('#progress-bar, #mobile-progress-bar').css('width', progress + '%');
+        $('#progress-text, #mobile-progress-text').text(progress + '%');
+        $('#answered-questions').text(response.answered_questions || 0);
+        $('#current-progress').text(progress + '%');
+    }
 }
 
-// Load existing answers on page load
-function loadExistingAnswers() {
-    @foreach($existingAnswers as $questionId => $answers)
-        // Find question index
-        const questionIndex = examQuestions.indexOf({{ $questionId }});
-        if (questionIndex >= 0) {
-            // Mark as answered in navigation
-            const navItem = document.querySelector(`.nav-item[data-question-index="${questionIndex}"]`);
-            if (navItem) {
-                navItem.classList.add('answered');
-            }
+function updateProgress() {
+    let answeredQuestions = 0;
+    
+    // Count questions where both tiers are answered
+    $('input[data-tier="1"]').each(function() {
+        const questionId = $(this).data('question-id');
+        const tier1Answered = $(`input[name="tier1_q${questionId}"]:checked`).length > 0;
+        const tier2Answered = $(`input[name="tier2_q${questionId}"]:checked`).length > 0;
+        
+        if (tier1Answered && tier2Answered) {
+            answeredQuestions++;
+        }
+    });
+    
+    const progress = Math.round((answeredQuestions / totalQuestions) * 100);
+    
+    $('#progress-bar, #mobile-progress-bar').css('width', progress + '%');
+    $('#progress-text, #mobile-progress-text').text(progress + '%');
+    $('#answered-questions').text(answeredQuestions);
+    $('#current-progress').text(progress + '%');
+}
+
+function updateQuestionNavigation() {
+    $('.question-nav-btn').each(function() {
+        const questionNum = $(this).data('question');
+        const questionId = $(`#question-${questionNum} input[data-tier="1"]`).first().data('question-id');
+        
+        // Reset classes
+        $(this).removeClass('btn-success btn-warning btn-outline-secondary')
+               .addClass('btn-outline-secondary');
+        
+        if (questionId) {
+            const tier1Answered = $(`input[name="tier1_q${questionId}"]:checked`).length > 0;
+            const tier2Answered = $(`input[name="tier2_q${questionId}"]:checked`).length > 0;
             
-            // Set selected options (you would need to expand this based on your data structure)
-            // This is a simplified version - you might need to adjust based on how you store answers
+            if (tier1Answered && tier2Answered) {
+                $(this).removeClass('btn-outline-secondary').addClass('btn-success');
+            } else if (tier1Answered || tier2Answered) {
+                $(this).removeClass('btn-outline-secondary').addClass('btn-warning');
+            }
         }
-    @endforeach
-}
-
-// Heartbeat to keep session alive
-function sendHeartbeat() {
-    fetch(`/api/student/sessions/${sessionId}/heartbeat`, {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        
+        // Highlight current question
+        if (questionNum === currentQuestion) {
+            $(this).addClass('active');
+        } else {
+            $(this).removeClass('active');
         }
-    }).catch(error => {
-        console.error('Heartbeat failed:', error);
     });
 }
 
-// Prevent accidental page refresh
-window.addEventListener('beforeunload', function(e) {
-    e.preventDefault();
-    e.returnValue = 'Anda yakin ingin meninggalkan halaman ujian?';
-});
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', function() {
-    updateNavigationButtons();
-    checkCurrentAnswers();
-    loadExistingAnswers();
+function startServerBasedTimer() {
+    updateTimerDisplay();
     
-    // Start heartbeat every 30 seconds
-    setInterval(sendHeartbeat, 30000);
-    
-    // Initialize existing answers display
-    @foreach($existingAnswers as $questionId => $tier2Answer)
-        // This would need to be expanded to show both tier1 and tier2 answers
-        // For now, just enable tier2 if there's an existing answer
-        const tier2Section = document.getElementById('tier2-{{ $questionId }}');
-        if (tier2Section) {
-            tier2Section.classList.add('enabled');
+    // Use a client-side countdown only for display purposes
+    // The server maintains the authoritative time
+    timerInterval = setInterval(function() {
+        if (remainingTime > 0) {
+            remainingTime--;
+            updateTimerDisplay();
+            
+            if (remainingTime <= 0) {
+                timeUp();
+            }
         }
-    @endforeach
+    }, 1000);
+}
+
+function updateTimerDisplay() {
+    const hours = Math.floor(remainingTime / 3600);
+    const minutes = Math.floor((remainingTime % 3600) / 60);
+    const seconds = remainingTime % 60;
+    
+    const timeString = String(hours).padStart(2, '0') + ':' + 
+                      String(minutes).padStart(2, '0') + ':' + 
+                      String(seconds).padStart(2, '0');
+    
+    $('#timer, #mobile-timer').text(timeString);
+    $('#remaining-time').text(timeString);
+    
+    // Change color when time is running low
+    if (remainingTime <= 300) { // 5 minutes
+        $('#timer, #mobile-timer').addClass('text-danger');
+    } else if (remainingTime <= 600) { // 10 minutes
+        $('#timer, #mobile-timer').addClass('text-warning');
+    }
+}
+
+function startHeartbeat() {
+    heartbeatInterval = setInterval(function() {
+        $.post(`/api/student/sessions/${sessionId}/heartbeat`, {
+            _token: $('meta[name="csrf-token"]').attr('content')
+        }).done(function(response) {
+            if (!response.success) {
+                if (response.redirect_url) {
+                    window.location.href = response.redirect_url;
+                } else {
+                    alert('Sesi ujian berakhir.');
+                    location.reload();
+                }
+            } else {
+                // Update remaining time from server
+                if (response.remaining_time !== undefined) {
+                    remainingTime = response.remaining_time;
+                    updateTimerDisplay();
+                }
+            }
+        }).fail(function() {
+            console.log('Heartbeat failed');
+        });
+    }, 30000); // Every 30 seconds
+}
+
+function timeUp() {
+    clearInterval(timerInterval);
+    clearInterval(heartbeatInterval);
+    
+    alert('Waktu ujian habis! Ujian akan diselesaikan secara otomatis.');
+    
+    // Submit exam automatically
+    finishExam();
+}
+
+function finishExam() {
+    // Disable all form elements
+    $('input, button').prop('disabled', true);
+    
+    $.post(`/exam/finish/${sessionId}`, {
+        _token: $('meta[name="csrf-token"]').attr('content')
+    }).done(function(response) {
+        if (response.success) {
+            window.removeEventListener('beforeunload', function() {});
+            window.location.href = response.redirect_url;
+        } else {
+            alert('Terjadi kesalahan saat menyelesaikan ujian: ' + response.message);
+            $('input, button').prop('disabled', false);
+        }
+    }).fail(function(xhr) {
+        alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
+        $('input, button').prop('disabled', false);
+    });
+}
+
+function showSaveIndicator() {
+    const toast = new bootstrap.Toast(document.getElementById('saveToast'));
+    toast.show();
+}
+
+// Cleanup intervals on page unload
+$(window).on('beforeunload', function() {
+    if (timerInterval) clearInterval(timerInterval);
+    if (heartbeatInterval) clearInterval(heartbeatInterval);
+    if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
 });
 </script>
+@endpush
+
+@push('styles')
+<style>
+.exam-container {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+/* Arabic text styling */
+.arabic-text {
+    direction: rtl;
+    text-align: right;
+    font-family: 'Amiri', 'Noto Sans Arabic', serif;
+}
+
+.modal-title {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container h5 {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container .form-check {
+    text-align: right;
+    direction: rtl;
+}
+
+.question-container .form-check-label {
+    text-align: right;
+    direction: rtl;
+}
+
+.question-container .question-text {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container .tier-content {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container .options {
+    direction: rtl;
+    text-align: right;
+}
+
+.question-container .form-check-input {
+    margin-left: 0.5rem;
+    margin-right: 0;
+    float: right;
+}
+
+.question-container .card-header {
+    direction: rtl;
+    text-align: right;
+}
+
+.tier-section {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    overflow: hidden;
+}
+
+.tier-header {
+    margin: 0;
+}
+
+.tier-content {
+    border-top: none !important;
+    border-radius: 0 0 0.375rem 0.375rem !important;
+    background-color: #ffffff;
+}
+
+.question-nav-btn {
+    aspect-ratio: 1;
+    font-size: 0.875rem;
+}
+
+.question-nav-btn.active {
+    box-shadow: 0 0 0 2px #0d6efd;
+}
+
+.avatar-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 0.875rem;
+}
+
+.avatar-lg {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+}
+
+.avatar-xl {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+}
+
+@media (max-width: 991.98px) {
+    .exam-container {
+        padding-bottom: 80px;
+    }
+    
+    /* Hide desktop elements on mobile */
+    .d-lg-flex {
+        display: none !important;
+    }
+}
+</style>
 @endpush

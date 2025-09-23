@@ -122,11 +122,14 @@
                 <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                     <div class="position-sticky pt-3">
                         <div class="text-center mb-4">
+                            <i class="text-white bi bi-mortarboard-fill"></i>
                             <h5 class="text-white">
-                                <i class="bi bi-mortarboard-fill"></i>
-                                Ujian Bahasa Arab
+                                الإختبار التشخيصي
                             </h5>
-                            <small class="text-white-50">Madrasah Aliyah</small>
+                            <h5 class="text-white">
+                                ذو المستويين
+                            </h5>
+                            <small class="text-white-50">للمدرسة الثانوية الإسلامية</small>
                         </div>
                         
                         <div class="text-center mb-3">
@@ -245,6 +248,10 @@
     
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Toastr JS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     
     @stack('scripts')
 </body>

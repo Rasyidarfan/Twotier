@@ -6,7 +6,6 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Exam;
 use App\Models\Subject;
-use Carbon\Carbon;
 
 class ExamSeeder extends Seeder
 {
@@ -50,9 +49,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 2, // Ustadz Ahmad Fadhil
-            'start_time' => Carbon::now()->addDays(7)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(7)->setTime(9, 30, 0),
         ]);
     }
 
@@ -69,9 +67,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 2, // Ustadz Ahmad Fadhil
-            'start_time' => Carbon::now()->addDays(14)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(14)->setTime(9, 30, 0),
         ]);
     }
 
@@ -88,9 +85,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 3, // Ustadzah Siti Khadijah
-            'start_time' => Carbon::now()->addDays(21)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(21)->setTime(10, 0, 0),
         ]);
     }
 
@@ -107,9 +103,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 3, // Ustadzah Siti Khadijah
-            'start_time' => Carbon::now()->addDays(28)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(28)->setTime(10, 0, 0),
         ]);
     }
 
@@ -126,9 +121,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 4, // Ustadz Muhammad Ridwan
-            'start_time' => Carbon::now()->addDays(35)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(35)->setTime(10, 30, 0),
         ]);
     }
 
@@ -145,9 +139,8 @@ class ExamSeeder extends Seeder
             'status' => 'draft',
             'shuffle_questions' => false,
             'show_result_immediately' => false,
+            'auto_regenerate_code' => true,
             'created_by' => 4, // Ustadz Muhammad Ridwan
-            'start_time' => Carbon::now()->addDays(42)->setTime(8, 0, 0),
-            'end_time' => Carbon::now()->addDays(42)->setTime(10, 30, 0),
         ]);
     }
 

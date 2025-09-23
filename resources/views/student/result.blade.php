@@ -83,7 +83,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card bg-success text-white">
                                 <div class="card-body">
-                                    <h2 class="mb-1">{{ $breakdown['benar-benar'] }}</h2>
+                                    <h2 class="mb-1">{{ $breakdown['benar_benar'] }}</h2>
                                     <p class="mb-0">Benar-Benar</p>
                                     <small>Konsep & Alasan Benar</small>
                                 </div>
@@ -92,7 +92,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card bg-warning text-white">
                                 <div class="card-body">
-                                    <h2 class="mb-1">{{ $breakdown['benar-salah'] }}</h2>
+                                    <h2 class="mb-1">{{ $breakdown['benar_salah'] }}</h2>
                                     <p class="mb-0">Benar-Salah</p>
                                     <small>Konsep Benar, Alasan Salah</small>
                                 </div>
@@ -101,7 +101,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card bg-info text-white">
                                 <div class="card-body">
-                                    <h2 class="mb-1">{{ $breakdown['salah-benar'] }}</h2>
+                                    <h2 class="mb-1">{{ $breakdown['salah_benar'] }}</h2>
                                     <p class="mb-0">Salah-Benar</p>
                                     <small>Konsep Salah, Alasan Benar</small>
                                 </div>
@@ -110,7 +110,7 @@
                         <div class="col-md-3 mb-3">
                             <div class="card bg-danger text-white">
                                 <div class="card-body">
-                                    <h2 class="mb-1">{{ $breakdown['salah-salah'] }}</h2>
+                                    <h2 class="mb-1">{{ $breakdown['salah_salah'] }}</h2>
                                     <p class="mb-0">Salah-Salah</p>
                                     <small>Konsep & Alasan Salah</small>
                                 </div>

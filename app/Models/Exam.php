@@ -14,12 +14,13 @@ class Exam extends Model
         'title',
         'description',
         'code',
+        'current_code',
+        'code_generated_at',
+        'auto_regenerate_code',
         'subject_id',
         'grade',
         'semester',
         'duration_minutes',
-        'start_time',
-        'end_time',
         'status',
         'shuffle_questions',
         'show_result_immediately',
@@ -27,8 +28,8 @@ class Exam extends Model
     ];
 
     protected $casts = [
-        'start_time' => 'datetime',
-        'end_time' => 'datetime',
+        'code_generated_at' => 'datetime',
+        'auto_regenerate_code' => 'boolean',
         'shuffle_questions' => 'boolean',
         'show_result_immediately' => 'boolean',
         'duration_minutes' => 'integer',
@@ -142,22 +143,55 @@ class Exam extends Model
         return $code;
     }
 
+    // Code generation methods
+    public function generateCurrentCode()
+    {
+        do {
+            $code = strtoupper(Str::random(6));
+        } while (self::where('current_code', $code)->exists());
+        
+        $this->update([
+            'current_code' => $code,
+            'code_generated_at' => now()
+        ]);
+        
+        return $code;
+    }
+    
+    public function shouldRegenerateCode()
+    {
+        if (!$this->auto_regenerate_code || !$this->code_generated_at) {
+            return false;
+        }
+        
+        return now()->diffInMinutes($this->code_generated_at) >= 2;
+    }
+    
+    public function getCurrentCode()
+    {
+        if ($this->status === 'waiting') {
+            if (!$this->current_code || $this->shouldRegenerateCode()) {
+                return $this->generateCurrentCode();
+            }
+        }
+        
+        return $this->current_code ?? $this->code;
+    }
+
     // Status checks
     public function isActive()
     {
-        return $this->status === 'active' && 
-               now()->between($this->start_time, $this->end_time);
+        return $this->status === 'active';
+    }
+
+    public function isWaiting()
+    {
+        return $this->status === 'waiting';
     }
 
     public function canStart()
     {
-        return $this->status === 'waiting' || 
-               ($this->status === 'active' && now()->gte($this->start_time));
-    }
-
-    public function isExpired()
-    {
-        return $this->end_time && now()->gt($this->end_time);
+        return $this->status === 'waiting' && $this->hasQuestions();
     }
 
     public function isDraft()
@@ -217,32 +251,224 @@ class Exam extends Model
     // Exam management methods
     public function startExam()
     {
-        $this->update([
-            'status' => 'active',
-            'start_time' => $this->start_time ?? now(),
-            'end_time' => $this->end_time ?? now()->addMinutes($this->duration_minutes),
-        ]);
+        $this->update(['status' => 'active']);
+        
+        // Update all approved sessions to ready state
+        $this->studentSessions()
+            ->where('status', 'approved')
+            ->update(['status' => 'approved']);
+            
+        // Update waiting_identity sessions to approved for exams that were draft
+        $this->studentSessions()
+            ->where('status', 'waiting_identity')
+            ->update(['status' => 'approved']);
     }
 
     public function finishExam()
     {
-        $this->update([
-            'status' => 'finished',
-            'end_time' => now(),
-        ]);
+        $this->update(['status' => 'finished']);
         
         // Finish all active sessions
         $this->studentSessions()
             ->where('status', 'in_progress')
-            ->update([
-                'status' => 'timeout',
-                'finished_at' => now(),
-            ]);
+            ->each(function ($session) {
+                $session->finishSession();
+            });
+            
+        // Approve all waiting sessions so they can start (they'll finish immediately due to exam status)
+        $this->studentSessions()
+            ->whereIn('status', ['waiting_identity', 'waiting_approval'])
+            ->update(['status' => 'approved']);
     }
 
     public function setWaiting()
     {
         $this->update(['status' => 'waiting']);
+        $this->generateCurrentCode();
+        
+        // Update waiting_approval sessions to waiting_identity for exams that were draft
+        $this->studentSessions()
+            ->where('status', 'waiting_approval')
+            ->update(['status' => 'waiting_identity']);
+    }
+    
+    public function setDraft()
+    {
+        $this->update([
+            'status' => 'draft',
+            'current_code' => null,
+            'code_generated_at' => null
+        ]);
+        
+        // Reset all active sessions when exam goes back to draft
+        $this->studentSessions()
+            ->whereIn('status', ['approved', 'in_progress'])
+            ->update(['status' => 'waiting_approval']);
+    }
+
+    public function extendTime($minutes, $sessionId = null)
+    {
+        try {
+            if ($sessionId) {
+                // Extend time for specific session
+                $session = $this->studentSessions()->find($sessionId);
+                if (!$session) {
+                    return [
+                        'success' => false,
+                        'message' => 'Sesi tidak ditemukan'
+                    ];
+                }
+                
+                $session->extendTime($minutes);
+                
+                return [
+                    'success' => true,
+                    'message' => "Waktu diperpanjang {$minutes} menit untuk {$session->student_name}"
+                ];
+            } else {
+                // Extend time for all active sessions
+                $activeSessions = $this->studentSessions()
+                    ->whereIn('status', ['approved', 'in_progress'])
+                    ->get();
+
+                foreach ($activeSessions as $session) {
+                    $session->extendTime($minutes);
+                }
+
+                return [
+                    'success' => true,
+                    'extended_sessions' => $activeSessions->count(),
+                    'message' => "Waktu diperpanjang {$minutes} menit untuk {$activeSessions->count()} peserta"
+                ];
+            }
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperpanjang waktu: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function kickParticipant($participantId)
+    {
+        try {
+            $session = $this->studentSessions()->find($participantId);
+
+            if (!$session) {
+                return [
+                    'success' => false,
+                    'message' => 'Peserta tidak ditemukan'
+                ];
+            }
+
+            $session->update([
+                'status' => 'kicked',
+                'finished_at' => now()
+            ]);
+
+            return [
+                'success' => true,
+                'message' => "Peserta {$session->student_name} berhasil dikeluarkan dari ujian"
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengeluarkan peserta: ' . $e->getMessage()
+            ];
+        }
+    }
+    
+    public function approveParticipant($participantId)
+    {
+        try {
+            $session = $this->studentSessions()->find($participantId);
+
+            if (!$session) {
+                return [
+                    'success' => false,
+                    'message' => 'Peserta tidak ditemukan'
+                ];
+            }
+            
+            if ($session->status !== 'waiting_approval') {
+                return [
+                    'success' => false,
+                    'message' => 'Peserta tidak dalam status menunggu persetujuan'
+                ];
+            }
+
+            $session->update([
+                'status' => 'approved',
+                'approved' => true,
+                'approved_at' => now(),
+                'approved_by' => auth()->id()
+            ]);
+
+            return [
+                'success' => true,
+                'message' => "Peserta {$session->student_name} berhasil disetujui"
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyetujui peserta: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function forceFinishAllSessions()
+    {
+        try {
+            $activeSessions = $this->studentSessions()
+                ->where('status', 'in_progress')
+                ->get();
+                
+            foreach ($activeSessions as $session) {
+                $session->finishSession();
+            }
+
+            return [
+                'success' => true,
+                'finished_sessions' => $activeSessions->count(),
+                'message' => "Berhasil mengakhiri {$activeSessions->count()} sesi aktif"
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengakhiri sesi: ' . $e->getMessage()
+            ];
+        }
+    }
+
+    public function getActiveParticipantsData()
+    {
+        return $this->studentSessions()
+            ->where('status', 'in_progress')
+            ->get()
+            ->map(function ($session) {
+                return [
+                    'id' => $session->id,
+                    'name' => $session->student_name,
+                    'email' => $session->student_identifier ?? 'N/A',
+                    'status' => $session->status,
+                    'started_at' => $session->started_at,
+                    'progress' => $this->calculateSessionProgress($session),
+                    'current_score' => $session->total_score ?? 0,
+                    'extended_time' => $session->extended_time ?? 0,
+                ];
+            });
+    }
+
+    private function calculateSessionProgress($session)
+    {
+        if ($session->status === 'registered') {
+            return 0;
+        }
+
+        $totalQuestions = $this->examQuestions()->count();
+        $answeredQuestions = $session->studentAnswers()->count();
+
+        return $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
     }
 
     // Validation methods
@@ -338,5 +564,30 @@ class Exam extends Model
         }
 
         return $difficultyStats;
+    }
+
+    // Get participants by status
+    public function getWaitingParticipants()
+    {
+        return $this->studentSessions()
+            ->whereIn('status', ['waiting_identity', 'waiting_approval'])
+            ->latest('joined_at')
+            ->get();
+    }
+    
+    public function getActiveParticipants()
+    {
+        return $this->studentSessions()
+            ->whereIn('status', ['approved', 'in_progress'])
+            ->latest('started_at')
+            ->get();
+    }
+    
+    public function getFinishedParticipants()
+    {
+        return $this->studentSessions()
+            ->whereIn('status', ['finished', 'timeout'])
+            ->latest('finished_at')
+            ->get();
     }
 }

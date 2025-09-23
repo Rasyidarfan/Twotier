@@ -262,7 +262,7 @@
                                     </td>
                                     <td>
                                         <div class="text-center">
-                                            <small class="text-muted d-block">{{ $question->usage_count ?? 0 }} مرة</small>
+                                            <small class="text-muted d-block">{{ $question->usage_count ?? 0 }} kali</small>
                                             @if($question->usage_count > 0)
                                                 <div class="progress mt-1" style="height: 4px;">
                                                     <div class="progress-bar bg-info" style="width: {{ min(($question->usage_count / 10) * 100, 100) }}%"></div>
@@ -375,7 +375,7 @@
                 <!-- Question stats will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">إغلاق</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
@@ -717,7 +717,7 @@ function viewQuestionStats(questionId) {
                                         stats.exams.map(exam => `
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <span>${exam.title}</span>
-                                                <small class="text-muted">${new Date(exam.created_at).toLocaleDateString('ar-SA')}</small>
+                                                <small class="text-muted">${new Date(exam.created_at).toLocaleDateString('id-ID')}</small>
                                             </div>
                                         `).join('') : 
                                         '<p class="text-muted">Soal ini belum digunakan dalam ujian apapun</p>'

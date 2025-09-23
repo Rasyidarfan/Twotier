@@ -143,7 +143,7 @@ class Question extends Model
         $multipliers = [
             'benar-benar' => 1.0,    // 100% - Pemahaman konsep dan reasoning benar
             'benar-salah' => 0.5,    // 50%  - Konsep benar tapi reasoning salah
-            'salah-benar' => 0.25,   // 25%  - Konsep salah tapi reasoning benar (mungkin kebetulan)
+            'salah-benar' => 0.5,    // 50%  - Konsep salah tapi reasoning benar
             'salah-salah' => 0.0,    // 0%   - Konsep dan reasoning salah
         ];
 

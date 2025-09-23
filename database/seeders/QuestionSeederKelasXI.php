@@ -38,7 +38,7 @@ class QuestionSeederKelasXI extends Seeder
                     '725',
                     '257',
                     '752'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // 527
                 'tier2_question' => 'لأنَّهُ...',
                 'tier2_options' => json_encode([
@@ -47,7 +47,7 @@ class QuestionSeederKelasXI extends Seeder
                     'سَبْعُمِائَةٍ وَخَمْسَةٌ وَعِشْرُونَ',
                     'مِائَتَانِ وَسَبْعَةٌ وَخَمْسُونَ',
                     'سَبْعُمِائَةٍ وَاثْنَانِ وَخَمْسُونَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // خَمْسُمِائَةٍ وَسَبْعَةٌ وَعِشْرُونَ
                 'difficulty' => 'sulit',
                 'created_by' => 3, // Ustadzah Siti Khadijah
@@ -61,7 +61,7 @@ class QuestionSeederKelasXI extends Seeder
                     '3149',
                     '4139',
                     '9413'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 0, // 1349
                 'tier2_question' => 'لأنَّهُ...',
                 'tier2_options' => json_encode([
@@ -70,7 +70,7 @@ class QuestionSeederKelasXI extends Seeder
                     'ثَلاثَةُ آلافٍ وَمِائَةٌ وَتِسْعَةٌ وَأَرْبَعُونَ',
                     'أَرْبَعَةُ آلافٍ وَمِائَةٌ وَثَلاثَةٌ وَتِسْعُونَ',
                     'تِسْعَةُ آلافٍ وَأَرْبَعُمِائَةٍ وَثَلاثَةَ عَشَرَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 0, // أَلْفٌ وَثَلاثُمِائَةٍ وَتِسْعَةٌ وَأَرْبَعُونَ
                 'difficulty' => 'sulit',
                 'created_by' => 3,
@@ -84,7 +84,7 @@ class QuestionSeederKelasXI extends Seeder
                     '100000',
                     '1000000',
                     '10000000'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 3, // 1000000
                 'tier2_question' => 'لأنَّهُ...',
                 'tier2_options' => json_encode([
@@ -93,7 +93,7 @@ class QuestionSeederKelasXI extends Seeder
                     'مِائَةُ أَلْفٍ',
                     'مِلْيُونٌ',
                     'عَشَرَةُ مَلايِينٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 3, // مِلْيُونٌ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -107,7 +107,7 @@ class QuestionSeederKelasXI extends Seeder
                     'ظرفِ مكانٍ',
                     'اسمٍ مُعَرَّفٍ',
                     'اسمٍ نَكِرَةٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // حرفِ جَرٍّ
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -116,7 +116,7 @@ class QuestionSeederKelasXI extends Seeder
                     'تدلُّ على المكانِ',
                     'تدلُّ على اسمٍ مُحَدَّدٍ',
                     'تدلُّ على اسمٍ غَيْرِ مُحَدَّدٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // تربطُ بينَ الأسماءِ بِحَرْفِ الجَرِّ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -130,7 +130,7 @@ class QuestionSeederKelasXI extends Seeder
                     'ظرفِ زمانٍ',
                     'اسمٍ نَكِرَةٍ',
                     'فِعْلٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // حرفِ عَطْفٍ
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -139,7 +139,7 @@ class QuestionSeederKelasXI extends Seeder
                     'تدلُّ على الزمانِ',
                     'تدلُّ على اسمٍ غَيْرِ مُحَدَّدٍ',
                     'تدلُّ على حَدَثٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // تربطُ بينَ الكلماتِ بِوَاوِ العَطْفِ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -153,7 +153,7 @@ class QuestionSeederKelasXI extends Seeder
                     'حرفَ جَرٍّ',
                     'حرفَ عَطْفٍ',
                     'ظرفَ مكانٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // اسمًا نَكِرَةً
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -162,7 +162,7 @@ class QuestionSeederKelasXI extends Seeder
                     'تربطُ بينَ الأسماءِ',
                     'تربطُ بينَ الكلماتِ',
                     'تدلُّ على المكانِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // تدلُّ على اسمٍ غَيْرِ مُحَدَّدٍ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -176,7 +176,7 @@ class QuestionSeederKelasXI extends Seeder
                     'حرفَ جَرٍّ',
                     'حرفَ عَطْفٍ',
                     'ظرفَ زمانٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // اسمًا مُعَرَّفًا
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -185,7 +185,7 @@ class QuestionSeederKelasXI extends Seeder
                     'تربطُ بينَ الأسماءِ',
                     'تربطُ بينَ الكلماتِ',
                     'تدلُّ على الزمانِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // تدلُّ على اسمٍ مُحَدَّدٍ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -199,7 +199,7 @@ class QuestionSeederKelasXI extends Seeder
                     'حرفَ جَرٍّ',
                     'حرفَ عَطْفٍ',
                     'ظرفَ زمانٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // حرفَ جَرٍّ
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -208,7 +208,7 @@ class QuestionSeederKelasXI extends Seeder
                     'تربطُ بينَ الأسماءِ',
                     'تربطُ بينَ الكلماتِ',
                     'تدلُّ على الزمانِ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // تدلُّ على اسمٍ مُحَدَّدٍ وَسَبَقَها حَرْفُ جَرٍّ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -222,7 +222,7 @@ class QuestionSeederKelasXI extends Seeder
                     '100000',
                     '1000000',
                     '10000000'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // 10000
                 'tier2_question' => 'لأنَّهُ...',
                 'tier2_options' => json_encode([
@@ -231,7 +231,7 @@ class QuestionSeederKelasXI extends Seeder
                     'مِائَةُ أَلْفٍ',
                     'مِلْيُونٌ',
                     'عَشَرَةُ مَلايِينٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // عَشَرَةُ آلافٍ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -245,7 +245,7 @@ class QuestionSeederKelasXI extends Seeder
                     'علاقة نعت',
                     'علاقة جر',
                     'علاقة ظرف'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // علاقة إضافة
                 'tier2_question' => 'لأنَّها...',
                 'tier2_options' => json_encode([
@@ -254,7 +254,7 @@ class QuestionSeederKelasXI extends Seeder
                     'الكلمة الثانية تصف الأولى',
                     'تربط بحرف جر',
                     'تدل على المكان'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // الكلمة الأولى تضاف للثانية
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -282,7 +282,7 @@ class QuestionSeederKelasXI extends Seeder
                     'اُكْتُبْ',
                     'كَاتِبٌ',
                     'مَكْتُوبٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // يَكْتُبُ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -291,7 +291,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ فِعْلُ أَمْرٍ',
                     'لِأَنَّهُ اِسْمُ فَاعِلٍ',
                     'لِأَنَّهُ اِسْمُ مَفْعُولٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ يَدُلُّ عَلَى الْحَاضِرِ أَوِ الْمُسْتَقْبَلِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -305,7 +305,7 @@ class QuestionSeederKelasXI extends Seeder
                     'ذَهَبَ',
                     'ذَاهِبٌ',
                     'مَذْهُوبٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // ذَهَبَ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -314,7 +314,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ يَدُلُّ عَلَى الْمَاضِي',
                     'لِأَنَّهُ اِسْمُ فَاعِلٍ',
                     'لِأَنَّهُ اِسْمُ مَفْعُولٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لِأَنَّهُ يَدُلُّ عَلَى الْمَاضِي
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -328,7 +328,7 @@ class QuestionSeederKelasXI extends Seeder
                     'كَتَبُوا',
                     'كَتَبْنَ',
                     'يَكْتُبْنَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // كَتَبَتْ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -337,7 +337,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ لِلْمُذَكَّرِ الْجَمْعِ',
                     'لِأَنَّهُ لِلْمُؤَنَّثِ الْجَمْعِ',
                     'لِأَنَّهُ فِعْلٌ مُضَارِعٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ لِلْمُؤَنَّثِ الْغَائِبِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -351,7 +351,7 @@ class QuestionSeederKelasXI extends Seeder
                     'يَذْهَبُونَ',
                     'يَذْهَبْنَ',
                     'ذَهَبُوا'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // يَذْهَبُونَ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -360,7 +360,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ لِلْجَمْعِ الْمُذَكَّرِ',
                     'لِأَنَّهُ لِلْجَمْعِ الْمُؤَنَّثِ',
                     'لِأَنَّهُ فِعْلٌ مَاضٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لِأَنَّهُ لِلْجَمْعِ الْمُذَكَّرِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -374,7 +374,7 @@ class QuestionSeederKelasXI extends Seeder
                     'قَرَأَتْ',
                     'كَتَبَ',
                     'تَكْتُبُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 3, // كَتَبَ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -383,7 +383,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ فِعْلٌ مُضَارِعٌ',
                     'لِأَنَّهُ اِسْمٌ',
                     'لِأَنَّهُ فِعْلُ أَمْرٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ لَا يَنْتَهِي بِتَاءِ التَّأْنِيثِ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -397,7 +397,7 @@ class QuestionSeederKelasXI extends Seeder
                     'قَرَأَ',
                     'ذَهَبَتْ',
                     'يَذْهَبُ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 3, // ذَهَبَتْ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -406,7 +406,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ فِعْلٌ مُضَارِعٌ',
                     'لِأَنَّهُ اِسْمٌ',
                     'لِأَنَّهُ فِعْلُ أَمْرٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ يَنْتَهِي بِتَاءِ التَّأْنِيثِ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -420,7 +420,7 @@ class QuestionSeederKelasXI extends Seeder
                     'يَكْتُبُونَ',
                     'يَكْتُبْنَ',
                     'كَتَبَتْ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 1, // تَكْتُبُ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -429,7 +429,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ لِلْمُذَكَّرِ الْجَمْعِ',
                     'لِأَنَّهُ لِلْمُؤَنَّثِ الْجَمْعِ',
                     'لِأَنَّهُ فِعْلٌ مَاضٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 1, // لِأَنَّهُ لِلْمُؤَنَّثِ الْمُفْرَدِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -443,7 +443,7 @@ class QuestionSeederKelasXI extends Seeder
                     'قَرَأُوا',
                     'قَرَأْنَ',
                     'يَقْرَأُونَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // قَرَأُوا
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -452,7 +452,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ لِلْجَمْعِ الْمُذَكَّرِ',
                     'لِأَنَّهُ لِلْجَمْعِ الْمُؤَنَّثِ',
                     'لِأَنَّهُ فِعْلٌ مُضَارِعٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لِأَنَّهُ لِلْجَمْعِ الْمُذَكَّرِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
@@ -466,7 +466,7 @@ class QuestionSeederKelasXI extends Seeder
                     'اُكْتُبْ',
                     'كَاتِبٌ',
                     'مَكْتُوبٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 2, // اُكْتُبْ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -475,7 +475,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ يَدُلُّ عَلَى طَلَبِ الْفِعْلِ',
                     'لِأَنَّهُ اِسْمُ فَاعِلٍ',
                     'لِأَنَّهُ اِسْمُ مَفْعُولٍ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 2, // لِأَنَّهُ يَدُلُّ عَلَى طَلَبِ الْفِعْلِ
                 'difficulty' => 'mudah',
                 'created_by' => 3,
@@ -489,7 +489,7 @@ class QuestionSeederKelasXI extends Seeder
                     'شَرِبُوا',
                     'شَرِبْنَ',
                     'يَشْرَبْنَ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier1_correct_answer' => 3, // شَرِبْنَ
                 'tier2_question' => 'مَا هُوَ السَّبَبُ فِي اخْتِيَارِكَ؟',
                 'tier2_options' => json_encode([
@@ -498,7 +498,7 @@ class QuestionSeederKelasXI extends Seeder
                     'لِأَنَّهُ لِلْمُذَكَّرِ الْجَمْعِ',
                     'لِأَنَّهُ لِلْمُؤَنَّثِ الْجَمْعِ',
                     'لِأَنَّهُ فِعْلٌ مُضَارِعٌ'
-                ]),
+                ],JSON_UNESCAPED_UNICODE),
                 'tier2_correct_answer' => 3, // لِأَنَّهُ لِلْمُؤَنَّثِ الْجَمْعِ
                 'difficulty' => 'sedang',
                 'created_by' => 3,
