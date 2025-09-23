@@ -195,6 +195,8 @@
                                 @if(!request('subject'))
                                     <th>Mata Pelajaran</th>
                                 @endif
+                                <th>Kelas</th>
+                                <th>Semester</th>
                                 <th>Deskripsi</th>
                                 <th>Jumlah Soal</th>
                                 <th>Status</th>
@@ -238,6 +240,14 @@
                                             <span class="badge bg-primary">{{ $chapter->subject->name ?? 'Tidak Ditentukan' }}</span>
                                         </td>
                                     @endif
+                                    <td>
+                                        <span class="badge bg-info">{{ $chapter->grade }}</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-{{ $chapter->semester === 'gasal' ? 'warning' : 'success' }}">
+                                            {{ $chapter->semester === 'gasal' ? 'Gasal' : 'Genap' }}
+                                        </span>
+                                    </td>
                                     <td>
                                         @if($chapter->description)
                                             <span class="text-truncate" style="max-width: 200px;" title="{{ $chapter->description }}">
@@ -340,6 +350,29 @@
                         <label for="code" class="form-label">Kode Bab</label>
                         <input type="text" class="form-control" id="code" name="code" placeholder="Contoh: BAB01">
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="grade" class="form-label">Kelas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="grade" name="grade" required>
+                                    <option value="">Pilih Kelas</option>
+                                    <option value="X">Kelas X</option>
+                                    <option value="XI">Kelas XI</option>
+                                    <option value="XII">Kelas XII</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                                <select class="form-select" id="semester" name="semester" required>
+                                    <option value="">Pilih Semester</option>
+                                    <option value="gasal">Semester Gasal</option>
+                                    <option value="genap">Semester Genap</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="description" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="description" name="description" rows="3"></textarea>
@@ -405,6 +438,29 @@
                         <label for="edit_code" class="form-label">Kode Bab</label>
                         <input type="text" class="form-control" id="edit_code" name="code">
                     </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_grade" class="form-label">Kelas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="edit_grade" name="grade" required>
+                                    <option value="">Pilih Kelas</option>
+                                    <option value="X">Kelas X</option>
+                                    <option value="XI">Kelas XI</option>
+                                    <option value="XII">Kelas XII</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="edit_semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                                <select class="form-select" id="edit_semester" name="semester" required>
+                                    <option value="">Pilih Semester</option>
+                                    <option value="gasal">Semester Gasal</option>
+                                    <option value="genap">Semester Genap</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-3">
                         <label for="edit_description" class="form-label">Deskripsi</label>
                         <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
@@ -469,6 +525,8 @@ function editChapter(id) {
             document.getElementById('edit_subject_id').value = chapter.subject_id;
             document.getElementById('edit_name').value = chapter.name;
             document.getElementById('edit_code').value = chapter.code || '';
+            document.getElementById('edit_grade').value = chapter.grade;
+            document.getElementById('edit_semester').value = chapter.semester;
             document.getElementById('edit_description').value = chapter.description || '';
             document.getElementById('edit_order').value = chapter.order || 1;
             document.getElementById('edit_is_active').value = chapter.is_active ? '1' : '0';
@@ -606,12 +664,14 @@ function moveChapter(id, direction) {
 document.getElementById('createChapterForm').addEventListener('submit', function(e) {
     const name = document.getElementById('name').value.trim();
     const subjectId = document.getElementById('subject_id').value;
-    
-    if (!name || !subjectId) {
+    const grade = document.getElementById('grade').value;
+    const semester = document.getElementById('semester').value;
+
+    if (!name || !subjectId || !grade || !semester) {
         e.preventDefault();
         Swal.fire({
             title: 'Error!',
-            text: 'Silakan isi semua field yang diperlukan',
+            text: 'Silakan isi semua field yang diperlukan (Nama Bab, Mata Pelajaran, Kelas, dan Semester)',
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -621,12 +681,14 @@ document.getElementById('createChapterForm').addEventListener('submit', function
 document.getElementById('editChapterForm').addEventListener('submit', function(e) {
     const name = document.getElementById('edit_name').value.trim();
     const subjectId = document.getElementById('edit_subject_id').value;
-    
-    if (!name || !subjectId) {
+    const grade = document.getElementById('edit_grade').value;
+    const semester = document.getElementById('edit_semester').value;
+
+    if (!name || !subjectId || !grade || !semester) {
         e.preventDefault();
         Swal.fire({
             title: 'Error!',
-            text: 'Silakan isi semua field yang diperlukan',
+            text: 'Silakan isi semua field yang diperlukan (Nama Bab, Mata Pelajaran, Kelas, dan Semester)',
             icon: 'error',
             confirmButtonText: 'OK'
         });
