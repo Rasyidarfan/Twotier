@@ -676,18 +676,12 @@ class GuruController extends Controller
         
         $stats = [
             'active_questions' => Question::where('is_active', true)->count(),
-            'easy_questions' => Question::where('difficulty', 'mudah')->where('is_active', true)->count(),
-            'medium_questions' => Question::where('difficulty', 'sedang')->where('is_active', true)->count(),
-            'hard_questions' => Question::where('difficulty', 'sulit')->where('is_active', true)->count(),
         ];
 
         // Extract stats for individual variables
         $activeQuestions = $stats['active_questions'];
-        $easyQuestions = $stats['easy_questions'];
-        $mediumQuestions = $stats['medium_questions'];
-        $hardQuestions = $stats['hard_questions'];
 
-        return view('guru.questions.index', compact('questions', 'subjects', 'chapters', 'stats', 'activeQuestions', 'easyQuestions', 'mediumQuestions', 'hardQuestions'));
+        return view('guru.questions.index', compact('questions', 'subjects', 'chapters', 'stats', 'activeQuestions'));
     }
 
     public function filterQuestions(Request $request)

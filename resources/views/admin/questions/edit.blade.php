@@ -78,28 +78,19 @@
                             </div>
                         </div>
 
+                        <!-- Hidden difficulty field with default value -->
+                        <input type="hidden" name="difficulty" value="{{ old('difficulty', $question->difficulty ?? 'sedang') }}">
+
                         <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label for="difficulty" class="form-label">Tingkat Kesulitan <span class="text-danger">*</span></label>
-                                <select class="form-select @error('difficulty') is-invalid @enderror" id="difficulty" name="difficulty" required>
-                                    <option value="">Pilih Tingkat Kesulitan</option>
-                                    <option value="mudah" {{ old('difficulty', $question->difficulty) == 'mudah' ? 'selected' : '' }}>Mudah</option>
-                                    <option value="sedang" {{ old('difficulty', $question->difficulty) == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                    <option value="sulit" {{ old('difficulty', $question->difficulty) == 'sulit' ? 'selected' : '' }}>Sulit</option>
-                                </select>
-                                @error('difficulty')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="points" class="form-label">Poin <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('points') is-invalid @enderror" 
+                                <input type="number" class="form-control @error('points') is-invalid @enderror"
                                        id="points" name="points" value="{{ old('points', 10) }}" min="1" max="100" required>
                                 @error('points')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
                                     <option value="1" {{ old('is_active', $question->is_active ? '1' : '0') == '1' ? 'selected' : '' }}>Aktif</option>
@@ -122,9 +113,10 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="tier1_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('tier1_question') is-invalid @enderror" 
-                                              id="tier1_question" name="tier1_question" rows="4" required 
-                                              placeholder="Masukkan pertanyaan utama di sini...">{{ old('tier1_question', $question->tier1_question) }}</textarea>
+                                    <textarea class="form-control @error('tier1_question') is-invalid @enderror"
+                                              id="tier1_question" name="tier1_question" rows="4" required
+                                              placeholder="Masukkan pertanyaan utama di sini..."
+                                              style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">{{ old('tier1_question', $question->tier1_question) }}</textarea>
                                     @error('tier1_question')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -132,33 +124,27 @@
 
                                 <!-- Tier 1 Options -->
                                 <div class="row">
-                                    @if(is_array($question->tier1_options))
-                                        @foreach($question->tier1_options as $index => $option)
-                                            <div class="col-md-6 mb-3">
-                                                <label for="tier1_options_{{ $index }}" class="form-label">Pilihan {{ chr(65 + $index) }} <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control @error('tier1_options.'.$index) is-invalid @enderror" 
-                                                       id="tier1_options_{{ $index }}" name="tier1_options[{{ $index }}]" 
-                                                       value="{{ old('tier1_options.'.$index, $option) }}" required 
-                                                       placeholder="Masukkan pilihan {{ chr(65 + $index) }}">
-                                                @error('tier1_options.'.$index)
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        @for($i = 0; $i < 5; $i++)
-                                            <div class="col-md-6 mb-3">
-                                                <label for="tier1_options_{{ $i }}" class="form-label">Pilihan {{ chr(65 + $i) }} <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control @error('tier1_options.'.$i) is-invalid @enderror" 
-                                                       id="tier1_options_{{ $i }}" name="tier1_options[{{ $i }}]" 
-                                                       value="{{ old('tier1_options.'.$i) }}" required 
-                                                       placeholder="Masukkan pilihan {{ chr(65 + $i) }}">
-                                                @error('tier1_options.'.$i)
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        @endfor
-                                    @endif
+                                    @php
+                                        $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+                                        $tier1Options = is_array($question->tier1_options) ? $question->tier1_options : [];
+                                        // Ensure we always have 5 options
+                                        while (count($tier1Options) < 5) {
+                                            $tier1Options[] = '';
+                                        }
+                                    @endphp
+                                    @for($i = 0; $i < 5; $i++)
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tier1_options_{{ $i }}" class="form-label">Pilihan {{ $arabicLetters[$i] }} <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('tier1_options.'.$i) is-invalid @enderror"
+                                                   id="tier1_options_{{ $i }}" name="tier1_options[{{ $i }}]"
+                                                   value="{{ old('tier1_options.'.$i, $tier1Options[$i] ?? '') }}" required
+                                                   placeholder="Masukkan pilihan {{ $arabicLetters[$i] }}"
+                                                   style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
+                                            @error('tier1_options.'.$i)
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endfor
                                 </div>
 
                                 <div class="mb-3">
@@ -166,11 +152,11 @@
                                     <select class="form-select @error('tier1_correct_answer') is-invalid @enderror" 
                                             id="tier1_correct_answer" name="tier1_correct_answer" required>
                                         <option value="">Pilih Jawaban yang Benar</option>
-                                        <option value="0" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '0' ? 'selected' : '' }}>A</option>
-                                        <option value="1" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '1' ? 'selected' : '' }}>B</option>
-                                        <option value="2" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '2' ? 'selected' : '' }}>C</option>
-                                        <option value="3" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '3' ? 'selected' : '' }}>D</option>
-                                        <option value="4" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '4' ? 'selected' : '' }}>E</option>
+                                        <option value="0" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '0' ? 'selected' : '' }}>أ</option>
+                                        <option value="1" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '1' ? 'selected' : '' }}>ب</option>
+                                        <option value="2" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '2' ? 'selected' : '' }}>ج</option>
+                                        <option value="3" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '3' ? 'selected' : '' }}>د</option>
+                                        <option value="4" {{ old('tier1_correct_answer', $question->tier1_correct_answer) == '4' ? 'selected' : '' }}>ه</option>
                                     </select>
                                     @error('tier1_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -190,9 +176,10 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="tier2_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('tier2_question') is-invalid @enderror" 
-                                              id="tier2_question" name="tier2_question" rows="4" required 
-                                              placeholder="Masukkan pertanyaan tentang alasan pemilihan jawaban...">{{ old('tier2_question', $question->tier2_question) }}</textarea>
+                                    <textarea class="form-control @error('tier2_question') is-invalid @enderror"
+                                              id="tier2_question" name="tier2_question" rows="4" required
+                                              placeholder="Masukkan pertanyaan tentang alasan pemilihan jawaban..."
+                                              style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">{{ old('tier2_question', $question->tier2_question) }}</textarea>
                                     @error('tier2_question')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -200,33 +187,27 @@
 
                                 <!-- Tier 2 Options -->
                                 <div class="row">
-                                    @if(is_array($question->tier2_options))
-                                        @foreach($question->tier2_options as $index => $option)
-                                            <div class="col-md-6 mb-3">
-                                                <label for="tier2_options_{{ $index }}" class="form-label">Pilihan {{ chr(65 + $index) }} <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control @error('tier2_options.'.$index) is-invalid @enderror" 
-                                                       id="tier2_options_{{ $index }}" name="tier2_options[{{ $index }}]" 
-                                                       value="{{ old('tier2_options.'.$index, $option) }}" required 
-                                                       placeholder="Masukkan alasan {{ chr(65 + $index) }}">
-                                                @error('tier2_options.'.$index)
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        @for($i = 0; $i < 5; $i++)
-                                            <div class="col-md-6 mb-3">
-                                                <label for="tier2_options_{{ $i }}" class="form-label">Pilihan {{ chr(65 + $i) }} <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control @error('tier2_options.'.$i) is-invalid @enderror" 
-                                                       id="tier2_options_{{ $i }}" name="tier2_options[{{ $i }}]" 
-                                                       value="{{ old('tier2_options.'.$i) }}" required 
-                                                       placeholder="Masukkan alasan {{ chr(65 + $i) }}">
-                                                @error('tier2_options.'.$i)
-                                                    <div class="invalid-feedback">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                        @endfor
-                                    @endif
+                                    @php
+                                        $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+                                        $tier2Options = is_array($question->tier2_options) ? $question->tier2_options : [];
+                                        // Ensure we always have 5 options
+                                        while (count($tier2Options) < 5) {
+                                            $tier2Options[] = '';
+                                        }
+                                    @endphp
+                                    @for($i = 0; $i < 5; $i++)
+                                        <div class="col-md-6 mb-3">
+                                            <label for="tier2_options_{{ $i }}" class="form-label">Pilihan {{ $arabicLetters[$i] }} <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control @error('tier2_options.'.$i) is-invalid @enderror"
+                                                   id="tier2_options_{{ $i }}" name="tier2_options[{{ $i }}]"
+                                                   value="{{ old('tier2_options.'.$i, $tier2Options[$i] ?? '') }}" required
+                                                   placeholder="Masukkan alasan {{ $arabicLetters[$i] }}"
+                                                   style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
+                                            @error('tier2_options.'.$i)
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    @endfor
                                 </div>
 
                                 <div class="mb-3">
@@ -234,11 +215,11 @@
                                     <select class="form-select @error('tier2_correct_answer') is-invalid @enderror" 
                                             id="tier2_correct_answer" name="tier2_correct_answer" required>
                                         <option value="">Pilih Alasan yang Benar</option>
-                                        <option value="0" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '0' ? 'selected' : '' }}>A</option>
-                                        <option value="1" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '1' ? 'selected' : '' }}>B</option>
-                                        <option value="2" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '2' ? 'selected' : '' }}>C</option>
-                                        <option value="3" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '3' ? 'selected' : '' }}>D</option>
-                                        <option value="4" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '4' ? 'selected' : '' }}>E</option>
+                                        <option value="0" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '0' ? 'selected' : '' }}>أ</option>
+                                        <option value="1" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '1' ? 'selected' : '' }}>ب</option>
+                                        <option value="2" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '2' ? 'selected' : '' }}>ج</option>
+                                        <option value="3" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '3' ? 'selected' : '' }}>د</option>
+                                        <option value="4" {{ old('tier2_correct_answer', $question->tier2_correct_answer) == '4' ? 'selected' : '' }}>ه</option>
                                     </select>
                                     @error('tier2_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>

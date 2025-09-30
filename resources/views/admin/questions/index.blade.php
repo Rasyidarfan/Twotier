@@ -189,7 +189,7 @@
 <div class="container">
     <!-- Statistics Cards -->
     <div class="row mb-4">
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="stats-card">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -202,7 +202,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-6">
             <div class="stats-card">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -211,32 +211,6 @@
                     <div class="ms-3">
                         <h3 class="mb-0">{{ $questions->where('is_active', true)->count() }}</h3>
                         <p class="text-muted mb-0">Aktif</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="bi bi-star"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h3 class="mb-0">{{ $questions->where('difficulty', 'mudah')->count() }}</h3>
-                        <p class="text-muted mb-0">Mudah</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stats-card">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="bi bi-lightning"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h3 class="mb-0">{{ $questions->where('difficulty', 'sulit')->count() }}</h3>
-                        <p class="text-muted mb-0">Sulit</p>
                     </div>
                 </div>
             </div>
@@ -269,16 +243,7 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label">Tingkat Kesulitan</label>
-                    <select name="difficulty" class="form-select">
-                        <option value="">Semua Tingkat</option>
-                        <option value="mudah" {{ request('difficulty') == 'mudah' ? 'selected' : '' }}>Mudah</option>
-                        <option value="sedang" {{ request('difficulty') == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                        <option value="sulit" {{ request('difficulty') == 'sulit' ? 'selected' : '' }}>Sulit</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <label class="form-label">Status</label>
                     <select name="status" class="form-select">
                         <option value="">Semua Status</option>
@@ -286,7 +251,7 @@
                         <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
                     </select>
                 </div>
-                <div class="col-md-2">
+                <div class="col-md-3">
                     <button type="submit" class="btn btn-primary w-100">
                         <i class="bi bi-search"></i>
                         Filter
@@ -304,9 +269,6 @@
                     <h6 class="mb-0">Soal #{{ $question->id }}</h6>
                     <span class="badge bg-secondary">{{ $question->chapter->subject->name }}</span>
                     <span class="badge bg-info">{{ $question->chapter->name }}</span>
-                    <span class="difficulty-badge difficulty-{{ $question->difficulty }}">
-                        {{ ucfirst($question->difficulty) }}
-                    </span>
                     @if($question->is_active)
                         <span class="badge bg-success">Aktif</span>
                     @else
@@ -339,7 +301,10 @@
                         @if(is_array($question->tier1_options) && count($question->tier1_options) > 0)
                             @foreach($question->tier1_options as $index => $option)
                                 <li class="option-item {{ $index == $question->tier1_correct_answer ? 'correct' : '' }}">
-                                    {{ chr(65 + $index) }}. {{ $option }}
+                                    @php
+                                        $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+                                    @endphp
+                                    {{ $arabicLetters[$index] ?? chr(65 + $index) }}) {{ $option }}
                                     @if($index == $question->tier1_correct_answer)
                                         <i class="bi bi-check-circle ms-2"></i>
                                     @endif
@@ -365,7 +330,10 @@
                         @if(is_array($question->tier2_options) && count($question->tier2_options) > 0)
                             @foreach($question->tier2_options as $index => $option)
                                 <li class="option-item {{ $index == $question->tier2_correct_answer ? 'correct' : '' }}">
-                                    {{ $index + 1 }}. {{ $option }}
+                                    @php
+                                        $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+                                    @endphp
+                                    {{ $arabicLetters[$index] ?? ($index + 1) }}) {{ $option }}
                                     @if($index == $question->tier2_correct_answer)
                                         <i class="bi bi-check-circle ms-2"></i>
                                     @endif

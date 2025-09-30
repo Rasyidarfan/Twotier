@@ -71,28 +71,19 @@
                             </div>
                         </div>
 
+                        <!-- Hidden difficulty field with default value -->
+                        <input type="hidden" name="difficulty" value="sedang">
+
                         <div class="row mb-4">
-                            <div class="col-md-4">
-                                <label for="difficulty" class="form-label">Tingkat Kesulitan <span class="text-danger">*</span></label>
-                                <select class="form-select @error('difficulty') is-invalid @enderror" id="difficulty" name="difficulty" required>
-                                    <option value="">Pilih Tingkat Kesulitan</option>
-                                    <option value="mudah" {{ old('difficulty') == 'mudah' ? 'selected' : '' }}>Mudah</option>
-                                    <option value="sedang" {{ old('difficulty') == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                    <option value="sulit" {{ old('difficulty') == 'sulit' ? 'selected' : '' }}>Sulit</option>
-                                </select>
-                                @error('difficulty')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="points" class="form-label">Poin <span class="text-danger">*</span></label>
-                                <input type="number" class="form-control @error('points') is-invalid @enderror" 
+                                <input type="number" class="form-control @error('points') is-invalid @enderror"
                                        id="points" name="points" value="{{ old('points', 10) }}" min="1" max="100" required>
                                 @error('points')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <label for="is_active" class="form-label">Status <span class="text-danger">*</span></label>
                                 <select class="form-select @error('is_active') is-invalid @enderror" id="is_active" name="is_active" required>
                                     <option value="1" {{ old('is_active', '1') == '1' ? 'selected' : '' }}>Aktif</option>
@@ -115,9 +106,10 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="tier1_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('tier1_question') is-invalid @enderror" 
-                                              id="tier1_question" name="tier1_question" rows="4" required 
-                                              placeholder="Masukkan pertanyaan utama di sini...">{{ old('tier1_question') }}</textarea>
+                                    <textarea class="form-control @error('tier1_question') is-invalid @enderror"
+                                              id="tier1_question" name="tier1_question" rows="4" required
+                                              placeholder="Masukkan pertanyaan utama di sini..."
+                                              style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">{{ old('tier1_question') }}</textarea>
                                     @error('tier1_question')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -126,46 +118,51 @@
                                 <!-- Tier 1 Options -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_options_0" class="form-label">Pilihan A <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_options.0') is-invalid @enderror" 
-                                               id="tier1_options_0" name="tier1_options[0]" value="{{ old('tier1_options.0') }}" required 
-                                               placeholder="Masukkan pilihan A">
+                                        <label for="tier1_options_0" class="form-label">Pilihan أ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.0') is-invalid @enderror"
+                                               id="tier1_options_0" name="tier1_options[0]" value="{{ old('tier1_options.0') }}" required
+                                               placeholder="Masukkan pilihan أ"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier1_options.0')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_options_1" class="form-label">Pilihan B <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_options.1') is-invalid @enderror" 
-                                               id="tier1_options_1" name="tier1_options[1]" value="{{ old('tier1_options.1') }}" required 
-                                               placeholder="Masukkan pilihan B">
+                                        <label for="tier1_options_1" class="form-label">Pilihan ب <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.1') is-invalid @enderror"
+                                               id="tier1_options_1" name="tier1_options[1]" value="{{ old('tier1_options.1') }}" required
+                                               placeholder="Masukkan pilihan ب"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier1_options.1')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_options_2" class="form-label">Pilihan C <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_options.2') is-invalid @enderror" 
-                                               id="tier1_options_2" name="tier1_options[2]" value="{{ old('tier1_options.2') }}" required 
-                                               placeholder="Masukkan pilihan C">
+                                        <label for="tier1_options_2" class="form-label">Pilihan ج <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.2') is-invalid @enderror"
+                                               id="tier1_options_2" name="tier1_options[2]" value="{{ old('tier1_options.2') }}" required
+                                               placeholder="Masukkan pilihan ج"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier1_options.2')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_options_3" class="form-label">Pilihan D <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_options.3') is-invalid @enderror" 
-                                               id="tier1_options_3" name="tier1_options[3]" value="{{ old('tier1_options.3') }}" required 
-                                               placeholder="Masukkan pilihan D">
+                                        <label for="tier1_options_3" class="form-label">Pilihan د <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.3') is-invalid @enderror"
+                                               id="tier1_options_3" name="tier1_options[3]" value="{{ old('tier1_options.3') }}" required
+                                               placeholder="Masukkan pilihan د"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier1_options.3')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier1_options_4" class="form-label">Pilihan E <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier1_options.4') is-invalid @enderror" 
-                                               id="tier1_options_4" name="tier1_options[4]" value="{{ old('tier1_options.4') }}" required 
-                                               placeholder="Masukkan pilihan E">
+                                        <label for="tier1_options_4" class="form-label">Pilihan ه <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier1_options.4') is-invalid @enderror"
+                                               id="tier1_options_4" name="tier1_options[4]" value="{{ old('tier1_options.4') }}" required
+                                               placeholder="Masukkan pilihan ه"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier1_options.4')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -177,11 +174,11 @@
                                     <select class="form-select @error('tier1_correct_answer') is-invalid @enderror" 
                                             id="tier1_correct_answer" name="tier1_correct_answer" required>
                                         <option value="">Pilih Jawaban yang Benar</option>
-                                        <option value="0" {{ old('tier1_correct_answer') == '0' ? 'selected' : '' }}>A</option>
-                                        <option value="1" {{ old('tier1_correct_answer') == '1' ? 'selected' : '' }}>B</option>
-                                        <option value="2" {{ old('tier1_correct_answer') == '2' ? 'selected' : '' }}>C</option>
-                                        <option value="3" {{ old('tier1_correct_answer') == '3' ? 'selected' : '' }}>D</option>
-                                        <option value="4" {{ old('tier1_correct_answer') == '4' ? 'selected' : '' }}>E</option>
+                                        <option value="0" {{ old('tier1_correct_answer') == '0' ? 'selected' : '' }}>أ</option>
+                                        <option value="1" {{ old('tier1_correct_answer') == '1' ? 'selected' : '' }}>ب</option>
+                                        <option value="2" {{ old('tier1_correct_answer') == '2' ? 'selected' : '' }}>ج</option>
+                                        <option value="3" {{ old('tier1_correct_answer') == '3' ? 'selected' : '' }}>د</option>
+                                        <option value="4" {{ old('tier1_correct_answer') == '4' ? 'selected' : '' }}>ه</option>
                                     </select>
                                     @error('tier1_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -201,9 +198,10 @@
                             <div class="card-body">
                                 <div class="mb-3">
                                     <label for="tier2_question" class="form-label">Teks Pertanyaan <span class="text-danger">*</span></label>
-                                    <textarea class="form-control @error('tier2_question') is-invalid @enderror" 
-                                              id="tier2_question" name="tier2_question" rows="4" required 
-                                              placeholder="Masukkan pertanyaan tentang alasan pemilihan jawaban...">{{ old('tier2_question') }}</textarea>
+                                    <textarea class="form-control @error('tier2_question') is-invalid @enderror"
+                                              id="tier2_question" name="tier2_question" rows="4" required
+                                              placeholder="Masukkan pertanyaan tentang alasan pemilihan jawaban..."
+                                              style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">{{ old('tier2_question') }}</textarea>
                                     @error('tier2_question')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
@@ -212,46 +210,51 @@
                                 <!-- Tier 2 Options -->
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_options_0" class="form-label">Pilihan A <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_options.0') is-invalid @enderror" 
-                                               id="tier2_options_0" name="tier2_options[0]" value="{{ old('tier2_options.0') }}" required 
-                                               placeholder="Masukkan alasan A">
+                                        <label for="tier2_options_0" class="form-label">Pilihan أ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.0') is-invalid @enderror"
+                                               id="tier2_options_0" name="tier2_options[0]" value="{{ old('tier2_options.0') }}" required
+                                               placeholder="Masukkan alasan أ"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier2_options.0')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_options_1" class="form-label">Pilihan B <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_options.1') is-invalid @enderror" 
-                                               id="tier2_options_1" name="tier2_options[1]" value="{{ old('tier2_options.1') }}" required 
-                                               placeholder="Masukkan alasan B">
+                                        <label for="tier2_options_1" class="form-label">Pilihan ب <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.1') is-invalid @enderror"
+                                               id="tier2_options_1" name="tier2_options[1]" value="{{ old('tier2_options.1') }}" required
+                                               placeholder="Masukkan alasan ب"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier2_options.1')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_options_2" class="form-label">Pilihan C <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_options.2') is-invalid @enderror" 
-                                               id="tier2_options_2" name="tier2_options[2]" value="{{ old('tier2_options.2') }}" required 
-                                               placeholder="Masukkan alasan C">
+                                        <label for="tier2_options_2" class="form-label">Pilihan ج <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.2') is-invalid @enderror"
+                                               id="tier2_options_2" name="tier2_options[2]" value="{{ old('tier2_options.2') }}" required
+                                               placeholder="Masukkan alasan ج"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier2_options.2')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_options_3" class="form-label">Pilihan D <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_options.3') is-invalid @enderror" 
-                                               id="tier2_options_3" name="tier2_options[3]" value="{{ old('tier2_options.3') }}" required 
-                                               placeholder="Masukkan alasan D">
+                                        <label for="tier2_options_3" class="form-label">Pilihan د <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.3') is-invalid @enderror"
+                                               id="tier2_options_3" name="tier2_options[3]" value="{{ old('tier2_options.3') }}" required
+                                               placeholder="Masukkan alasan د"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier2_options.3')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                     <div class="col-md-6 mb-3">
-                                        <label for="tier2_options_4" class="form-label">Pilihan E <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control @error('tier2_options.4') is-invalid @enderror" 
-                                               id="tier2_options_4" name="tier2_options[4]" value="{{ old('tier2_options.4') }}" required 
-                                               placeholder="Masukkan alasan E">
+                                        <label for="tier2_options_4" class="form-label">Pilihan ه <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('tier2_options.4') is-invalid @enderror"
+                                               id="tier2_options_4" name="tier2_options[4]" value="{{ old('tier2_options.4') }}" required
+                                               placeholder="Masukkan alasan ه"
+                                               style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
                                         @error('tier2_options.4')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -263,11 +266,11 @@
                                     <select class="form-select @error('tier2_correct_answer') is-invalid @enderror" 
                                             id="tier2_correct_answer" name="tier2_correct_answer" required>
                                         <option value="">Pilih Alasan yang Benar</option>
-                                        <option value="0" {{ old('tier2_correct_answer') == '0' ? 'selected' : '' }}>A</option>
-                                        <option value="1" {{ old('tier2_correct_answer') == '1' ? 'selected' : '' }}>B</option>
-                                        <option value="2" {{ old('tier2_correct_answer') == '2' ? 'selected' : '' }}>C</option>
-                                        <option value="3" {{ old('tier2_correct_answer') == '3' ? 'selected' : '' }}>D</option>
-                                        <option value="4" {{ old('tier2_correct_answer') == '4' ? 'selected' : '' }}>E</option>
+                                        <option value="0" {{ old('tier2_correct_answer') == '0' ? 'selected' : '' }}>أ</option>
+                                        <option value="1" {{ old('tier2_correct_answer') == '1' ? 'selected' : '' }}>ب</option>
+                                        <option value="2" {{ old('tier2_correct_answer') == '2' ? 'selected' : '' }}>ج</option>
+                                        <option value="3" {{ old('tier2_correct_answer') == '3' ? 'selected' : '' }}>د</option>
+                                        <option value="4" {{ old('tier2_correct_answer') == '4' ? 'selected' : '' }}>ه</option>
                                     </select>
                                     @error('tier2_correct_answer')
                                         <div class="invalid-feedback">{{ $message }}</div>

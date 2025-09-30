@@ -172,7 +172,7 @@
                                 </li>
                             @endif
                             
-                            @if(auth()->user()->isGuru() || auth()->user()->isAdmin())
+                            @if(auth()->user()->isGuru())
                                 <li class="nav-item">
                                     <a class="nav-link {{ request()->routeIs('guru.dashboard') ? 'active' : '' }}" href="{{ route('guru.dashboard') }}">
                                         <i class="bi bi-speedometer2"></i> Dashboard Guru

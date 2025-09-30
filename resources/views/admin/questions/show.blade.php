@@ -47,11 +47,6 @@
                         <div class="col-md-6">
                             <p><strong>Mata Pelajaran:</strong> {{ $question->chapter->subject->name ?? 'Tidak Ditentukan' }}</p>
                             <p><strong>Bab:</strong> {{ $question->chapter->name ?? 'Tidak Ditentukan' }}</p>
-                            <p><strong>Tingkat Kesulitan:</strong> 
-                                <span class="badge bg-{{ $question->difficulty === 'easy' ? 'success' : ($question->difficulty === 'medium' ? 'warning' : 'danger') }}">
-                                    {{ $question->difficulty === 'easy' ? 'Mudah' : ($question->difficulty === 'medium' ? 'Sedang' : 'Sulit') }}
-                                </span>
-                            </p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Nilai:</strong> {{ $question->points ?? 'Tidak Ditentukan' }}</p>
@@ -80,7 +75,7 @@
                 <div class="card-body">
                     <div class="question-content mb-4">
                         <h5>Isi Soal:</h5>
-                        <div class="p-3 bg-light rounded">
+                        <div class="p-3 bg-light rounded" style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif; font-size: 1.1rem; line-height: 1.6;">
                             {{ $question->tier1_question }}
                         </div>
                     </div>
@@ -98,54 +93,27 @@
                     <div class="question-options">
                         <h6>Pilihan Jawaban:</h6>
                         <div class="row">
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier1_correct_answer === 'a' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier1_correct_answer === 'a' ? 'text-success fw-bold' : '' }}">
-                                        A) {{ $question->tier1_option_a }}
-                                    </label>
-                                    @if($question->tier1_correct_answer === 'a')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier1_correct_answer === 'b' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier1_correct_answer === 'b' ? 'text-success fw-bold' : '' }}">
-                                        B) {{ $question->tier1_option_b }}
-                                    </label>
-                                    @if($question->tier1_correct_answer === 'b')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier1_correct_answer === 'c' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier1_correct_answer === 'c' ? 'text-success fw-bold' : '' }}">
-                                        C) {{ $question->tier1_option_c }}
-                                    </label>
-                                    @if($question->tier1_correct_answer === 'c')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier1_correct_answer === 'd' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier1_correct_answer === 'd' ? 'text-success fw-bold' : '' }}">
-                                        D) {{ $question->tier1_option_d }}
-                                    </label>
-                                    @if($question->tier1_correct_answer === 'd')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
+                            @php
+                                $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه']; // أ، ب، ج، د، ه
+                                $tier1Options = is_array($question->tier1_options) ? $question->tier1_options : [];
+                            @endphp
+                            @for($i = 0; $i < 5; $i++)
+                                @if(isset($tier1Options[$i]))
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" disabled
+                                                   {{ $question->tier1_correct_answer === $i ? 'checked' : '' }}>
+                                            <label class="form-check-label {{ $question->tier1_correct_answer === $i ? 'text-success fw-bold' : '' }}"
+                                                   style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
+                                                {{ $arabicLetters[$i] }}) {{ $tier1Options[$i] }}
+                                            </label>
+                                            @if($question->tier1_correct_answer === $i)
+                                                <i class="bi bi-check-circle text-success ms-2"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                            @endfor
                         </div>
                     </div>
                 </div>
@@ -162,7 +130,7 @@
                 <div class="card-body">
                     <div class="question-content mb-4">
                         <h5>Isi Soal:</h5>
-                        <div class="p-3 bg-light rounded">
+                        <div class="p-3 bg-light rounded" style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif; font-size: 1.1rem; line-height: 1.6;">
                             {{ $question->tier2_question }}
                         </div>
                     </div>
@@ -180,54 +148,27 @@
                     <div class="question-options">
                         <h6>Pilihan Jawaban:</h6>
                         <div class="row">
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier2_correct_answer === 'a' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier2_correct_answer === 'a' ? 'text-success fw-bold' : '' }}">
-                                        A) {{ $question->tier2_option_a }}
-                                    </label>
-                                    @if($question->tier2_correct_answer === 'a')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier2_correct_answer === 'b' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier2_correct_answer === 'b' ? 'text-success fw-bold' : '' }}">
-                                        B) {{ $question->tier2_option_b }}
-                                    </label>
-                                    @if($question->tier2_correct_answer === 'b')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier2_correct_answer === 'c' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier2_correct_answer === 'c' ? 'text-success fw-bold' : '' }}">
-                                        C) {{ $question->tier2_option_c }}
-                                    </label>
-                                    @if($question->tier2_correct_answer === 'c')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="radio" disabled 
-                                           {{ $question->tier2_correct_answer === 'd' ? 'checked' : '' }}>
-                                    <label class="form-check-label {{ $question->tier2_correct_answer === 'd' ? 'text-success fw-bold' : '' }}">
-                                        D) {{ $question->tier2_option_d }}
-                                    </label>
-                                    @if($question->tier2_correct_answer === 'd')
-                                        <i class="bi bi-check-circle text-success ms-2"></i>
-                                    @endif
-                                </div>
-                            </div>
+                            @php
+                                $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه']; // أ، ب، ج، د، ه
+                                $tier2Options = is_array($question->tier2_options) ? $question->tier2_options : [];
+                            @endphp
+                            @for($i = 0; $i < 5; $i++)
+                                @if(isset($tier2Options[$i]))
+                                    <div class="col-md-6 mb-2">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" disabled
+                                                   {{ $question->tier2_correct_answer === $i ? 'checked' : '' }}>
+                                            <label class="form-check-label {{ $question->tier2_correct_answer === $i ? 'text-success fw-bold' : '' }}"
+                                                   style="direction: rtl; text-align: right; font-family: 'Amiri', 'Noto Sans Arabic', serif;">
+                                                {{ $arabicLetters[$i] }}) {{ $tier2Options[$i] }}
+                                            </label>
+                                            @if($question->tier2_correct_answer === $i)
+                                                <i class="bi bi-check-circle text-success ms-2"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endif
+                            @endfor
                         </div>
                     </div>
                 </div>

@@ -225,42 +225,20 @@
                 </h6>
             </div>
             <div class="card-body">
-                <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label for="question_selection_type" class="form-label">Cara Memilih Soal</label>
-                        <select class="form-select" id="question_selection_type" name="question_selection_type">
-                            <option value="manual" {{ old('question_selection_type', 'manual') == 'manual' ? 'selected' : '' }}>Pilih Manual</option>
-                            <option value="random" {{ old('question_selection_type') == 'random' ? 'selected' : '' }}>Pilih Acak</option>
-                            <option value="mixed" {{ old('question_selection_type') == 'mixed' ? 'selected' : '' }}>Campuran</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6" id="total_questions_container" style="display: none;">
-                        <label for="total_questions" class="form-label">Total Jumlah Soal</label>
-                        <input type="number" class="form-control" id="total_questions" name="total_questions" 
-                               value="{{ old('total_questions', 10) }}" min="1" max="100">
-                    </div>
-                </div>
+                <!-- Hidden field to maintain backend compatibility -->
+                <input type="hidden" name="question_selection_type" value="manual">
 
                 <!-- Manual Question Selection -->
                 <div id="manual_selection" class="question-selection-method">
                     <h6 class="text-secondary mb-3">Pilih Soal Secara Manual</h6>
                     <div class="row">
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label for="filter_chapter" class="form-label">Filter berdasarkan Bab</label>
                             <select class="form-select" id="filter_chapter" name="filter_chapter">
                                 <option value="">Semua Bab</option>
                             </select>
                         </div>
-                        <div class="col-md-4 mb-3">
-                            <label for="filter_difficulty" class="form-label">Filter berdasarkan Tingkat Kesulitan</label>
-                            <select class="form-select" id="filter_difficulty" name="filter_difficulty">
-                                <option value="">Semua Tingkat</option>
-                                <option value="easy">Mudah</option>
-                                <option value="medium">Sedang</option>
-                                <option value="hard">Sulit</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">&nbsp;</label>
                             <div class="d-grid">
                                 <button type="button" class="btn btn-outline-primary" id="load_questions">
@@ -273,32 +251,6 @@
 
                     <div id="questions_list" class="mt-3">
                         <!-- Questions will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Random Question Selection -->
-                <div id="random_selection" class="question-selection-method" style="display: none;">
-                    <h6 class="text-secondary mb-3">Pilih Soal Secara Acak</h6>
-                    <div class="row">
-                        <div class="col-md-3 mb-3">
-                            <label for="easy_questions" class="form-label">Soal Mudah</label>
-                            <input type="number" class="form-control" id="easy_questions" name="easy_questions" 
-                                   value="{{ old('easy_questions', 0) }}" min="0">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="medium_questions" class="form-label">Soal Sedang</label>
-                            <input type="number" class="form-control" id="medium_questions" name="medium_questions" 
-                                   value="{{ old('medium_questions', 0) }}" min="0">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label for="hard_questions" class="form-label">Soal Sulit</label>
-                            <input type="number" class="form-control" id="hard_questions" name="hard_questions" 
-                                   value="{{ old('hard_questions', 0) }}" min="0">
-                        </div>
-                        <div class="col-md-3 mb-3">
-                            <label class="form-label">Total</label>
-                            <input type="text" class="form-control" id="questions_total" readonly>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -333,35 +285,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const subjectSelect = document.getElementById('subject_id');
     const chapterSelect = document.getElementById('filter_chapter');
-    const questionSelectionType = document.getElementById('question_selection_type');
-    const totalQuestionsContainer = document.getElementById('total_questions_container');
-    const manualSelection = document.getElementById('manual_selection');
-    const randomSelection = document.getElementById('random_selection');
-    
-    // Handle question selection type change
-    questionSelectionType.addEventListener('change', function() {
-        const type = this.value;
-        
-        if (type === 'manual') {
-            manualSelection.style.display = 'block';
-            randomSelection.style.display = 'none';
-            totalQuestionsContainer.style.display = 'none';
-        } else if (type === 'random') {
-            manualSelection.style.display = 'none';
-            randomSelection.style.display = 'block';
-            totalQuestionsContainer.style.display = 'block';
-        } else if (type === 'mixed') {
-            manualSelection.style.display = 'block';
-            randomSelection.style.display = 'block';
-            totalQuestionsContainer.style.display = 'block';
-        }
-    });
-    
+
     // Load chapters when subject changes
     subjectSelect.addEventListener('change', function() {
         const subjectId = this.value;
         chapterSelect.innerHTML = '<option value="">Semua Bab</option>';
-        
+
         if (subjectId) {
             fetch(`/guru/subjects/${subjectId}/chapters`)
                 .then(response => response.json())
@@ -378,13 +307,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
     });
-    
+
     // Load questions for manual selection
     document.getElementById('load_questions').addEventListener('click', function() {
         const subjectId = subjectSelect.value;
         const chapterId = chapterSelect.value;
-        const difficulty = document.getElementById('filter_difficulty').value;
-        
+
         if (!subjectId) {
             Swal.fire({
                 title: 'Peringatan!',
@@ -394,13 +322,12 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return;
         }
-        
+
         const params = new URLSearchParams({
             subject_id: subjectId,
-            ...(chapterId && { chapter_id: chapterId }),
-            ...(difficulty && { difficulty: difficulty })
+            ...(chapterId && { chapter_id: chapterId })
         });
-        
+
         fetch(`/guru/questions/search?${params}`)
             .then(response => response.json())
             .then(questions => {
@@ -416,49 +343,32 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
     });
-    
-    // Calculate total questions for random selection
-    const questionInputs = ['easy_questions', 'medium_questions', 'hard_questions'];
-    questionInputs.forEach(inputId => {
-        document.getElementById(inputId).addEventListener('input', calculateTotal);
-    });
-    
-    function calculateTotal() {
-        const easy = parseInt(document.getElementById('easy_questions').value) || 0;
-        const medium = parseInt(document.getElementById('medium_questions').value) || 0;
-        const hard = parseInt(document.getElementById('hard_questions').value) || 0;
-        const total = easy + medium + hard;
-        
-        document.getElementById('questions_total').value = total;
-        document.getElementById('total_questions').value = total;
-    }
-    
+
     function displayQuestions(questions) {
         const container = document.getElementById('questions_list');
-        
+
         if (questions.length === 0) {
             container.innerHTML = '<p class="text-muted">Tidak ditemukan soal yang sesuai dengan kriteria yang ditentukan.</p>';
             return;
         }
-        
+
         let html = '<div class="table-responsive"><table class="table table-sm"><thead><tr>';
         html += '<th><input type="checkbox" id="select_all_questions"></th>';
-        html += '<th>Soal</th><th>Bab</th><th>Tingkat Kesulitan</th><th>Poin</th>';
+        html += '<th>Soal</th><th>Bab</th><th>Poin</th>';
         html += '</tr></thead><tbody>';
-        
+
         questions.forEach(question => {
             html += `<tr>
                 <td><input type="checkbox" name="selected_questions[]" value="${question.id}" class="question-checkbox"></td>
-                <td><div class="text-truncate" style="max-width: 300px;" title="${question.tier1_question}">${question.tier1_question.substring(0, 100)}...</div></td>
+                <td><div class="text-truncate" style="max-width: 400px;" title="${question.tier1_question}">${question.tier1_question.substring(0, 120)}...</div></td>
                 <td><span class="badge bg-info">${question.chapter ? question.chapter.name : 'Tidak Ditentukan'}</span></td>
-                <td><span class="badge bg-${getDifficultyColor(question.difficulty)}">${getDifficultyText(question.difficulty)}</span></td>
-                <td>${question.points}</td>
+                <td>${question.points || 10}</td>
             </tr>`;
         });
-        
+
         html += '</tbody></table></div>';
         container.innerHTML = html;
-        
+
         // Add select all functionality
         document.getElementById('select_all_questions').addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('.question-checkbox');
@@ -467,32 +377,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
-    
-    function getDifficultyColor(difficulty) {
-        switch(difficulty) {
-            case 'easy': return 'success';
-            case 'medium': return 'warning';
-            case 'hard': return 'danger';
-            default: return 'secondary';
-        }
-    }
-    
-    function getDifficultyText(difficulty) {
-        switch(difficulty) {
-            case 'easy': return 'Mudah';
-            case 'medium': return 'Sedang';
-            case 'hard': return 'Sulit';
-            default: return 'Tidak Ditentukan';
-        }
-    }
-    
+
     // Form validation
     document.getElementById('createExamForm').addEventListener('submit', function(e) {
         const title = document.getElementById('title').value.trim();
         const subjectId = document.getElementById('subject_id').value;
         const duration = document.getElementById('duration').value;
-        const selectionType = document.getElementById('question_selection_type').value;
-        
+
         if (!title || !subjectId || !duration) {
             e.preventDefault();
             Swal.fire({
@@ -503,36 +394,19 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             return;
         }
-        
-        if (selectionType === 'manual') {
-            const selectedQuestions = document.querySelectorAll('.question-checkbox:checked');
-            if (selectedQuestions.length === 0) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Peringatan!',
-                    text: 'Silakan pilih soal untuk ujian',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
-        } else if (selectionType === 'random') {
-            const total = parseInt(document.getElementById('questions_total').value) || 0;
-            if (total === 0) {
-                e.preventDefault();
-                Swal.fire({
-                    title: 'Peringatan!',
-                    text: 'Silakan tentukan jumlah soal untuk setiap tingkat kesulitan',
-                    icon: 'warning',
-                    confirmButtonText: 'OK'
-                });
-                return;
-            }
+
+        const selectedQuestions = document.querySelectorAll('.question-checkbox:checked');
+        if (selectedQuestions.length === 0) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Peringatan!',
+                text: 'Silakan pilih soal untuk ujian',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
         }
     });
-    
-    // Initialize
-    calculateTotal();
 });
 </script>
 @endpush
