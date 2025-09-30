@@ -102,7 +102,7 @@ class GuruController extends Controller
             ]);
         }
 
-        return redirect()->route('guru.exams')
+        return redirect()->route('guru.exams.index')
             ->with('success', 'Ujian berhasil dibuat dengan kode: ' . $code);
     }
 
@@ -180,7 +180,7 @@ class GuruController extends Controller
             ]);
         }
 
-        return redirect()->route('guru.exams')
+        return redirect()->route('guru.exams.index')
             ->with('success', 'Ujian berhasil diperbarui.');
     }
 
@@ -190,7 +190,7 @@ class GuruController extends Controller
         
         // Only allow deletion for draft and finished exams
         if (!in_array($exam->status, ['draft', 'finished'])) {
-            return redirect()->route('guru.exams')
+            return redirect()->route('guru.exams.index')
                 ->with('error', 'Hanya ujian dengan status draft atau selesai yang dapat dihapus.');
         }
         
@@ -220,7 +220,7 @@ class GuruController extends Controller
             ? 'Ujian dan semua hasil ujian berhasil dihapus.' 
             : 'Ujian berhasil dihapus.';
             
-        return redirect()->route('guru.exams')
+        return redirect()->route('guru.exams.index')
             ->with('success', $message);
     }
 
@@ -720,5 +720,35 @@ class GuruController extends Controller
         $chapters = Chapter::where('is_active', true)->get();
 
         return view('guru.questions.index', compact('questions', 'subjects', 'chapters'));
+    }
+
+    public function searchQuestions(Request $request)
+    {
+        $query = Question::with(['chapter.subject'])
+            ->where('is_active', true);
+
+        if ($request->filled('subject_id')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('subject_id', $request->subject_id);
+            });
+        }
+
+        if ($request->filled('chapter_id')) {
+            $query->where('chapter_id', $request->chapter_id);
+        }
+
+        $questions = $query->latest()->get();
+
+        return response()->json($questions);
+    }
+
+    public function getSubjectChapters($subjectId)
+    {
+        $chapters = Chapter::where('subject_id', $subjectId)
+            ->where('is_active', true)
+            ->orderBy('order')
+            ->get(['id', 'name', 'order']);
+
+        return response()->json($chapters);
     }
 }

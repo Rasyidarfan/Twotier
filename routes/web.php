@@ -131,6 +131,10 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/questions', [GuruController::class, 'questionBank'])->name('questions');
         Route::get('/questions/index', [GuruController::class, 'questionBank'])->name('questions.index');
         Route::get('/questions/filter', [GuruController::class, 'filterQuestions'])->name('questions.filter');
+        Route::get('/questions/search', [GuruController::class, 'searchQuestions'])->name('questions.search');
+
+        // ===== SUBJECT & CHAPTER HELPERS =====
+        Route::get('/subjects/{subject}/chapters', [GuruController::class, 'getSubjectChapters'])->name('subjects.chapters');
     });
 });
 

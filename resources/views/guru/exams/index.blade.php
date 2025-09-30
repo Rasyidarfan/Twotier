@@ -2,6 +2,21 @@
 
 @section('title', 'Kelola Ujian')
 
+@push('styles')
+<style>
+    .card-body.p-0 {
+        overflow: visible !important;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        overflow-y: visible;
+    }
+    .dropdown-menu {
+        z-index: 1050;
+    }
+</style>
+@endpush
+
 @section('content')
 <div class="container-fluid">
     <!-- Header -->
@@ -199,67 +214,52 @@
                                                     <button class="btn btn-sm btn-outline-primary" onclick="viewExamDetails({{ $exam->id }})" title="Lihat Detail">
                                                         <i class="bi bi-eye"></i>
                                                     </button>
-                                                    
+
                                                     @if($exam->status === 'draft')
                                                         <a href="{{ route('guru.exams.edit', $exam) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
+                                                        <button class="btn btn-sm btn-outline-info" onclick="updateExamStatus({{ $exam->id }}, 'waiting')" title="Set Waiting">
+                                                            <i class="bi bi-clock"></i>
+                                                        </button>
                                                     @endif
-                                                    
-                                                    @if(in_array($exam->status, ['waiting', 'active']))
+
+                                                    @if($exam->status === 'waiting')
                                                         <a href="{{ route('guru.exams.waiting-room', $exam) }}" class="btn btn-sm btn-outline-success" title="Monitor">
                                                             <i class="bi bi-display"></i>
                                                         </a>
+                                                        <button class="btn btn-sm btn-outline-success" onclick="updateExamStatus({{ $exam->id }}, 'active')" title="Mulai Ujian">
+                                                            <i class="bi bi-play-fill"></i>
+                                                        </button>
+                                                        <button class="btn btn-sm btn-outline-secondary" onclick="updateExamStatus({{ $exam->id }}, 'draft')" title="Kembali ke Draft">
+                                                            <i class="bi bi-arrow-left"></i>
+                                                        </button>
                                                     @endif
-                                                    
+
+                                                    @if($exam->status === 'active')
+                                                        <a href="{{ route('guru.exams.waiting-room', $exam) }}" class="btn btn-sm btn-outline-success" title="Monitor">
+                                                            <i class="bi bi-display"></i>
+                                                        </a>
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="updateExamStatus({{ $exam->id }}, 'finished')" title="Akhiri Ujian">
+                                                            <i class="bi bi-stop-fill"></i>
+                                                        </button>
+                                                    @endif
+
                                                     @if($exam->status === 'finished')
                                                         <a href="{{ route('guru.exams.results', $exam) }}" class="btn btn-sm btn-outline-info" title="Hasil">
                                                             <i class="bi bi-bar-chart"></i>
                                                         </a>
                                                     @endif
-                                                    
-                                                    <div class="btn-group" role="group">
-                                                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" title="Lainnya">
-                                                            <i class="bi bi-three-dots-vertical"></i>
+
+                                                    <button class="btn btn-sm btn-outline-secondary" onclick="duplicateExam({{ $exam->id }})" title="Duplikat">
+                                                        <i class="bi bi-files"></i>
+                                                    </button>
+
+                                                    @if(in_array($exam->status, ['draft', 'finished']))
+                                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteExam({{ $exam->id }}, '{{ addslashes($exam->title) }}', '{{ $exam->status }}')" title="Hapus">
+                                                            <i class="bi bi-trash"></i>
                                                         </button>
-                                                        <ul class="dropdown-menu">
-                                                            <li><button class="dropdown-item" onclick="duplicateExam({{ $exam->id }})">
-                                                                <i class="bi bi-files"></i> Duplikat
-                                                            </button></li>
-                                                            
-                                                            @if($exam->status === 'draft')
-                                                                <li><button class="dropdown-item" onclick="updateExamStatus({{ $exam->id }}, 'waiting')">
-                                                                    <i class="bi bi-clock"></i> Set Waiting
-                                                                </button></li>
-                                                            @endif
-                                                            
-                                                            @if($exam->status === 'waiting')
-                                                                <li><button class="dropdown-item" onclick="updateExamStatus({{ $exam->id }}, 'active')">
-                                                                    <i class="bi bi-play-fill"></i> Mulai Ujian
-                                                                </button></li>
-                                                                <li><button class="dropdown-item" onclick="updateExamStatus({{ $exam->id }}, 'draft')">
-                                                                    <i class="bi bi-pencil-square"></i> Kembali ke Draft
-                                                                </button></li>
-                                                            @endif
-                                                            
-                                                            @if($exam->status === 'active')
-                                                                <li><button class="dropdown-item" onclick="updateExamStatus({{ $exam->id }}, 'finished')">
-                                                                    <i class="bi bi-stop-fill"></i> Akhiri Ujian
-                                                                </button></li>
-                                                            @endif
-                                                            
-                                                            <li><hr class="dropdown-divider"></li>
-                                                            
-                                                            @if(in_array($exam->status, ['draft', 'finished']))
-                                                                <li><button class="dropdown-item text-danger" onclick="deleteExam({{ $exam->id }}, '{{ $exam->title }}', '{{ $exam->status }}')">
-                                                                    <i class="bi bi-trash"></i> Hapus
-                                                                    @if($exam->status === 'finished')
-                                                                        <small class="d-block text-muted">Termasuk hasil ujian</small>
-                                                                    @endif
-                                                                </button></li>
-                                                            @endif
-                                                        </ul>
-                                                    </div>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -317,37 +317,44 @@ function clearFilters() {
 }
 
 function viewExamDetails(examId) {
-    $.get(`/guru/exams/${examId}`, function(data) {
-        const content = `
-            <div class="row">
-                <div class="col-md-6">
-                    <table class="table table-sm">
-                        <tr><th>Judul:</th><td>${data.title}</td></tr>
-                        <tr><th>Mata Pelajaran:</th><td>${data.subject.name}</td></tr>
-                        <tr><th>Kelas/Semester:</th><td>${data.grade} / ${data.semester.charAt(0).toUpperCase() + data.semester.slice(1)}</td></tr>
-                        <tr><th>Durasi:</th><td>${data.duration} menit</td></tr>
-                        <tr><th>Status:</th><td><span class="badge bg-primary">${data.status.toUpperCase()}</span></td></tr>
-                    </table>
+    fetch(`/guru/exams/${examId}`)
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr><th>Judul:</th><td>${data.title}</td></tr>
+                            <tr><th>Mata Pelajaran:</th><td>${data.subject?.name || '-'}</td></tr>
+                            <tr><th>Durasi:</th><td>${data.duration} menit</td></tr>
+                            <tr><th>Status:</th><td><span class="badge bg-primary">${data.status.toUpperCase()}</span></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <table class="table table-sm">
+                            <tr><th>Kode Ujian:</th><td><code>${data.code}</code></td></tr>
+                            ${data.current_code ? `<tr><th>Kode Aktif:</th><td><code class="text-success">${data.current_code}</code></td></tr>` : ''}
+                            <tr><th>Jumlah Soal:</th><td>${data.questions_count}</td></tr>
+                            <tr><th>Peserta:</th><td>${data.participants_count}</td></tr>
+                            <tr><th>Acak Soal:</th><td>${data.shuffle_questions ? 'Ya' : 'Tidak'}</td></tr>
+                            <tr><th>Tampilkan Hasil:</th><td>${data.show_result_immediately ? 'Ya' : 'Tidak'}</td></tr>
+                        </table>
+                    </div>
                 </div>
-                <div class="col-md-6">
-                    <table class="table table-sm">
-                        <tr><th>Kode Ujian:</th><td><code>${data.code}</code></td></tr>
-                        ${data.current_code ? `<tr><th>Kode Aktif:</th><td><code class="text-success">${data.current_code}</code></td></tr>` : ''}
-                        <tr><th>Jumlah Soal:</th><td>${data.questions_count}</td></tr>
-                        <tr><th>Peserta:</th><td>${data.participants_count}</td></tr>
-                        <tr><th>Acak Soal:</th><td>${data.shuffle_questions ? 'Ya' : 'Tidak'}</td></tr>
-                        <tr><th>Tampilkan Hasil:</th><td>${data.show_result_immediately ? 'Ya' : 'Tidak'}</td></tr>
-                    </table>
-                </div>
-            </div>
-            ${data.description ? `<div class="mt-3"><strong>Deskripsi:</strong><br>${data.description}</div>` : ''}
-        `;
-        
-        $('#examDetailsContent').html(content);
-        $('#examDetailsModal').modal('show');
-    }).fail(function() {
-        toastr.error('Gagal memuat detail ujian');
-    });
+                ${data.description ? `<div class="mt-3"><strong>Deskripsi:</strong><br>${data.description}</div>` : ''}
+            `;
+
+            document.getElementById('examDetailsContent').innerHTML = content;
+            new bootstrap.Modal(document.getElementById('examDetailsModal')).show();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire({
+                title: 'Error!',
+                text: 'Gagal memuat detail ujian',
+                icon: 'error'
+            });
+        });
 }
 
 function updateExamStatus(examId, status) {
@@ -357,14 +364,14 @@ function updateExamStatus(examId, status) {
         'active': 'memulai ujian',
         'finished': 'mengakhiri ujian'
     };
-    
+
     const icons = {
         'draft': 'question',
         'waiting': 'info',
         'active': 'success',
         'finished': 'warning'
     };
-    
+
     Swal.fire({
         title: 'Konfirmasi',
         text: `Apakah Anda yakin ingin ${messages[status]}?`,
@@ -376,26 +383,34 @@ function updateExamStatus(examId, status) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            $.post(`/guru/exams/${examId}/status`, {
-                status: status,
-                _token: $('meta[name="csrf-token"]').attr('content')
-            }).done(function(response) {
-                if (response.success) {
+            fetch(`/guru/exams/${examId}/status`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     Swal.fire({
                         title: 'Berhasil!',
-                        text: response.message,
+                        text: data.message,
                         icon: 'success',
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
                         location.reload();
                     });
+                } else {
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
-            }).fail(function(xhr) {
-                const response = xhr.responseJSON;
+            })
+            .catch(error => {
                 Swal.fire({
                     title: 'Gagal!',
-                    text: response.message || 'Terjadi kesalahan',
+                    text: error.message || 'Terjadi kesalahan',
                     icon: 'error'
                 });
             });
@@ -415,25 +430,33 @@ function duplicateExam(examId) {
         cancelButtonText: 'Batal'
     }).then((result) => {
         if (result.isConfirmed) {
-            $.post(`/guru/exams/${examId}/duplicate`, {
-                _token: $('meta[name="csrf-token"]').attr('content')
-            }).done(function(response) {
-                if (response.success) {
+            fetch(`/guru/exams/${examId}/duplicate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
                     Swal.fire({
                         title: 'Berhasil!',
-                        text: response.message,
+                        text: data.message,
                         icon: 'success',
                         timer: 1500,
                         showConfirmButton: false
                     }).then(() => {
                         location.reload();
                     });
+                } else {
+                    throw new Error(data.message || 'Terjadi kesalahan');
                 }
-            }).fail(function(xhr) {
-                const response = xhr.responseJSON;
+            })
+            .catch(error => {
                 Swal.fire({
                     title: 'Gagal!',
-                    text: response.message || 'Terjadi kesalahan',
+                    text: error.message || 'Terjadi kesalahan',
                     icon: 'error'
                 });
             });
@@ -491,13 +514,15 @@ function deleteExam(examId, examTitle, examStatus) {
                 });
             }
             
-            $.ajax({
-                url: `/guru/exams/${examId}`,
-                type: 'DELETE',
-                data: {
-                    _token: $('meta[name="csrf-token"]').attr('content')
+            fetch(`/guru/exams/${examId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                 }
-            }).done(function(response) {
+            })
+            .then(response => response.json())
+            .then(data => {
                 Swal.fire({
                     title: 'Terhapus!',
                     text: examStatus === 'finished' ? 'Ujian dan semua hasil ujian berhasil dihapus' : 'Ujian berhasil dihapus',
@@ -507,11 +532,11 @@ function deleteExam(examId, examTitle, examStatus) {
                 }).then(() => {
                     location.reload();
                 });
-            }).fail(function(xhr) {
-                const response = xhr.responseJSON;
+            })
+            .catch(error => {
                 Swal.fire({
                     title: 'Gagal!',
-                    text: response.message || 'Terjadi kesalahan saat menghapus ujian',
+                    text: error.message || 'Terjadi kesalahan saat menghapus ujian',
                     icon: 'error'
                 });
             });

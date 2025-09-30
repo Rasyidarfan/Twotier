@@ -38,29 +38,19 @@
                 </h6>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="title" class="form-label">Judul Ujian <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('title') is-invalid @enderror" 
-                               id="title" name="title" value="{{ old('title') }}" required>
-                        @error('title')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="code" class="form-label">Kode Ujian</label>
-                        <input type="text" class="form-control @error('code') is-invalid @enderror" 
-                               id="code" name="code" value="{{ old('code') }}" placeholder="Akan dibuat otomatis">
-                        @error('code')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Judul Ujian <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('title') is-invalid @enderror"
+                           id="title" name="title" value="{{ old('title') }}" required>
+                    @error('title')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="subject_id" class="form-label">Mata Pelajaran <span class="text-danger">*</span></label>
-                        <select class="form-select @error('subject_id') is-invalid @enderror" 
+                        <select class="form-select @error('subject_id') is-invalid @enderror"
                                 id="subject_id" name="subject_id" required>
                             <option value="">Pilih Mata Pelajaran</option>
                             @foreach($subjects as $subject)
@@ -74,10 +64,38 @@
                         @enderror
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="duration" class="form-label">Durasi Ujian (menit) <span class="text-danger">*</span></label>
-                        <input type="number" class="form-control @error('duration') is-invalid @enderror" 
-                               id="duration" name="duration" value="{{ old('duration', 60) }}" min="5" max="300" required>
-                        @error('duration')
+                        <label for="duration_minutes" class="form-label">Durasi Ujian (menit) <span class="text-danger">*</span></label>
+                        <input type="number" class="form-control @error('duration_minutes') is-invalid @enderror"
+                               id="duration_minutes" name="duration_minutes" value="{{ old('duration_minutes', 60) }}" min="5" max="300" required>
+                        @error('duration_minutes')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="grade" class="form-label">Kelas <span class="text-danger">*</span></label>
+                        <select class="form-select @error('grade') is-invalid @enderror"
+                                id="grade" name="grade" required>
+                            <option value="">Pilih Kelas</option>
+                            <option value="X" {{ old('grade') == 'X' ? 'selected' : '' }}>X</option>
+                            <option value="XI" {{ old('grade') == 'XI' ? 'selected' : '' }}>XI</option>
+                            <option value="XII" {{ old('grade') == 'XII' ? 'selected' : '' }}>XII</option>
+                        </select>
+                        @error('grade')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="semester" class="form-label">Semester <span class="text-danger">*</span></label>
+                        <select class="form-select @error('semester') is-invalid @enderror"
+                                id="semester" name="semester" required>
+                            <option value="">Pilih Semester</option>
+                            <option value="gasal" {{ old('semester') == 'gasal' ? 'selected' : '' }}>Gasal</option>
+                            <option value="genap" {{ old('semester') == 'genap' ? 'selected' : '' }}>Genap</option>
+                        </select>
+                        @error('semester')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
@@ -104,46 +122,9 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="max_attempts" class="form-label">Jumlah Percobaan yang Diizinkan</label>
-                        <select class="form-select @error('max_attempts') is-invalid @enderror" 
-                                id="max_attempts" name="max_attempts">
-                            <option value="1" {{ old('max_attempts', 1) == 1 ? 'selected' : '' }}>Satu Kali</option>
-                            <option value="2" {{ old('max_attempts') == 2 ? 'selected' : '' }}>Dua Kali</option>
-                            <option value="3" {{ old('max_attempts') == 3 ? 'selected' : '' }}>Tiga Kali</option>
-                            <option value="0" {{ old('max_attempts') == 0 ? 'selected' : '' }}>Tidak Terbatas</option>
-                        </select>
-                        @error('max_attempts')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="passing_score" class="form-label">Nilai Kelulusan (%)</label>
-                        <input type="number" class="form-control @error('passing_score') is-invalid @enderror" 
-                               id="passing_score" name="passing_score" value="{{ old('passing_score', 60) }}" 
-                               min="0" max="100">
-                        @error('passing_score')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="show_results" class="form-label">Tampilkan Hasil</label>
-                        <select class="form-select @error('show_results') is-invalid @enderror" 
-                                id="show_results" name="show_results">
-                            <option value="immediately" {{ old('show_results', 'immediately') == 'immediately' ? 'selected' : '' }}>Langsung Setelah Selesai</option>
-                            <option value="after_exam" {{ old('show_results') == 'after_exam' ? 'selected' : '' }}>Setelah Ujian Berakhir</option>
-                            <option value="manual" {{ old('show_results') == 'manual' ? 'selected' : '' }}>Manual oleh Guru</option>
-                        </select>
-                        @error('show_results')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                </div>
-
-                <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="shuffle_questions" 
+                            <input class="form-check-input" type="checkbox" id="shuffle_questions"
                                    name="shuffle_questions" value="1" {{ old('shuffle_questions') ? 'checked' : '' }}>
                             <label class="form-check-label" for="shuffle_questions">
                                 Acak Urutan Soal
@@ -152,31 +133,10 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="shuffle_options" 
-                                   name="shuffle_options" value="1" {{ old('shuffle_options') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="shuffle_options">
-                                Acak Urutan Pilihan
-                            </label>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="show_correct_answers" 
-                                   name="show_correct_answers" value="1" {{ old('show_correct_answers') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="show_correct_answers">
-                                Tampilkan Jawaban Benar dalam Hasil
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" id="prevent_back" 
-                                   name="prevent_back" value="1" {{ old('prevent_back') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="prevent_back">
-                                Cegah Kembali ke Soal Sebelumnya
+                            <input class="form-check-input" type="checkbox" id="show_result_immediately"
+                                   name="show_result_immediately" value="1" {{ old('show_result_immediately') ? 'checked' : '' }}>
+                            <label class="form-check-label" for="show_result_immediately">
+                                Tampilkan Hasil Langsung Setelah Selesai
                             </label>
                         </div>
                     </div>
@@ -184,37 +144,6 @@
             </div>
         </div>
 
-        <!-- Time Settings -->
-        <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">
-                    <i class="bi bi-calendar me-2"></i>
-                    Pengaturan Waktu
-                </h6>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="start_time" class="form-label">Tanggal dan Waktu Mulai</label>
-                        <input type="datetime-local" class="form-control @error('start_time') is-invalid @enderror" 
-                               id="start_time" name="start_time" value="{{ old('start_time') }}">
-                        @error('start_time')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="form-text text-muted">Kosongkan untuk mulai langsung</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="end_time" class="form-label">Tanggal dan Waktu Berakhir</label>
-                        <input type="datetime-local" class="form-control @error('end_time') is-invalid @enderror" 
-                               id="end_time" name="end_time" value="{{ old('end_time') }}">
-                        @error('end_time')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                        <small class="form-text text-muted">Kosongkan untuk tidak membatasi waktu berakhir</small>
-                    </div>
-                </div>
-            </div>
-        </div>
 
         <!-- Question Selection -->
         <div class="card shadow mb-4">
@@ -359,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         questions.forEach(question => {
             html += `<tr>
-                <td><input type="checkbox" name="selected_questions[]" value="${question.id}" class="question-checkbox"></td>
+                <td><input type="checkbox" name="questions[]" value="${question.id}" class="question-checkbox"></td>
                 <td><div class="text-truncate" style="max-width: 400px;" title="${question.tier1_question}">${question.tier1_question.substring(0, 120)}...</div></td>
                 <td><span class="badge bg-info">${question.chapter ? question.chapter.name : 'Tidak Ditentukan'}</span></td>
                 <td>${question.points || 10}</td>
@@ -382,9 +311,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('createExamForm').addEventListener('submit', function(e) {
         const title = document.getElementById('title').value.trim();
         const subjectId = document.getElementById('subject_id').value;
-        const duration = document.getElementById('duration').value;
+        const durationMinutes = document.getElementById('duration_minutes').value;
+        const grade = document.getElementById('grade').value;
+        const semester = document.getElementById('semester').value;
 
-        if (!title || !subjectId || !duration) {
+        if (!title || !subjectId || !durationMinutes || !grade || !semester) {
             e.preventDefault();
             Swal.fire({
                 title: 'Error!',
