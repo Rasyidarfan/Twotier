@@ -90,7 +90,7 @@ Route::middleware(['auth'])->group(function () {
     });
     
     // Guru routes
-    Route::middleware(['role:guru,admin'])->prefix('guru')->name('guru.')->group(function () {
+    Route::middleware(['role:guru'])->prefix('guru')->name('guru.')->group(function () {
         Route::get('/dashboard', [GuruController::class, 'dashboard'])->name('dashboard');
         
         // ===== EXAM MANAGEMENT =====
@@ -132,6 +132,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/questions/index', [GuruController::class, 'questionBank'])->name('questions.index');
         Route::get('/questions/filter', [GuruController::class, 'filterQuestions'])->name('questions.filter');
         Route::get('/questions/search', [GuruController::class, 'searchQuestions'])->name('questions.search');
+        Route::get('/questions/{question}', [GuruController::class, 'showQuestion'])->name('questions.show');
+        Route::get('/questions/{question}/stats', [GuruController::class, 'showQuestionStats'])->name('questions.stats');
 
         // ===== SUBJECT & CHAPTER HELPERS =====
         Route::get('/subjects/{subject}/chapters', [GuruController::class, 'getSubjectChapters'])->name('subjects.chapters');

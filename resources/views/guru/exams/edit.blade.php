@@ -243,6 +243,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('load_questions').addEventListener('click', function() {
         const subjectId = subjectSelect.value;
         const chapterId = chapterSelect.value;
+        const grade = document.getElementById('grade').value;
+        const semester = document.getElementById('semester').value;
 
         if (!subjectId) {
             Swal.fire({
@@ -254,8 +256,20 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
+        if (!grade || !semester) {
+            Swal.fire({
+                title: 'Peringatan!',
+                text: 'Silakan pilih kelas dan semester terlebih dahulu',
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
         const params = new URLSearchParams({
             subject_id: subjectId,
+            grade: grade,
+            semester: semester,
             ...(chapterId && { chapter_id: chapterId })
         });
 

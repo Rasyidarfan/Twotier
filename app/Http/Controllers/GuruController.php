@@ -664,24 +664,38 @@ class GuruController extends Controller
     }
 
     // ===== QUESTION BANK =====
-    public function questionBank()
+    public function questionBank(Request $request)
     {
-        $questions = Question::with(['chapter.subject', 'creator'])
-            ->where('is_active', true)
-            ->latest()
-            ->paginate(20);
+        $query = Question::with(['chapter.subject', 'creator'])
+            ->where('is_active', true);
+
+        // Search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('tier1_question', 'like', "%{$search}%")
+                  ->orWhere('tier2_question', 'like', "%{$search}%");
+            });
+        }
+
+        // Subject filter
+        if ($request->filled('subject_id')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('subject_id', $request->subject_id);
+            });
+        }
+
+        // Chapter filter
+        if ($request->filled('chapter_id')) {
+            $query->where('chapter_id', $request->chapter_id);
+        }
+
+        $questions = $query->latest()->paginate(20)->withQueryString();
 
         $subjects = Subject::where('is_active', true)->get();
         $chapters = Chapter::where('is_active', true)->get();
-        
-        $stats = [
-            'active_questions' => Question::where('is_active', true)->count(),
-        ];
 
-        // Extract stats for individual variables
-        $activeQuestions = $stats['active_questions'];
-
-        return view('guru.questions.index', compact('questions', 'subjects', 'chapters', 'stats', 'activeQuestions'));
+        return view('guru.questions.index', compact('questions', 'subjects', 'chapters'));
     }
 
     public function filterQuestions(Request $request)
@@ -737,6 +751,18 @@ class GuruController extends Controller
             $query->where('chapter_id', $request->chapter_id);
         }
 
+        if ($request->filled('grade')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('grade', $request->grade);
+            });
+        }
+
+        if ($request->filled('semester')) {
+            $query->whereHas('chapter', function($q) use ($request) {
+                $q->where('semester', $request->semester);
+            });
+        }
+
         $questions = $query->latest()->get();
 
         return response()->json($questions);
@@ -750,5 +776,62 @@ class GuruController extends Controller
             ->get(['id', 'name', 'order']);
 
         return response()->json($chapters);
+    }
+
+    public function showQuestion(Question $question)
+    {
+        $question->load(['chapter.subject', 'creator']);
+
+        return response()->json([
+            'id' => $question->id,
+            'tier1_question' => $question->tier1_question,
+            'tier1_options' => $question->tier1_options,
+            'tier1_correct_answer' => $question->tier1_correct_answer,
+            'tier2_question' => $question->tier2_question,
+            'tier2_options' => $question->tier2_options,
+            'tier2_correct_answer' => $question->tier2_correct_answer,
+            'difficulty' => $question->difficulty,
+            'points' => $question->points ?? 10,
+            'status' => $question->is_active ? 'active' : 'inactive',
+            'subject' => $question->chapter->subject ?? null,
+            'chapter' => $question->chapter ?? null,
+            'created_at' => $question->created_at,
+        ]);
+    }
+
+    public function showQuestionStats(Question $question)
+    {
+        // Get basic usage stats
+        $totalUsage = ExamQuestion::where('question_id', $question->id)->count();
+
+        // Get exams using this question
+        $exams = Exam::whereHas('examQuestions', function($q) use ($question) {
+            $q->where('question_id', $question->id);
+        })->get(['id', 'title', 'created_at']);
+
+        // Get answer statistics
+        $totalAnswers = StudentAnswer::where('question_id', $question->id)->count();
+
+        $correctBoth = StudentAnswer::where('question_id', $question->id)
+            ->where('result_category', 'benar-benar')
+            ->count();
+
+        $tier1Correct = StudentAnswer::where('question_id', $question->id)
+            ->whereIn('result_category', ['benar-benar', 'benar-salah'])
+            ->count();
+
+        $tier2Correct = StudentAnswer::where('question_id', $question->id)
+            ->whereIn('result_category', ['benar-benar', 'salah-benar'])
+            ->count();
+
+        return response()->json([
+            'total_views' => 0, // Not tracked
+            'total_attempts' => $totalAnswers,
+            'correct_answers' => $correctBoth,
+            'success_rate' => $totalAnswers > 0 ? round(($correctBoth / $totalAnswers) * 100, 1) : 0,
+            'tier1_success_rate' => $totalAnswers > 0 ? round(($tier1Correct / $totalAnswers) * 100, 1) : 0,
+            'tier2_success_rate' => $totalAnswers > 0 ? round(($tier2Correct / $totalAnswers) * 100, 1) : 0,
+            'exams' => $exams,
+        ]);
     }
 }
