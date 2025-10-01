@@ -292,9 +292,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadSelectedQuestions() {
     const selectedQuestions = @json($selectedQuestions->pluck('question_id'));
+    const grade = document.getElementById('grade').value;
+    const semester = document.getElementById('semester').value;
+    const subjectId = document.getElementById('subject_id').value;
 
     if (selectedQuestions.length > 0) {
-        fetch(`/guru/questions/search?ids=${selectedQuestions.join(',')}`)
+        const params = new URLSearchParams({
+            ids: selectedQuestions.join(','),
+            subject_id: subjectId,
+            grade: grade,
+            semester: semester
+        });
+
+        fetch(`/guru/questions/search?${params}`)
             .then(response => response.json())
             .then(questions => {
                 displayQuestions(questions, selectedQuestions);

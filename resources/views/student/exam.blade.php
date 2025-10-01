@@ -9,7 +9,7 @@
 @section('content')
 <div class="exam-container">
     <!-- Header -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="exam-navbar">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="exam-navbar">
         <div class="container-fluid">
             <div class="d-flex align-items-center">
                 <h5 class="navbar-brand mb-0">{{ $exam->title }}</h5>
@@ -66,13 +66,6 @@
                                 </div>
                             @endforeach
                         </div>
-                        <div class="mt-3">
-                            <small class="text-muted">
-                                <span class="badge bg-success me-1"></span> مجاب<br>
-                                <span class="badge bg-warning me-1"></span> غير مكتمل<br>
-                                <span class="badge bg-secondary me-1"></span> غير مجاب
-                            </small>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -87,10 +80,21 @@
                                     <h5 class="mb-0">
                                         السؤال {{ $index + 1 }} من {{ $questions->count() }}
                                     </h5>
-                                    <div class="d-lg-none">
-                                        <button class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" data-bs-target="#questionNavOffcanvas">
-                                            <i class="bi bi-list"></i> تنقل
-                                        </button>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <!-- Font Size Control -->
+                                        <div class="font-size-control">
+                                            <button class="font-size-btn" onclick="changeFont(false)" title="تصغير الخط">
+                                                <small>a</small>
+                                            </button>
+                                            <button class="font-size-btn" onclick="changeFont(true)" title="تكبير الخط">
+                                                <strong>A</strong>
+                                            </button>
+                                        </div>
+                                        <div class="d-lg-none">
+                                            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="offcanvas" data-bs-target="#questionNavOffcanvas">
+                                                <i class="bi bi-list"></i> تنقل
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -98,7 +102,7 @@
                                 <!-- Tier 1 Question -->
                                 <div class="tier-section mb-4">
                                     <div class="tier-header bg-primary text-white p-3 rounded-top">
-                                        <h6 class="mb-0"><i class="bi bi-layers"></i>المستوى الأول</h6>
+                                        <h6 class="mb-0">المستوى الأول</h6>
                                     </div>
                                     <div class="tier-content border rounded-bottom p-3">
                                         <div class="question-text mb-3">
@@ -106,23 +110,25 @@
                                         </div>
                                         <div class="options">
                                             @php
-                                                $tier1Options = is_string($question->tier1_options) ? 
-                                                    json_decode($question->tier1_options, true) : 
+                                                $tier1Options = is_string($question->tier1_options) ?
+                                                    json_decode($question->tier1_options, true) :
                                                     $question->tier1_options;
                                             @endphp
                                             @if(is_array($tier1Options))
                                                 @foreach($tier1Options as $optionIndex => $option)
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input tier1-option" 
-                                                               type="radio" 
-                                                               name="tier1_q{{ $question->id }}" 
-                                                               value="{{ $optionIndex }}" 
+                                                    <div class="option" data-question="{{ $question->id }}" data-tier="1" data-option="{{ $optionIndex }}">
+                                                        <input type="radio"
+                                                               class="tier1-option"
+                                                               name="tier1_q{{ $question->id }}"
+                                                               value="{{ $optionIndex }}"
                                                                id="tier1_q{{ $question->id }}_{{ $optionIndex }}"
                                                                data-question-id="{{ $question->id }}"
-                                                               data-tier="1">
-                                                        <label class="form-check-label" for="tier1_q{{ $question->id }}_{{ $optionIndex }}">
-                                                            {{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}. {{ $option }}
-                                                        </label>
+                                                               data-tier="1"
+                                                               style="display: none;">
+                                                        <div class="option-label">
+                                                            <div class="option-circle">{{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}</div>
+                                                        </div>
+                                                        <div class="option-text mx-1">{{ $option }}</div>
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -133,7 +139,7 @@
                                 <!-- Tier 2 Question -->
                                 <div class="tier-section">
                                     <div class="tier-header bg-success text-white p-3 rounded-top">
-                                        <h6 class="mb-0"><i class="bi bi-layers"></i>المستوى الثاني</h6>
+                                        <h6 class="mb-0">المستوى الثاني</h6>
                                     </div>
                                     <div class="tier-content border rounded-bottom p-3">
                                         <div class="question-text mb-3">
@@ -141,23 +147,25 @@
                                         </div>
                                         <div class="options">
                                             @php
-                                                $tier2Options = is_string($question->tier2_options) ? 
-                                                    json_decode($question->tier2_options, true) : 
+                                                $tier2Options = is_string($question->tier2_options) ?
+                                                    json_decode($question->tier2_options, true) :
                                                     $question->tier2_options;
                                             @endphp
                                             @if(is_array($tier2Options))
                                                 @foreach($tier2Options as $optionIndex => $option)
-                                                    <div class="form-check mb-2">
-                                                        <input class="form-check-input tier2-option" 
-                                                               type="radio" 
-                                                               name="tier2_q{{ $question->id }}" 
-                                                               value="{{ $optionIndex }}" 
+                                                    <div class="option" data-question="{{ $question->id }}" data-tier="2" data-option="{{ $optionIndex }}">
+                                                        <input type="radio"
+                                                               class="tier2-option"
+                                                               name="tier2_q{{ $question->id }}"
+                                                               value="{{ $optionIndex }}"
                                                                id="tier2_q{{ $question->id }}_{{ $optionIndex }}"
                                                                data-question-id="{{ $question->id }}"
-                                                               data-tier="2">
-                                                        <label class="form-check-label" for="tier2_q{{ $question->id }}_{{ $optionIndex }}">
-                                                            {{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}. {{ $option }}
-                                                        </label>
+                                                               data-tier="2"
+                                                               style="display: none;">
+                                                        <div class="option-label">
+                                                            <div class="option-circle">{{ $arabicLetters[$optionIndex] ?? chr(65 + $optionIndex) }}</div>
+                                                        </div>
+                                                        <div class="option-text  mx-1">{{ $option }}</div>
                                                     </div>
                                                 @endforeach
                                             @endif
@@ -168,16 +176,16 @@
                                 <!-- Navigation Buttons -->
                                 <div class="d-flex justify-content-between mt-4">
                                     <div>
-                                        @if($index > 0)
-                                            <button class="btn btn-outline-secondary" onclick="goToQuestion({{ $index }})">
-                                                <i class="bi bi-chevron-left"></i> السابق
+                                        @if($index < $questions->count() - 1)
+                                            <button class="btn btn-primary" onclick="goToQuestion({{ $index + 2 }})">
+                                                التالي <i class="bi bi-chevron-right"></i>
                                             </button>
                                         @endif
                                     </div>
                                     <div>
-                                        @if($index < $questions->count() - 1)
-                                            <button class="btn btn-primary" onclick="goToQuestion({{ $index + 2 }})">
-                                                التالي <i class="bi bi-chevron-right"></i>
+                                        @if($index > 0)
+                                            <button class="btn btn-outline-secondary" onclick="goToQuestion({{ $index }})">
+                                                <i class="bi bi-chevron-left"></i> السابق
                                             </button>
                                         @endif
                                     </div>
@@ -324,14 +332,18 @@ function loadExistingAnswers() {
     Object.keys(existingAnswers).forEach(questionId => {
         const answer = existingAnswers[questionId];
         if (answer && answer.tier1_answer !== null && answer.tier1_answer !== undefined) {
-            $(`input[name="tier1_q${questionId}"][value="${answer.tier1_answer}"]`).prop('checked', true);
+            const $input = $(`input[name="tier1_q${questionId}"][value="${answer.tier1_answer}"]`);
+            $input.prop('checked', true);
+            $input.closest('.option').addClass('selected');
         }
-        
+
         if (answer && answer.tier2_answer !== null && answer.tier2_answer !== undefined) {
-            $(`input[name="tier2_q${questionId}"][value="${answer.tier2_answer}"]`).prop('checked', true);
+            const $input = $(`input[name="tier2_q${questionId}"][value="${answer.tier2_answer}"]`);
+            $input.prop('checked', true);
+            $input.closest('.option').addClass('selected');
         }
     });
-    
+
     updateProgress();
     updateQuestionNavigation();
 }
@@ -355,17 +367,33 @@ function markPageLoadedAndStartTimer() {
 }
 
 function bindEvents() {
-    // Handle answer selection
+    // Handle option clicks
+    $(document).on('click', '.option', function() {
+        const $this = $(this);
+        const $input = $this.find('input[type="radio"]');
+
+        // Unselect siblings
+        $this.siblings('.option').removeClass('selected');
+
+        // Select this option
+        $this.addClass('selected');
+        $input.prop('checked', true);
+
+        // Trigger save
+        saveAnswer($input[0]);
+    });
+
+    // Handle answer selection via radio (backup)
     $('.tier1-option, .tier2-option').on('change', function() {
         saveAnswer(this);
     });
-    
+
     // Prevent accidental page leave
     window.addEventListener('beforeunload', function(e) {
         e.preventDefault();
         e.returnValue = 'Apakah Anda yakin ingin meninggalkan halaman ujian?';
     });
-    
+
     // Handle visibility change (tab switch detection)
     document.addEventListener('visibilitychange', function() {
         if (document.hidden) {
@@ -616,6 +644,20 @@ function showSaveIndicator() {
     toast.show();
 }
 
+// Font size control
+let fontSize = 16; // Default font size in pixels
+
+function changeFont(increase) {
+    if (increase) {
+        fontSize += 2;
+    } else {
+        fontSize = Math.max(12, fontSize - 2); // Minimum font size 12px
+    }
+
+    // Apply font size to question text and options
+    $('.question-text, .option-text, .second-tier-label').css('font-size', fontSize + 'px');
+}
+
 // Cleanup intervals on page unload
 $(window).on('beforeunload', function() {
     if (timerInterval) clearInterval(timerInterval);
@@ -632,10 +674,124 @@ $(window).on('beforeunload', function() {
     min-height: 100vh;
 }
 
+/* Navbar gradient styling */
+#exam-navbar {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+#exam-navbar .navbar-brand,
+#exam-navbar .text-light,
+#exam-navbar small,
+#exam-navbar i {
+    color: white !important;
+}
+
+#exam-navbar #timer {
+    color: white !important;
+    font-weight: bold;
+}
+
+#exam-navbar .progress-bar,
+#mobile-progress-bar {
+    background: linear-gradient(90deg, #47c363 0%, #34a853 100%) !important;
+}
+
+/* Font Size Control */
+.font-size-control {
+    display: flex;
+    gap: 5px;
+}
+
+.font-size-btn {
+    background-color: #6777ef;
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s;
+}
+
+.font-size-btn:hover {
+    background-color: #5568d3;
+}
+
+.font-size-btn small,
+.font-size-btn strong {
+    color: white;
+    line-height: 1;
+}
+
 /* Arabic text styling */
 .arabic-text {
     direction: rtl;
     text-align: right;
+    font-family: 'Amiri', 'Noto Sans Arabic', serif;
+}
+
+/* Custom option styling */
+.options {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #e1e5eb;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    direction: rtl;
+    text-align: right;
+}
+
+.option:hover {
+    border-color: #6777ef;
+    background-color: #e3eaff;
+}
+
+.option.selected {
+    border-color: #6777ef;
+    background-color: #e3eaff;
+}
+
+.option-label {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
+.option-circle {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 0.9em;
+    margin-right: 10px;
+}
+
+.option.selected .option-circle {
+    background-color: #6777ef;
+    color: white;
+}
+
+.option-text {
+    flex: 1;
+    text-align: right;
+    direction: rtl;
     font-family: 'Amiri', 'Noto Sans Arabic', serif;
 }
 

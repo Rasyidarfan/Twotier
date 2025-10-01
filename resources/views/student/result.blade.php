@@ -1,13 +1,17 @@
-@extends('layouts.app')
+@extends('layouts.student')
 
 @section('title', 'Hasil Ujian - ' . $exam->title)
+
+@php
+    $arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+@endphp
 
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-10">
             <!-- Header -->
-            <div class="card bg-primary text-white mb-4">
+            <div class="card result-header text-white mb-4">
                 <div class="card-body text-center">
                     <i class="bi bi-trophy-fill" style="font-size: 3rem;"></i>
                     <h2 class="mt-3 mb-1">Hasil Ujian</h2>
@@ -160,45 +164,26 @@
                 </div>
                 <div class="card-body">
                     @foreach($answers as $index => $answer)
-                        <div class="card mb-3 border-start border-4 
-                            @switch($answer->result_category)
-                                @case('benar-benar') border-success @break
-                                @case('benar-salah') border-warning @break
-                                @case('salah-benar') border-info @break
-                                @case('salah-salah') border-danger @break
-                            @endswitch">
+                        <div class="card mb-3 border-start border-4 border-primary">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
-                                    <h6 class="mb-0">Soal {{ $index + 1 }}</h6>
-                                    <div>
-                                        <span class="badge result-badge result-{{ $answer->result_category }}">
-                                            {{ ucwords(str_replace('-', ' ', $answer->result_category)) }}
-                                        </span>
-                                        <span class="badge bg-primary ms-1">{{ $answer->points_earned }} poin</span>
-                                    </div>
+                                    <h6 class="mb-0">السؤال {{ $index + 1 }}</h6>
                                 </div>
 
                                 <!-- Tier 1 -->
                                 <div class="mb-3">
                                     <h6 class="text-primary">
                                         <i class="bi bi-1-circle"></i>
-                                        Pertanyaan Utama
+                                        المستوى الأول
                                     </h6>
-                                    <div class="arabic-text bg-light p-2 rounded mb-2">
-                                        {{ $answer->question->tier1_question }}
+                                    <div class="question-text-rtl bg-light p-3 rounded mb-2">
+                                        {!! $answer->question->tier1_question !!}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>Jawaban Anda:</strong>
-                                            <div class="arabic-option {{ $answer->tier1_answer === $answer->question->tier1_correct_answer ? 'text-success' : 'text-danger' }}">
-                                                {{ chr(65 + $answer->tier1_answer) }}. {{ $answer->question->tier1_options[$answer->tier1_answer] }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <strong>Jawaban Benar:</strong>
-                                            <div class="arabic-option text-success">
-                                                {{ chr(65 + $answer->question->tier1_correct_answer) }}. {{ $answer->question->tier1_options[$answer->question->tier1_correct_answer] }}
-                                            </div>
+                                    <div class="answer-section">
+                                        <strong>إجابتك:</strong>
+                                        <div class="student-answer-box p-2 mt-2 rounded">
+                                            <span class="option-letter">{{ $arabicLetters[$answer->tier1_answer] ?? chr(65 + $answer->tier1_answer) }}</span>
+                                            <span class="option-text-rtl">{{ $answer->question->tier1_options[$answer->tier1_answer] }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -207,23 +192,16 @@
                                 <div>
                                     <h6 class="text-success">
                                         <i class="bi bi-2-circle"></i>
-                                        Alasan Pemilihan
+                                        المستوى الثاني
                                     </h6>
-                                    <div class="arabic-text bg-light p-2 rounded mb-2">
-                                        {{ $answer->question->tier2_question }}
+                                    <div class="question-text-rtl bg-light p-3 rounded mb-2">
+                                        {!! $answer->question->tier2_question !!}
                                     </div>
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <strong>Jawaban Anda:</strong>
-                                            <div class="arabic-option {{ $answer->tier2_answer === $answer->question->tier2_correct_answer ? 'text-success' : 'text-danger' }}">
-                                                {{ $answer->tier2_answer + 1 }}. {{ $answer->question->tier2_options[$answer->tier2_answer] }}
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <strong>Jawaban Benar:</strong>
-                                            <div class="arabic-option text-success">
-                                                {{ $answer->question->tier2_correct_answer + 1 }}. {{ $answer->question->tier2_options[$answer->question->tier2_correct_answer] }}
-                                            </div>
+                                    <div class="answer-section">
+                                        <strong>إجابتك:</strong>
+                                        <div class="student-answer-box p-2 mt-2 rounded">
+                                            <span class="option-letter">{{ $arabicLetters[$answer->tier2_answer] ?? chr(65 + $answer->tier2_answer) }}</span>
+                                            <span class="option-text-rtl">{{ $answer->question->tier2_options[$answer->tier2_answer] }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -258,20 +236,260 @@
     </div>
 </div>
 
+@push('styles')
 <style>
-    @media print {
-        .btn-group, .card:last-child {
-            display: none !important;
-        }
-        
-        .card {
-            border: 1px solid #dee2e6 !important;
-            box-shadow: none !important;
-        }
+    /* Result Header with Gradient */
+    .result-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     }
-    
+
+    /* RTL Styling for Arabic Text */
+    .question-text-rtl {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Amiri', 'Noto Sans Arabic', serif;
+        font-size: 1.1em;
+        line-height: 1.8;
+    }
+
+    .option-text-rtl {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Amiri', 'Noto Sans Arabic', serif;
+        font-size: 1em;
+        line-height: 1.6;
+    }
+
+    .answer-section {
+        direction: rtl;
+        text-align: right;
+    }
+
+    .student-answer-box {
+        background-color: #f8f9fa;
+        border: 2px solid #dee2e6;
+        direction: rtl;
+        text-align: right;
+    }
+
+    .option-letter {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #6777ef;
+        color: white;
+        text-align: center;
+        line-height: 30px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+
     .border-start {
         border-left-width: 4px !important;
     }
+
+    .border-primary {
+        border-color: #6777ef !important;
+    }
+
+    /* Print Styles */
+    @media print {
+        body {
+            background-color: white !important;
+        }
+
+        .container {
+            max-width: 100% !important;
+        }
+
+        .btn-group,
+        .card:last-child,
+        button {
+            display: none !important;
+        }
+
+        .card {
+            border: 1px solid #dee2e6 !important;
+            box-shadow: none !important;
+            page-break-inside: avoid;
+            margin-bottom: 1rem !important;
+        }
+
+        .result-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .card-body {
+            padding: 1rem !important;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            page-break-after: avoid;
+        }
+
+        .question-text-rtl,
+        .option-text-rtl {
+            font-size: 12pt !important;
+            line-height: 1.6 !important;
+        }
+
+        .student-answer-box {
+            border: 1px solid #000 !important;
+            padding: 0.5rem !important;
+        }
+
+        .option-letter {
+            background-color: #6777ef !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* Preserve colors for result categories */
+        .bg-success,
+        .border-success {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .bg-warning,
+        .border-warning {
+            background-color: #ffc107 !important;
+            border-color: #ffc107 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .bg-info,
+        .border-info {
+            background-color: #17a2b8 !important;
+            border-color: #17a2b8 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .bg-danger,
+        .border-danger {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .bg-primary {
+            background-color: #6777ef !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        .border-primary {
+            border-color: #6777ef !important;
+        }
+
+        .badge {
+            border: 1px solid #000;
+        }
+
+        /* Score Summary Cards - Use thick borders as alternative to background */
+        .row.text-center .col-md-3 .card.bg-success,
+        .card.bg-success {
+            border: 5px solid #28a745 !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .card.bg-success h2 {
+            color: #28a745 !important;
+            font-weight: bold !important;
+        }
+
+        .card.bg-success p,
+        .card.bg-success small {
+            color: #333 !important;
+        }
+
+        .row.text-center .col-md-3 .card.bg-warning,
+        .card.bg-warning {
+            border: 5px solid #ffc107 !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .card.bg-warning h2 {
+            color: #ffc107 !important;
+            font-weight: bold !important;
+        }
+
+        .card.bg-warning p,
+        .card.bg-warning small {
+            color: #333 !important;
+        }
+
+        .row.text-center .col-md-3 .card.bg-info,
+        .card.bg-info {
+            border: 5px solid #17a2b8 !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .card.bg-info h2 {
+            color: #17a2b8 !important;
+            font-weight: bold !important;
+        }
+
+        .card.bg-info p,
+        .card.bg-info small {
+            color: #333 !important;
+        }
+
+        .row.text-center .col-md-3 .card.bg-danger,
+        .card.bg-danger {
+            border: 5px solid #dc3545 !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .card.bg-danger h2 {
+            color: #dc3545 !important;
+            font-weight: bold !important;
+        }
+
+        .card.bg-danger p,
+        .card.bg-danger small {
+            color: #333 !important;
+        }
+
+        .row .col-12 .card.bg-primary,
+        .card.bg-primary {
+            border: 5px solid #6777ef !important;
+            background-color: #f8f9fa !important;
+        }
+
+        .card.bg-primary h1,
+        .card.bg-primary .display-4 {
+            color: #6777ef !important;
+            font-weight: bold !important;
+        }
+
+        .card.bg-primary h4,
+        .card.bg-primary p {
+            color: #333 !important;
+        }
+
+        /* Page breaks */
+        .card.mb-3 {
+            page-break-inside: avoid;
+        }
+
+        .card.mb-4 {
+            page-break-inside: avoid;
+        }
+    }
+
+    @page {
+        margin: 1cm;
+        size: A4;
+    }
 </style>
+@endpush
 @endsection

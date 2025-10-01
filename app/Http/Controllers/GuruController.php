@@ -741,6 +741,12 @@ class GuruController extends Controller
         $query = Question::with(['chapter.subject'])
             ->where('is_active', true);
 
+        // Filter by specific IDs (for edit page)
+        if ($request->filled('ids')) {
+            $ids = explode(',', $request->ids);
+            $query->whereIn('id', $ids);
+        }
+
         if ($request->filled('subject_id')) {
             $query->whereHas('chapter', function($q) use ($request) {
                 $q->where('subject_id', $request->subject_id);

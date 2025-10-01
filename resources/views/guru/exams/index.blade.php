@@ -219,8 +219,8 @@
                                                         <a href="{{ route('guru.exams.edit', $exam) }}" class="btn btn-sm btn-outline-warning" title="Edit">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
-                                                        <button class="btn btn-sm btn-outline-info" onclick="updateExamStatus({{ $exam->id }}, 'waiting')" title="Set Waiting">
-                                                            <i class="bi bi-clock"></i>
+                                                        <button class="btn btn-sm btn-info mx-1" onclick="updateExamStatus({{ $exam->id }}, 'waiting')" title="Set Waiting">
+                                                            <i class="bi bi-clock"> Set Waiting</i>
                                                         </button>
                                                     @endif
 
@@ -228,8 +228,8 @@
                                                         <a href="{{ route('guru.exams.waiting-room', $exam) }}" class="btn btn-sm btn-outline-success" title="Monitor">
                                                             <i class="bi bi-display"></i>
                                                         </a>
-                                                        <button class="btn btn-sm btn-outline-success" onclick="updateExamStatus({{ $exam->id }}, 'active')" title="Mulai Ujian">
-                                                            <i class="bi bi-play-fill"></i>
+                                                        <button class="btn btn-sm btn-success mx-1" onclick="updateExamStatus({{ $exam->id }}, 'active')" title="Mulai Ujian">
+                                                            <i class="bi bi-play-fill"> Mulai Ujian</i>
                                                         </button>
                                                         <button class="btn btn-sm btn-outline-secondary" onclick="updateExamStatus({{ $exam->id }}, 'draft')" title="Kembali ke Draft">
                                                             <i class="bi bi-arrow-left"></i>
