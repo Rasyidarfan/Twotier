@@ -537,6 +537,12 @@ class GuruController extends Controller
         // Question analysis
         $questionAnalysis = $this->getQuestionAnalysis($exam);
 
+        // Answer category breakdown (benar-benar, benar-salah, salah-benar, salah-salah)
+        $answerCategoryBreakdown = $this->getAnswerCategoryBreakdown($exam);
+
+        // Chapter-based breakdown
+        $chapterBreakdown = $this->getChapterBreakdown($exam);
+
         // Transform sessions to results format for view compatibility
         $results = $sessions->map(function ($session) use ($exam) {
             $percentage = $exam->total_points > 0 ? ($session->total_score / $exam->total_points) * 100 : 0;
@@ -556,8 +562,8 @@ class GuruController extends Controller
         });
 
         return view('guru.exams.results', compact(
-            'exam', 
-            'results', 
+            'exam',
+            'results',
             'totalParticipants',
             'averageScore',
             'highestScore',
@@ -565,7 +571,9 @@ class GuruController extends Controller
             'passedCount',
             'failedCount',
             'scoresDistribution',
-            'questionAnalysis'
+            'questionAnalysis',
+            'answerCategoryBreakdown',
+            'chapterBreakdown'
         ));
     }
 
@@ -585,21 +593,70 @@ class GuruController extends Controller
                 ->get();
 
             $totalAnswers = $answers->count();
-            $correctAnswers = $answers->where('tier1_answer', $question->tier1_correct_answer)
-                                   ->where('tier2_answer', $question->tier2_correct_answer)
-                                   ->count();
-            $wrongAnswers = $totalAnswers - $correctAnswers;
-            $successRate = $totalAnswers > 0 ? ($correctAnswers / $totalAnswers) * 100 : 0;
+            $benarBenar = $answers->where('result_category', 'benar-benar')->count();
+            $benarSalah = $answers->where('result_category', 'benar-salah')->count();
+            $salahBenar = $answers->where('result_category', 'salah-benar')->count();
+            $salahSalah = $answers->where('result_category', 'salah-salah')->count();
 
             $analysis[] = [
                 'question' => $question,
-                'correct_answers' => $correctAnswers,
-                'wrong_answers' => $wrongAnswers,
-                'success_rate' => round($successRate, 1)
+                'benar_benar' => $benarBenar,
+                'benar_salah' => $benarSalah,
+                'salah_benar' => $salahBenar,
+                'salah_salah' => $salahSalah,
+                'total_answers' => $totalAnswers
             ];
         }
 
         return $analysis;
+    }
+
+    private function getAnswerCategoryBreakdown(Exam $exam)
+    {
+        $answers = StudentAnswer::whereHas('session', function($q) use ($exam) {
+            $q->where('exam_id', $exam->id)
+              ->whereIn('status', ['finished', 'timeout']);
+        })->get();
+
+        $breakdown = [
+            'benar_benar' => $answers->where('result_category', 'benar-benar')->count(),
+            'benar_salah' => $answers->where('result_category', 'benar-salah')->count(),
+            'salah_benar' => $answers->where('result_category', 'salah-benar')->count(),
+            'salah_salah' => $answers->where('result_category', 'salah-salah')->count(),
+        ];
+
+        return $breakdown;
+    }
+
+    private function getChapterBreakdown(Exam $exam)
+    {
+        $chapters = $exam->examQuestions()
+            ->with('question.chapter')
+            ->get()
+            ->groupBy('question.chapter.name');
+
+        $breakdown = [];
+
+        foreach ($chapters as $chapterName => $examQuestions) {
+            $questionIds = $examQuestions->pluck('question.id');
+
+            $answers = StudentAnswer::whereIn('question_id', $questionIds)
+                ->whereHas('session', function($q) use ($exam) {
+                    $q->where('exam_id', $exam->id)
+                      ->whereIn('status', ['finished', 'timeout']);
+                })
+                ->get();
+
+            $breakdown[] = [
+                'chapter_name' => $chapterName ?? 'Tanpa Bab',
+                'benar_benar' => $answers->where('result_category', 'benar-benar')->count(),
+                'benar_salah' => $answers->where('result_category', 'benar-salah')->count(),
+                'salah_benar' => $answers->where('result_category', 'salah-benar')->count(),
+                'salah_salah' => $answers->where('result_category', 'salah-salah')->count(),
+            ];
+        }
+
+        return $breakdown;
     }
 
     public function exportResults(Exam $exam)
@@ -803,6 +860,137 @@ class GuruController extends Controller
             'chapter' => $question->chapter ?? null,
             'created_at' => $question->created_at,
         ]);
+    }
+
+    public function getQuestionAnalysisDetail(Exam $exam, Question $question)
+    {
+        $this->authorize('view', $exam);
+
+        $question->load(['chapter.subject']);
+
+        // Get all answers for this question in this exam
+        $answers = StudentAnswer::where('question_id', $question->id)
+            ->whereHas('session', function($q) use ($exam) {
+                $q->where('exam_id', $exam->id)
+                  ->whereIn('status', ['finished', 'timeout']);
+            })
+            ->get();
+
+        // Answer category breakdown
+        $categoryBreakdown = [
+            'benar_benar' => $answers->where('result_category', 'benar-benar')->count(),
+            'benar_salah' => $answers->where('result_category', 'benar-salah')->count(),
+            'salah_benar' => $answers->where('result_category', 'salah-benar')->count(),
+            'salah_salah' => $answers->where('result_category', 'salah-salah')->count(),
+        ];
+
+        $totalAnswers = $answers->count();
+
+        // Get all possible options from question
+        $tier1Options = is_array($question->tier1_options) ? $question->tier1_options : json_decode($question->tier1_options, true);
+        $tier2Options = is_array($question->tier2_options) ? $question->tier2_options : json_decode($question->tier2_options, true);
+
+        // Tier 1 option selection statistics - dynamic based on available options
+        $tier1Stats = [];
+        $tier1Percentages = [];
+        foreach (array_keys($tier1Options) as $option) {
+            $count = $answers->where('tier1_answer', $option)->count();
+            $tier1Stats[$option] = $count;
+            $tier1Percentages[$option] = $totalAnswers > 0 ? round(($count / $totalAnswers) * 100, 1) : 0;
+        }
+
+        // Tier 2 option selection statistics - dynamic based on available options
+        $tier2Stats = [];
+        $tier2Percentages = [];
+        foreach (array_keys($tier2Options) as $option) {
+            $count = $answers->where('tier2_answer', $option)->count();
+            $tier2Stats[$option] = $count;
+            $tier2Percentages[$option] = $totalAnswers > 0 ? round(($count / $totalAnswers) * 100, 1) : 0;
+        }
+
+        return response()->json([
+            'question' => [
+                'id' => $question->id,
+                'tier1_question' => $question->tier1_question,
+                'tier1_options' => $question->tier1_options,
+                'tier1_correct_answer' => $question->tier1_correct_answer,
+                'tier2_question' => $question->tier2_question,
+                'tier2_options' => $question->tier2_options,
+                'tier2_correct_answer' => $question->tier2_correct_answer,
+                'difficulty' => $question->difficulty,
+                'chapter' => $question->chapter ? $question->chapter->name : 'N/A',
+                'subject' => $question->chapter && $question->chapter->subject ? $question->chapter->subject->name : 'N/A',
+            ],
+            'total_answers' => $totalAnswers,
+            'category_breakdown' => $categoryBreakdown,
+            'tier1_stats' => $tier1Stats,
+            'tier2_stats' => $tier2Stats,
+            'tier1_percentages' => $tier1Percentages,
+            'tier2_percentages' => $tier2Percentages,
+        ]);
+    }
+
+    public function studentResultDetail(Exam $exam, StudentExamSession $session)
+    {
+        $this->authorize('view', $exam);
+
+        // Verify session belongs to this exam
+        if ($session->exam_id !== $exam->id) {
+            abort(404);
+        }
+
+        // Get all answers for this session with questions
+        $answers = StudentAnswer::where('session_id', $session->id)
+            ->with('question.chapter')
+            ->get();
+
+        // Overall category breakdown
+        $overallBreakdown = [
+            'benar_benar' => $answers->where('result_category', 'benar-benar')->count(),
+            'benar_salah' => $answers->where('result_category', 'benar-salah')->count(),
+            'salah_benar' => $answers->where('result_category', 'salah-benar')->count(),
+            'salah_salah' => $answers->where('result_category', 'salah-salah')->count(),
+        ];
+
+        // Chapter-based breakdown
+        $chapterBreakdown = [];
+        $examQuestions = $exam->examQuestions()->with('question.chapter')->get();
+        $chapters = $examQuestions->groupBy('question.chapter.name');
+
+        foreach ($chapters as $chapterName => $questions) {
+            $questionIds = $questions->pluck('question.id');
+            $chapterAnswers = $answers->whereIn('question_id', $questionIds);
+
+            $chapterBreakdown[] = [
+                'chapter_name' => $chapterName ?? 'Tanpa Bab',
+                'benar_benar' => $chapterAnswers->where('result_category', 'benar-benar')->count(),
+                'benar_salah' => $chapterAnswers->where('result_category', 'benar-salah')->count(),
+                'salah_benar' => $chapterAnswers->where('result_category', 'salah-benar')->count(),
+                'salah_salah' => $chapterAnswers->where('result_category', 'salah-salah')->count(),
+            ];
+        }
+
+        // Get detailed question list with answers
+        $questionDetails = [];
+        foreach ($examQuestions as $index => $examQuestion) {
+            $question = $examQuestion->question;
+            $answer = $answers->firstWhere('question_id', $question->id);
+
+            $questionDetails[] = [
+                'number' => $index + 1,
+                'question' => $question,
+                'answer' => $answer,
+                'chapter' => $question->chapter ? $question->chapter->name : 'Tanpa Bab',
+            ];
+        }
+
+        return view('guru.exams.student-result', compact(
+            'exam',
+            'session',
+            'overallBreakdown',
+            'chapterBreakdown',
+            'questionDetails'
+        ));
     }
 
     public function showQuestionStats(Question $question)

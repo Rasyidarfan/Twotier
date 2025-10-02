@@ -126,6 +126,8 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/exams/{exam}/export-current-results', [GuruController::class, 'exportCurrentResults'])->name('exams.export-current-results');
         Route::get('/exams/{exam}/results', [GuruController::class, 'examResults'])->name('exams.results');
         Route::get('/exams/{exam}/export', [GuruController::class, 'exportResults'])->name('exams.export');
+        Route::get('/exams/{exam}/questions/{question}/analysis', [GuruController::class, 'getQuestionAnalysisDetail'])->name('exams.questions.analysis');
+        Route::get('/exams/{exam}/student/{session}/result', [GuruController::class, 'studentResultDetail'])->name('exams.student-result');
         
         // ===== QUESTION BANK =====
         Route::get('/questions', [GuruController::class, 'questionBank'])->name('questions');

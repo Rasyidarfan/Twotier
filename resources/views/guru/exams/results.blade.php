@@ -198,6 +198,36 @@
         </div>
     </div>
 
+    <!-- Answer Category Charts Row -->
+    <div class="row mb-4">
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-pie-chart me-2"></i>
+                        Kategori Jawaban Siswa
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="answerCategoryChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        <i class="bi bi-bar-chart-steps me-2"></i>
+                        Analisis Jawaban per Bab
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <canvas id="chapterBreakdownChart" width="400" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Question Analysis -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
@@ -211,13 +241,13 @@
                 <table class="table table-bordered">
                     <thead>
                         <tr>
-                        <th>No. Soal</th>
-                        <th>Soal</th>
-                        <th>Tingkat Kesulitan</th>
-                        <th>Jawaban Benar</th>
-                        <th>Jawaban Salah</th>
-                        <th>Tingkat Keberhasilan</th>
-                        <th>Aksi</th>
+                            <th>No.</th>
+                            <th>Soal</th>
+                            <th>Benar-Benar</th>
+                            <th>Benar-Salah</th>
+                            <th>Salah-Benar</th>
+                            <th>Salah-Salah</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -229,28 +259,21 @@
                                         {{ Str::limit($analysis['question']->tier1_question, 80) }}
                                     </div>
                                 </td>
-                                <td>
-                                    <span class="badge bg-{{ $analysis['question']->difficulty == 'easy' ? 'success' : ($analysis['question']->difficulty == 'medium' ? 'warning' : 'danger') }}">
-                                        {{ $analysis['question']->difficulty == 'easy' ? 'Mudah' : ($analysis['question']->difficulty == 'medium' ? 'Sedang' : 'Sulit') }}
-                                    </span>
+                                <td class="text-center">
+                                    <span class="badge bg-success">{{ $analysis['benar_benar'] }}</span>
                                 </td>
-                                <td>
-                                    <span class="badge bg-success">{{ $analysis['correct_answers'] }}</span>
+                                <td class="text-center">
+                                    <span class="badge bg-warning text-dark">{{ $analysis['benar_salah'] }}</span>
                                 </td>
-                                <td>
-                                    <span class="badge bg-danger">{{ $analysis['wrong_answers'] }}</span>
+                                <td class="text-center">
+                                    <span class="badge bg-info">{{ $analysis['salah_benar'] }}</span>
                                 </td>
-                                <td>
-                                    <div class="progress" style="height: 20px;">
-                                        <div class="progress-bar bg-{{ $analysis['success_rate'] >= 70 ? 'success' : ($analysis['success_rate'] >= 50 ? 'warning' : 'danger') }}" 
-                                             role="progressbar" style="width: {{ $analysis['success_rate'] }}%">
-                                            {{ number_format($analysis['success_rate'], 1) }}%
-                                        </div>
-                                    </div>
+                                <td class="text-center">
+                                    <span class="badge bg-danger">{{ $analysis['salah_salah'] }}</span>
                                 </td>
-                                <td>
-                                    <button type="button" class="btn btn-sm btn-info" 
-                                            onclick="viewQuestionDetails({{ $analysis['question']->id }})" title="Detail Soal">
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-sm btn-info"
+                                            onclick="viewQuestionDetails({{ $analysis['question']->id }})" title="Lihat Detail">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </td>
@@ -352,23 +375,13 @@
                                         <span class="badge bg-warning">{{ $result->status == 'in_progress' ? 'Sedang Berjalan' : 'Belum Selesai' }}</span>
                                     @endif
                                 </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <button type="button" class="btn btn-sm btn-info" 
-                                                onclick="viewDetailedResult({{ $result->id }})" title="Lihat Detail">
-                                            <i class="bi bi-eye"></i>
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-primary" 
-                                                onclick="downloadResultPDF({{ $result->id }})" title="Download PDF">
-                                            <i class="bi bi-file-earmark-pdf"></i>
-                                        </button>
-                                        @if($result->status == 'completed')
-                                            <button type="button" class="btn btn-sm btn-success" 
-                                                    onclick="sendResultEmail({{ $result->id }})" title="Kirim Hasil via Email">
-                                                <i class="bi bi-envelope"></i>
-                                            </button>
-                                        @endif
-                                    </div>
+                                <td class="text-center">
+                                    <a href="{{ route('guru.exams.student-result', ['exam' => $exam->id, 'session' => $result->id]) }}"
+                                       class="btn btn-sm btn-info"
+                                       target="_blank"
+                                       title="Lihat Detail">
+                                        <i class="bi bi-eye"></i> Lihat
+                                    </a>
                                 </td>
                             </tr>
                         @endforeach
@@ -386,34 +399,47 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize charts
     initializeScoresChart();
     initializePassFailChart();
+    initializeAnswerCategoryChart();
+    initializeChapterBreakdownChart();
 });
 
 function initializeScoresChart() {
     const ctx = document.getElementById('scoresChart').getContext('2d');
     const scoresData = @json($scoresDistribution);
-    
+
+    // Create smooth density curve data points
+    const densityData = [];
+    const smoothness = 100; // Number of points for smooth curve
+
+    // Create interpolated points for smooth curve
+    for (let i = 0; i <= smoothness; i++) {
+        const x = (i / smoothness) * 100; // 0 to 100%
+        let y = 0;
+
+        // Gaussian kernel density estimation
+        scoresData.forEach((count, index) => {
+            const binCenter = (index * 20) + 10; // Center of each bin (10, 30, 50, 70, 90)
+            const bandwidth = 15; // Smoothing parameter
+            const distance = (x - binCenter) / bandwidth;
+            y += count * Math.exp(-0.5 * distance * distance);
+        });
+
+        densityData.push({x: x, y: y});
+    }
+
     new Chart(ctx, {
-        type: 'bar',
+        type: 'line',
         data: {
-            labels: ['0-20%', '21-40%', '41-60%', '61-80%', '81-100%'],
             datasets: [{
-                label: 'Jumlah Siswa',
-                data: scoresData,
-                backgroundColor: [
-                    'rgba(220, 53, 69, 0.8)',
-                    'rgba(253, 126, 20, 0.8)',
-                    'rgba(255, 193, 7, 0.8)',
-                    'rgba(25, 135, 84, 0.8)',
-                    'rgba(13, 110, 253, 0.8)'
-                ],
-                borderColor: [
-                    'rgba(220, 53, 69, 1)',
-                    'rgba(253, 126, 20, 1)',
-                    'rgba(255, 193, 7, 1)',
-                    'rgba(25, 135, 84, 1)',
-                    'rgba(13, 110, 253, 1)'
-                ],
-                borderWidth: 1
+                label: 'Density',
+                data: densityData,
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 0,
+                pointHoverRadius: 5
             }]
         },
         options: {
@@ -421,13 +447,38 @@ function initializeScoresChart() {
             plugins: {
                 legend: {
                     display: false
+                },
+                tooltip: {
+                    callbacks: {
+                        title: function(context) {
+                            return 'Nilai: ' + context[0].parsed.x.toFixed(1) + '%';
+                        },
+                        label: function(context) {
+                            return 'Density: ' + context.parsed.y.toFixed(2);
+                        }
+                    }
                 }
             },
             scales: {
+                x: {
+                    type: 'linear',
+                    min: 0,
+                    max: 100,
+                    title: {
+                        display: true,
+                        text: 'Nilai (%)'
+                    },
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                },
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        stepSize: 1
+                    title: {
+                        display: true,
+                        text: 'Kepadatan'
                     }
                 }
             }
@@ -439,7 +490,7 @@ function initializePassFailChart() {
     const ctx = document.getElementById('passFailChart').getContext('2d');
     const passedCount = {{ $passedCount }};
     const failedCount = {{ $failedCount }};
-    
+
     new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -466,6 +517,163 @@ function initializePassFailChart() {
             }
         }
     });
+}
+
+function initializeAnswerCategoryChart() {
+    const ctx = document.getElementById('answerCategoryChart').getContext('2d');
+    const categoryData = @json($answerCategoryBreakdown);
+
+    new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Benar-Benar', 'Benar-Salah', 'Salah-Benar', 'Salah-Salah'],
+            datasets: [{
+                data: [
+                    categoryData.benar_benar,
+                    categoryData.benar_salah,
+                    categoryData.salah_benar,
+                    categoryData.salah_salah
+                ],
+                backgroundColor: [
+                    'rgba(25, 135, 84, 0.8)',   // Green for benar-benar
+                    'rgba(255, 193, 7, 0.8)',   // Yellow for benar-salah
+                    'rgba(13, 110, 253, 0.8)',  // Blue for salah-benar
+                    'rgba(220, 53, 69, 0.8)'    // Red for salah-salah
+                ],
+                borderColor: [
+                    'rgba(25, 135, 84, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(13, 110, 253, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                            return label + ': ' + value + ' (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+function initializeChapterBreakdownChart() {
+    const ctx = document.getElementById('chapterBreakdownChart').getContext('2d');
+    const chapterData = @json($chapterBreakdown);
+
+    const labels = chapterData.map(item => item.chapter_name);
+
+    // Calculate percentages for each chapter
+    const benarBenarData = chapterData.map(item => {
+        const total = item.benar_benar + item.benar_salah + item.salah_benar + item.salah_salah;
+        return total > 0 ? ((item.benar_benar / total) * 100) : 0;
+    });
+    const benarSalahData = chapterData.map(item => {
+        const total = item.benar_benar + item.benar_salah + item.salah_benar + item.salah_salah;
+        return total > 0 ? ((item.benar_salah / total) * 100) : 0;
+    });
+    const salahBenarData = chapterData.map(item => {
+        const total = item.benar_benar + item.benar_salah + item.salah_benar + item.salah_salah;
+        return total > 0 ? ((item.salah_benar / total) * 100) : 0;
+    });
+    const salahSalahData = chapterData.map(item => {
+        const total = item.benar_benar + item.benar_salah + item.salah_benar + item.salah_salah;
+        return total > 0 ? ((item.salah_salah / total) * 100) : 0;
+    });
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Benar-Benar',
+                    data: benarBenarData,
+                    backgroundColor: 'rgba(25, 135, 84, 0.8)',
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    borderWidth: 1,
+                    rawData: chapterData.map(item => item.benar_benar)
+                },
+                {
+                    label: 'Benar-Salah',
+                    data: benarSalahData,
+                    backgroundColor: 'rgba(255, 193, 7, 0.8)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1,
+                    rawData: chapterData.map(item => item.benar_salah)
+                },
+                {
+                    label: 'Salah-Benar',
+                    data: salahBenarData,
+                    backgroundColor: 'rgba(13, 110, 253, 0.8)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 1,
+                    rawData: chapterData.map(item => item.salah_benar)
+                },
+                {
+                    label: 'Salah-Salah',
+                    data: salahSalahData,
+                    backgroundColor: 'rgba(220, 53, 69, 0.8)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1,
+                    rawData: chapterData.map(item => item.salah_salah)
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const percentage = context.parsed.x || 0;
+                            const rawValue = context.dataset.rawData[context.dataIndex];
+                            return label + ': ' + rawValue + ' (' + percentage.toFixed(1) + '%)';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        }
+                    }
+                },
+                y: {
+                    stacked: true
+                }
+            }
+        }
+    });
+
+    // Adjust canvas height based on number of chapters
+    const canvas = document.getElementById('chapterBreakdownChart');
+    canvas.style.height = (labels.length * 50 + 100) + 'px';
 }
 
 function filterResults(filter) {
@@ -549,60 +757,244 @@ function sendResultEmail(resultId) {
 }
 
 function viewQuestionDetails(questionId) {
-    fetch(`/guru/questions/${questionId}/analysis/{{ $exam->id }}`)
+    fetch(`/guru/exams/{{ $exam->id }}/questions/${questionId}/analysis`)
         .then(response => response.json())
         .then(data => {
-            let html = `
-                <div class="text-start">
-                    <h6>Soal Utama:</h6>
-                    <p>${data.question.tier1_question}</p>
-                    <h6>Pilihan Jawaban:</h6>
-                    <ul>
-                        <li class="${data.question.tier1_correct_answer === 'a' ? 'text-success fw-bold' : ''}">A) ${data.question.tier1_option_a}</li>
-                        <li class="${data.question.tier1_correct_answer === 'b' ? 'text-success fw-bold' : ''}">B) ${data.question.tier1_option_b}</li>
-                        <li class="${data.question.tier1_correct_answer === 'c' ? 'text-success fw-bold' : ''}">C) ${data.question.tier1_option_c}</li>
-                        <li class="${data.question.tier1_correct_answer === 'd' ? 'text-success fw-bold' : ''}">D) ${data.question.tier1_option_d}</li>
-                    </ul>
-                    <h6>Soal Penjelasan:</h6>
-                    <p>${data.question.tier2_question}</p>
-                    <h6>Pilihan Penjelasan:</h6>
-                    <ul>
-                        <li class="${data.question.tier2_correct_answer === 'a' ? 'text-success fw-bold' : ''}">A) ${data.question.tier2_option_a}</li>
-                        <li class="${data.question.tier2_correct_answer === 'b' ? 'text-success fw-bold' : ''}">B) ${data.question.tier2_option_b}</li>
-                        <li class="${data.question.tier2_correct_answer === 'c' ? 'text-success fw-bold' : ''}">C) ${data.question.tier2_option_c}</li>
-                        <li class="${data.question.tier2_correct_answer === 'd' ? 'text-success fw-bold' : ''}">D) ${data.question.tier2_option_d}</li>
-                    </ul>
-                    <hr>
-                    <h6>Statistik Jawaban:</h6>
-                    <div class="row">
-                        <div class="col-6">
-                            <small class="text-muted">Level 1:</small>
-                            <ul class="list-unstyled">
-                                <li>A: ${data.tier1_stats.a || 0} jawaban</li>
-                                <li>B: ${data.tier1_stats.b || 0} jawaban</li>
-                                <li>C: ${data.tier1_stats.c || 0} jawaban</li>
-                                <li>D: ${data.tier1_stats.d || 0} jawaban</li>
-                            </ul>
+            const q = data.question;
+
+            // Ensure options are objects, not strings
+            const tier1Opts = typeof q.tier1_options === 'string' ? JSON.parse(q.tier1_options) : q.tier1_options;
+            const tier2Opts = typeof q.tier2_options === 'string' ? JSON.parse(q.tier2_options) : q.tier2_options;
+            const arabicLetters = ['أ', 'ب', 'ج', 'د', 'ه'];
+
+            // Helper function to escape HTML
+            const escapeHtml = (text) => {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            };
+
+            try {
+                let html = `
+                <div class="modal-question-analysis">
+                    <div class="mb-3 text-center">
+                        <span class="badge bg-info me-2">${escapeHtml(q.subject || 'N/A')}</span>
+                        <span class="badge bg-secondary">${escapeHtml(q.chapter || 'N/A')}</span>
+                    </div>
+
+                    <!-- Tier 1 Question -->
+                    <div class="tier-section-modal mb-4">
+                        <div class="tier-header-modal bg-primary text-white p-3 rounded-top">
+                            <h6 class="mb-0">المستوى الأول</h6>
                         </div>
-                        <div class="col-6">
-                            <small class="text-muted">Level 2:</small>
-                            <ul class="list-unstyled">
-                                <li>A: ${data.tier2_stats.a || 0} jawaban</li>
-                                <li>B: ${data.tier2_stats.b || 0} jawaban</li>
-                                <li>C: ${data.tier2_stats.c || 0} jawaban</li>
-                                <li>D: ${data.tier2_stats.d || 0} jawaban</li>
-                            </ul>
+                        <div class="tier-content-modal border rounded-bottom p-3">
+                            <div class="question-text-modal mb-3">
+                                ${q.tier1_question || ''}
+                            </div>
+                            <div class="options-modal">
+                                ${Object.keys(tier1Opts).map((key, index) => {
+                                    const correctAnswer = q.tier1_correct_answer ? String(q.tier1_correct_answer).toLowerCase() : '';
+                                    const isCorrect = correctAnswer === key.toLowerCase();
+                                    const percentage = data.tier1_percentages && data.tier1_percentages[key] !== undefined ? data.tier1_percentages[key] : 0;
+                                    return `
+                                        <div class="option-modal ${isCorrect ? 'correct-answer' : ''}" style="background: linear-gradient(to right, #7bed9f ${percentage}%, #efefef ${percentage}%);">
+                                            <div class="option-label-modal">
+                                                <div class="option-circle-modal ${isCorrect ? 'correct' : ''}">
+                                                    ${isCorrect ? '<i class="bi bi-key-fill"></i>' : arabicLetters[index]}
+                                                </div>
+                                            </div>
+                                            <div class="option-text-modal">
+                                                ${tier1Opts[key]}
+                                            </div>
+                                            <div class="option-percentage-modal">
+                                                <span class="badge ${isCorrect ? 'bg-success' : 'bg-dark'}">${percentage}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tier 2 Question -->
+                    <div class="tier-section-modal mb-4">
+                        <div class="tier-header-modal bg-success text-white p-3 rounded-top">
+                            <h6 class="mb-0">المستوى الثاني</h6>
+                        </div>
+                        <div class="tier-content-modal border rounded-bottom p-3">
+                            <div class="question-text-modal mb-3">
+                                ${q.tier2_question || ''}
+                            </div>
+                            <div class="options-modal">
+                                ${Object.keys(tier2Opts).map((key, index) => {
+                                    const correctAnswer = q.tier2_correct_answer ? String(q.tier2_correct_answer).toLowerCase() : '';
+                                    const isCorrect = correctAnswer === key.toLowerCase();
+                                    const percentage = data.tier2_percentages && data.tier2_percentages[key] !== undefined ? data.tier2_percentages[key] : 0;
+                                    return `
+                                        <div class="option-modal ${isCorrect ? 'correct-answer' : ''}" style="background: linear-gradient(to right, #7bed9f ${percentage}%, #efefef ${percentage}%);">
+                                            <div class="option-label-modal">
+                                                <div class="option-circle-modal ${isCorrect ? 'correct' : ''}">
+                                                    ${isCorrect ? '<i class="bi bi-key-fill"></i>' : arabicLetters[index]}
+                                                </div>
+                                            </div>
+                                            <div class="option-text-modal">
+                                                ${tier2Opts[key]}
+                                            </div>
+                                            <div class="option-percentage-modal">
+                                                <span class="badge ${isCorrect ? 'bg-success' : 'bg-dark'}">${percentage}%</span>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <h6 class="text-primary mb-3 text-center">إحصائيات الإجابات (${data.total_answers} طالب)</h6>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h6 class="text-center mb-2">فئات الإجابات</h6>
+                            <div style="height: 80px;">
+                                <canvas id="modalCategoryChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <style>
+                    .modal-question-analysis {
+                        direction: rtl;
+                        text-align: right;
+                    }
+
+                    .tier-section-modal {
+                        border: 1px solid #dee2e6;
+                        border-radius: 0.375rem;
+                        overflow: hidden;
+                    }
+
+                    .tier-header-modal {
+                        margin: 0;
+                        direction: rtl;
+                        text-align: right;
+                    }
+
+                    .tier-content-modal {
+                        border-top: none !important;
+                        background-color: #ffffff;
+                        direction: rtl;
+                        text-align: right;
+                    }
+
+                    .question-text-modal {
+                        direction: rtl;
+                        text-align: right;
+                        font-family: 'Amiri', 'Noto Sans Arabic', serif;
+                        font-size: 1.1rem;
+                        line-height: 1.8;
+                    }
+
+                    .options-modal {
+                        display: grid;
+                        grid-template-columns: 1fr;
+                        gap: 10px;
+                    }
+
+                    .option-modal {
+                        display: flex;
+                        align-items: center;
+                        padding: 12px;
+                        border: 2px solid #e1e5eb;
+                        border-radius: 8px;
+                        direction: rtl;
+                        text-align: right;
+                        transition: all 0.2s ease;
+                        position: relative;
+                        overflow: hidden;
+                    }
+
+                    .option-modal.correct-answer {
+                        border: 3px solid #28a745;
+                        box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2);
+                        outline: 2px dashed #28a745;
+                        outline-offset: 3px;
+                    }
+
+                    .option-label-modal {
+                        display: flex;
+                        align-items: center;
+                        margin-left: 10px;
+                    }
+
+                    .option-circle-modal {
+                        width: 38px;
+                        height: 38px;
+                        border-radius: 50%;
+                        background-color: #f1f1f1;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        font-weight: 600;
+                        font-size: 1.1em;
+                        margin-left: 10px;
+                        transition: all 0.3s ease;
+                    }
+
+                    .option-circle-modal.correct {
+                        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+                        color: white;
+                        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+                        font-size: 1.2em;
+                        animation: pulse-key 2s ease-in-out infinite;
+                    }
+
+                    @keyframes pulse-key {
+                        0%, 100% {
+                            transform: scale(1);
+                            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+                        }
+                        50% {
+                            transform: scale(1.05);
+                            box-shadow: 0 6px 16px rgba(40, 167, 69, 0.6);
+                        }
+                    }
+
+                    .option-text-modal {
+                        flex: 1;
+                        text-align: right;
+                        direction: rtl;
+                        font-family: 'Amiri', 'Noto Sans Arabic', serif;
+                        font-size: 1rem;
+                        line-height: 1.6;
+                    }
+
+                    .option-percentage-modal {
+                        margin-right: 10px;
+                    }
+                </style>
             `;
-            
-            Swal.fire({
-                title: 'Analisis Soal',
-                html: html,
-                width: '800px',
-                confirmButtonText: 'Tutup'
-            });
+
+                Swal.fire({
+                    title: 'Detail Analisis Soal',
+                    html: html,
+                    width: '900px',
+                    confirmButtonText: 'Tutup',
+                    didOpen: () => {
+                        // Initialize chart in modal
+                        initModalCategoryChart(data.category_breakdown, data.total_answers);
+                    }
+                });
+            } catch (renderError) {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Error saat render modal: ' + renderError.message,
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
         })
         .catch(error => {
             Swal.fire({
@@ -613,6 +1005,104 @@ function viewQuestionDetails(questionId) {
             });
         });
 }
+
+function initModalCategoryChart(categoryData, totalAnswers) {
+    const ctx = document.getElementById('modalCategoryChart').getContext('2d');
+
+    // Calculate percentages
+    const benarBenarPct = totalAnswers > 0 ? ((categoryData.benar_benar / totalAnswers) * 100) : 0;
+    const benarSalahPct = totalAnswers > 0 ? ((categoryData.benar_salah / totalAnswers) * 100) : 0;
+    const salahBenarPct = totalAnswers > 0 ? ((categoryData.salah_benar / totalAnswers) * 100) : 0;
+    const salahSalahPct = totalAnswers > 0 ? ((categoryData.salah_salah / totalAnswers) * 100) : 0;
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [''],
+            datasets: [
+                {
+                    label: 'Benar-Benar',
+                    data: [benarBenarPct],
+                    backgroundColor: 'rgba(25, 135, 84, 0.9)',
+                    borderColor: 'rgba(25, 135, 84, 1)',
+                    borderWidth: 1,
+                    rawData: categoryData.benar_benar
+                },
+                {
+                    label: 'Benar-Salah',
+                    data: [benarSalahPct],
+                    backgroundColor: 'rgba(255, 193, 7, 0.9)',
+                    borderColor: 'rgba(255, 193, 7, 1)',
+                    borderWidth: 1,
+                    rawData: categoryData.benar_salah
+                },
+                {
+                    label: 'Salah-Benar',
+                    data: [salahBenarPct],
+                    backgroundColor: 'rgba(13, 110, 253, 0.9)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    borderWidth: 1,
+                    rawData: categoryData.salah_benar
+                },
+                {
+                    label: 'Salah-Salah',
+                    data: [salahSalahPct],
+                    backgroundColor: 'rgba(220, 53, 69, 0.9)',
+                    borderColor: 'rgba(220, 53, 69, 1)',
+                    borderWidth: 1,
+                    rawData: categoryData.salah_salah
+                }
+            ]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 15,
+                        font: {
+                            size: 11
+                        },
+                        padding: 10
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.dataset.label || '';
+                            const percentage = context.parsed.x || 0;
+                            const rawValue = context.dataset.rawData;
+                            return label + ': ' + rawValue + ' (' + percentage.toFixed(1) + '%)';
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        callback: function(value) {
+                            return value + '%';
+                        },
+                        font: {
+                            size: 10
+                        }
+                    }
+                },
+                y: {
+                    stacked: true,
+                    display: false
+                }
+            }
+        }
+    });
+}
+
 </script>
 @endpush
 @endsection
