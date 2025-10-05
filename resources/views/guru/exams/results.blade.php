@@ -30,9 +30,6 @@
                     Ekspor Hasil
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="{{ route('guru.exams.export', ['exam' => $exam->id, 'format' => 'excel']) }}">
-                        <i class="bi bi-file-earmark-excel me-2"></i>Excel
-                    </a></li>
                     <li><a class="dropdown-item" href="{{ route('guru.exams.export', ['exam' => $exam->id, 'format' => 'pdf']) }}">
                         <i class="bi bi-file-earmark-pdf me-2"></i>PDF
                     </a></li>
@@ -243,10 +240,10 @@
                         <tr>
                             <th>No.</th>
                             <th>Soal</th>
-                            <th>Benar-Benar</th>
-                            <th>Benar-Salah</th>
-                            <th>Salah-Benar</th>
-                            <th>Salah-Salah</th>
+                            <th>Paham Konsep</th>
+                            <th>Miskonsepsi</th>
+                            <th>Menebak</th>
+                            <th>Tidak Paham Konsep</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -526,7 +523,7 @@ function initializeAnswerCategoryChart() {
     new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: ['Benar-Benar', 'Benar-Salah', 'Salah-Benar', 'Salah-Salah'],
+            labels: ['Paham Konsep', 'Miskonsepsi', 'Menebak', 'Tidak Paham Konsep'],
             datasets: [{
                 data: [
                     categoryData.benar_benar,
@@ -535,10 +532,10 @@ function initializeAnswerCategoryChart() {
                     categoryData.salah_salah
                 ],
                 backgroundColor: [
-                    'rgba(25, 135, 84, 0.8)',   // Green for benar-benar
-                    'rgba(255, 193, 7, 0.8)',   // Yellow for benar-salah
-                    'rgba(13, 110, 253, 0.8)',  // Blue for salah-benar
-                    'rgba(220, 53, 69, 0.8)'    // Red for salah-salah
+                    'rgba(25, 135, 84, 0.8)',   // Green for Paham Konsep
+                    'rgba(255, 193, 7, 0.8)',   // Yellow for Miskonsepsi
+                    'rgba(13, 110, 253, 0.8)',  // Blue for Menebak
+                    'rgba(220, 53, 69, 0.8)'    // Red for Tidak Paham Konsep
                 ],
                 borderColor: [
                     'rgba(25, 135, 84, 1)',
@@ -601,7 +598,7 @@ function initializeChapterBreakdownChart() {
             labels: labels,
             datasets: [
                 {
-                    label: 'Benar-Benar',
+                    label: 'Paham Konsep',
                     data: benarBenarData,
                     backgroundColor: 'rgba(25, 135, 84, 0.8)',
                     borderColor: 'rgba(25, 135, 84, 1)',
@@ -609,7 +606,7 @@ function initializeChapterBreakdownChart() {
                     rawData: chapterData.map(item => item.benar_benar)
                 },
                 {
-                    label: 'Benar-Salah',
+                    label: 'Miskonsepsi',
                     data: benarSalahData,
                     backgroundColor: 'rgba(255, 193, 7, 0.8)',
                     borderColor: 'rgba(255, 193, 7, 1)',
@@ -617,7 +614,7 @@ function initializeChapterBreakdownChart() {
                     rawData: chapterData.map(item => item.benar_salah)
                 },
                 {
-                    label: 'Salah-Benar',
+                    label: 'Menebak',
                     data: salahBenarData,
                     backgroundColor: 'rgba(13, 110, 253, 0.8)',
                     borderColor: 'rgba(13, 110, 253, 1)',
@@ -625,7 +622,7 @@ function initializeChapterBreakdownChart() {
                     rawData: chapterData.map(item => item.salah_benar)
                 },
                 {
-                    label: 'Salah-Salah',
+                    label: 'Tidak Paham Konsep',
                     data: salahSalahData,
                     backgroundColor: 'rgba(220, 53, 69, 0.8)',
                     borderColor: 'rgba(220, 53, 69, 1)',
@@ -793,8 +790,10 @@ function viewQuestionDetails(questionId) {
                             </div>
                             <div class="options-modal">
                                 ${Object.keys(tier1Opts).map((key, index) => {
-                                    const correctAnswer = q.tier1_correct_answer ? String(q.tier1_correct_answer).toLowerCase() : '';
-                                    const isCorrect = correctAnswer === key.toLowerCase();
+                                    // Convert both to integer for reliable comparison
+                                    const optionIndex = parseInt(key);
+                                    const correctAnswerIndex = parseInt(q.tier1_correct_answer);
+                                    const isCorrect = !isNaN(optionIndex) && !isNaN(correctAnswerIndex) && optionIndex === correctAnswerIndex;
                                     const percentage = data.tier1_percentages && data.tier1_percentages[key] !== undefined ? data.tier1_percentages[key] : 0;
                                     return `
                                         <div class="option-modal ${isCorrect ? 'correct-answer' : ''}" style="background: linear-gradient(to right, #7bed9f ${percentage}%, #efefef ${percentage}%);">
@@ -827,8 +826,10 @@ function viewQuestionDetails(questionId) {
                             </div>
                             <div class="options-modal">
                                 ${Object.keys(tier2Opts).map((key, index) => {
-                                    const correctAnswer = q.tier2_correct_answer ? String(q.tier2_correct_answer).toLowerCase() : '';
-                                    const isCorrect = correctAnswer === key.toLowerCase();
+                                    // Convert both to integer for reliable comparison
+                                    const optionIndex = parseInt(key);
+                                    const correctAnswerIndex = parseInt(q.tier2_correct_answer);
+                                    const isCorrect = !isNaN(optionIndex) && !isNaN(correctAnswerIndex) && optionIndex === correctAnswerIndex;
                                     const percentage = data.tier2_percentages && data.tier2_percentages[key] !== undefined ? data.tier2_percentages[key] : 0;
                                     return `
                                         <div class="option-modal ${isCorrect ? 'correct-answer' : ''}" style="background: linear-gradient(to right, #7bed9f ${percentage}%, #efefef ${percentage}%);">
@@ -1021,7 +1022,7 @@ function initModalCategoryChart(categoryData, totalAnswers) {
             labels: [''],
             datasets: [
                 {
-                    label: 'Benar-Benar',
+                    label: 'Paham Konsep',
                     data: [benarBenarPct],
                     backgroundColor: 'rgba(25, 135, 84, 0.9)',
                     borderColor: 'rgba(25, 135, 84, 1)',
@@ -1029,7 +1030,7 @@ function initModalCategoryChart(categoryData, totalAnswers) {
                     rawData: categoryData.benar_benar
                 },
                 {
-                    label: 'Benar-Salah',
+                    label: 'Miskonsepsi',
                     data: [benarSalahPct],
                     backgroundColor: 'rgba(255, 193, 7, 0.9)',
                     borderColor: 'rgba(255, 193, 7, 1)',
@@ -1037,7 +1038,7 @@ function initModalCategoryChart(categoryData, totalAnswers) {
                     rawData: categoryData.benar_salah
                 },
                 {
-                    label: 'Salah-Benar',
+                    label: 'Menebak',
                     data: [salahBenarPct],
                     backgroundColor: 'rgba(13, 110, 253, 0.9)',
                     borderColor: 'rgba(13, 110, 253, 1)',
@@ -1045,7 +1046,7 @@ function initModalCategoryChart(categoryData, totalAnswers) {
                     rawData: categoryData.salah_benar
                 },
                 {
-                    label: 'Salah-Salah',
+                    label: 'Tidak Paham Konsep',
                     data: [salahSalahPct],
                     backgroundColor: 'rgba(220, 53, 69, 0.9)',
                     borderColor: 'rgba(220, 53, 69, 1)',

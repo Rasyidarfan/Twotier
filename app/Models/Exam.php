@@ -16,7 +16,6 @@ class Exam extends Model
         'code',
         'current_code',
         'code_generated_at',
-        'auto_regenerate_code',
         'subject_id',
         'grade',
         'semester',
@@ -29,7 +28,6 @@ class Exam extends Model
 
     protected $casts = [
         'code_generated_at' => 'datetime',
-        'auto_regenerate_code' => 'boolean',
         'shuffle_questions' => 'boolean',
         'show_result_immediately' => 'boolean',
         'duration_minutes' => 'integer',
@@ -133,48 +131,51 @@ class Exam extends Model
         return $query->where('created_by', $userId);
     }
 
-    // Generate kode ujian unik 6 karakter
+    // Generate kode ujian unik 6 karakter (hanya huruf)
     private function generateUniqueCode()
     {
         do {
-            $code = strtoupper(Str::random(6));
+            $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 6));
         } while (self::where('code', $code)->exists());
-        
+
         return $code;
     }
 
-    // Code generation methods
+    // Code generation methods (hanya huruf)
     public function generateCurrentCode()
     {
         do {
-            $code = strtoupper(Str::random(6));
+            $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 6));
         } while (self::where('current_code', $code)->exists());
-        
+
         $this->update([
             'current_code' => $code,
             'code_generated_at' => now()
         ]);
-        
+
         return $code;
     }
-    
-    public function shouldRegenerateCode()
+
+    public function regenerateCurrentCode()
     {
-        if (!$this->auto_regenerate_code || !$this->code_generated_at) {
-            return false;
+        if ($this->status !== 'waiting') {
+            return [
+                'success' => false,
+                'message' => 'Kode hanya bisa di-generate ulang saat ujian berstatus waiting'
+            ];
         }
-        
-        return now()->diffInMinutes($this->code_generated_at) >= 2;
+
+        $newCode = $this->generateCurrentCode();
+
+        return [
+            'success' => true,
+            'message' => 'Kode berhasil di-generate ulang',
+            'code' => $newCode
+        ];
     }
-    
+
     public function getCurrentCode()
     {
-        if ($this->status === 'waiting') {
-            if (!$this->current_code || $this->shouldRegenerateCode()) {
-                return $this->generateCurrentCode();
-            }
-        }
-        
         return $this->current_code ?? $this->code;
     }
 

@@ -121,6 +121,7 @@ Route::middleware(['auth'])->group(function () {
         // ===== COMMUNICATION =====
         Route::post('/exams/{exam}/broadcast-message', [GuruController::class, 'broadcastMessage'])->name('exams.broadcast-message');
         Route::post('/exams/{exam}/end', [GuruController::class, 'endExam'])->name('exams.end');
+        Route::post('/exams/{exam}/regenerate-code', [GuruController::class, 'regenerateCode'])->name('exams.regenerate-code');
         
         // ===== EXPORT & RESULTS =====
         Route::get('/exams/{exam}/export-current-results', [GuruController::class, 'exportCurrentResults'])->name('exams.export-current-results');

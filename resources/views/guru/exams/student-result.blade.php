@@ -127,13 +127,13 @@
                         </h6>
                         @if($detail['answer'])
                             @if($detail['answer']->result_category === 'benar-benar')
-                                <span class="badge bg-success">Benar-Benar</span>
+                                <span class="badge bg-success">Paham Konsep</span>
                             @elseif($detail['answer']->result_category === 'benar-salah')
-                                <span class="badge bg-warning">Benar-Salah</span>
+                                <span class="badge bg-warning">Miskonsepsi</span>
                             @elseif($detail['answer']->result_category === 'salah-benar')
-                                <span class="badge bg-info">Salah-Benar</span>
+                                <span class="badge bg-info">Menebak</span>
                             @else
-                                <span class="badge bg-danger">Salah-Salah</span>
+                                <span class="badge bg-danger">Tidak Paham Konsep</span>
                             @endif
                         @endif
                     </div>
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: ['Kategori'],
             datasets: [
                 {
-                    label: 'Benar-Benar',
+                    label: 'Paham Konsep',
                     data: [parseFloat(overallPercentages.benar_benar)],
                     backgroundColor: 'rgba(25, 135, 84, 0.8)',
                     borderColor: 'rgba(25, 135, 84, 1)',
@@ -322,7 +322,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     rawData: [overallData.benar_benar]
                 },
                 {
-                    label: 'Benar-Salah',
+                    label: 'Miskonsepsi',
                     data: [parseFloat(overallPercentages.benar_salah)],
                     backgroundColor: 'rgba(255, 193, 7, 0.8)',
                     borderColor: 'rgba(255, 193, 7, 1)',
@@ -330,7 +330,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     rawData: [overallData.benar_salah]
                 },
                 {
-                    label: 'Salah-Benar',
+                    label: 'Menebak',
                     data: [parseFloat(overallPercentages.salah_benar)],
                     backgroundColor: 'rgba(13, 110, 253, 0.8)',
                     borderColor: 'rgba(13, 110, 253, 1)',
@@ -338,7 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     rawData: [overallData.salah_benar]
                 },
                 {
-                    label: 'Salah-Salah',
+                    label: 'Tidak Paham Konsep',
                     data: [parseFloat(overallPercentages.salah_salah)],
                     backgroundColor: 'rgba(220, 53, 69, 0.8)',
                     borderColor: 'rgba(220, 53, 69, 1)',
@@ -390,7 +390,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const chapterLabels = chapterData.map(ch => ch.chapter_name);
     const chapterDatasets = [
         {
-            label: 'Benar-Benar',
+            label: 'Paham Konsep',
             data: chapterData.map(ch => {
                 const total = ch.benar_benar + ch.benar_salah + ch.salah_benar + ch.salah_salah;
                 return total > 0 ? ((ch.benar_benar / total) * 100).toFixed(1) : 0;
@@ -401,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rawData: chapterData.map(ch => ch.benar_benar)
         },
         {
-            label: 'Benar-Salah',
+            label: 'Miskonsepsi',
             data: chapterData.map(ch => {
                 const total = ch.benar_benar + ch.benar_salah + ch.salah_benar + ch.salah_salah;
                 return total > 0 ? ((ch.benar_salah / total) * 100).toFixed(1) : 0;
@@ -412,7 +412,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rawData: chapterData.map(ch => ch.benar_salah)
         },
         {
-            label: 'Salah-Benar',
+            label: 'Menebak',
             data: chapterData.map(ch => {
                 const total = ch.benar_benar + ch.benar_salah + ch.salah_benar + ch.salah_salah;
                 return total > 0 ? ((ch.salah_benar / total) * 100).toFixed(1) : 0;
@@ -423,7 +423,7 @@ document.addEventListener('DOMContentLoaded', function() {
             rawData: chapterData.map(ch => ch.salah_benar)
         },
         {
-            label: 'Salah-Salah',
+            label: 'Tidak Paham Konsep',
             data: chapterData.map(ch => {
                 const total = ch.benar_benar + ch.benar_salah + ch.salah_benar + ch.salah_salah;
                 return total > 0 ? ((ch.salah_salah / total) * 100).toFixed(1) : 0;

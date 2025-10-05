@@ -14,6 +14,7 @@ use App\Models\StudentExamSession;
 use App\Models\ExamResult;
 use App\Models\StudentAnswer;
 use App\Traits\HasTimezone;
+use PDF;
 
 class GuruController extends Controller
 {
@@ -73,9 +74,9 @@ class GuruController extends Controller
             'questions.*' => 'exists:questions,id',
         ]);
 
-        // Generate unique exam code
+        // Generate unique exam code (hanya huruf)
         do {
-            $code = strtoupper(Str::random(6));
+            $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 6));
         } while (Exam::where('code', $code)->exists());
 
         $exam = Exam::create([
@@ -228,9 +229,9 @@ class GuruController extends Controller
     {
         $this->authorize('view', $exam);
 
-        // Generate new unique code
+        // Generate new unique code (hanya huruf)
         do {
-            $code = strtoupper(Str::random(6));
+            $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 6));
         } while (Exam::where('code', $code)->exists());
 
         // Create duplicate exam
@@ -442,6 +443,15 @@ class GuruController extends Controller
         ]);
     }
 
+    public function regenerateCode(Request $request, Exam $exam)
+    {
+        $this->authorize('update', $exam);
+
+        $result = $exam->regenerateCurrentCode();
+
+        return response()->json($result, $result['success'] ? 200 : 400);
+    }
+
     // ===== EXPORT & RESULTS =====
     public function exportCurrentResults(Exam $exam)
     {
@@ -579,12 +589,12 @@ class GuruController extends Controller
 
     private function getQuestionAnalysis(Exam $exam)
     {
-        $questions = $exam->examQuestions()->with('question')->get();
+        $questions = $exam->examQuestions()->with('question.chapter')->get();
         $analysis = [];
 
         foreach ($questions as $examQuestion) {
             $question = $examQuestion->question;
-            
+
             // Get all answers for this question
             $answers = StudentAnswer::where('question_id', $question->id)
                 ->whereHas('session', function($q) use ($exam) {
@@ -598,13 +608,31 @@ class GuruController extends Controller
             $salahBenar = $answers->where('result_category', 'salah-benar')->count();
             $salahSalah = $answers->where('result_category', 'salah-salah')->count();
 
+            // Calculate tier 1 option percentages
+            $tier1Options = is_array($question->tier1_options) ? $question->tier1_options : json_decode($question->tier1_options, true);
+            $tier1Percentages = [];
+            foreach (array_keys($tier1Options) as $key) {
+                $count = $answers->where('tier1_answer', $key)->count();
+                $tier1Percentages[$key] = $totalAnswers > 0 ? round(($count / $totalAnswers) * 100, 1) : 0;
+            }
+
+            // Calculate tier 2 option percentages
+            $tier2Options = is_array($question->tier2_options) ? $question->tier2_options : json_decode($question->tier2_options, true);
+            $tier2Percentages = [];
+            foreach (array_keys($tier2Options) as $key) {
+                $count = $answers->where('tier2_answer', $key)->count();
+                $tier2Percentages[$key] = $totalAnswers > 0 ? round(($count / $totalAnswers) * 100, 1) : 0;
+            }
+
             $analysis[] = [
                 'question' => $question,
                 'benar_benar' => $benarBenar,
                 'benar_salah' => $benarSalah,
                 'salah_benar' => $salahBenar,
                 'salah_salah' => $salahSalah,
-                'total_answers' => $totalAnswers
+                'total_answers' => $totalAnswers,
+                'tier1_percentages' => $tier1Percentages,
+                'tier2_percentages' => $tier2Percentages
             ];
         }
 
@@ -659,17 +687,24 @@ class GuruController extends Controller
         return $breakdown;
     }
 
-    public function exportResults(Exam $exam)
+    public function exportResults(Request $request, Exam $exam)
     {
         $this->authorize('view', $exam);
+
+        $format = $request->get('format', 'csv');
 
         $sessions = StudentExamSession::where('exam_id', $exam->id)
             ->whereIn('status', ['finished', 'timeout'])
             ->with(['studentAnswers'])
             ->get();
 
+        if ($format === 'pdf') {
+            return $this->exportResultsPDF($exam, $sessions);
+        }
+
+        // Default: CSV Export
         $filename = 'hasil_final_' . $exam->code . '_' . date('Y-m-d') . '.csv';
-        
+
         $headers = [
             'Content-Type' => 'text/csv',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
@@ -677,7 +712,7 @@ class GuruController extends Controller
 
         $callback = function() use ($sessions) {
             $file = fopen('php://output', 'w');
-            
+
             fputcsv($file, [
                 'Nama Siswa',
                 'Identitas',
@@ -685,10 +720,10 @@ class GuruController extends Controller
                 'Waktu Mulai',
                 'Waktu Selesai',
                 'Durasi',
-                'Benar-Benar',
-                'Benar-Salah',
-                'Salah-Benar',
-                'Salah-Salah',
+                'Paham Konsep',
+                'Miskonsepsi',
+                'Menebak',
+                'Tidak Paham Konsep',
                 'Total Skor',
                 'Persentase'
             ]);
@@ -697,7 +732,7 @@ class GuruController extends Controller
                 $breakdown = $session->breakdown_summary;
                 $maxScore = $session->exam->total_points;
                 $percentage = $maxScore > 0 ? round(($session->total_score / $maxScore) * 100, 1) : 0;
-                
+
                 fputcsv($file, [
                     $session->student_name,
                     $session->student_identifier ?? '-',
@@ -718,6 +753,102 @@ class GuruController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function exportResultsPDF(Exam $exam, $sessions)
+    {
+        // Statistics
+        $totalParticipants = StudentExamSession::where('exam_id', $exam->id)->count();
+        $completedSessions = $sessions->count();
+        $averageScore = $sessions->whereNotNull('total_score')->avg('total_score') ?? 0;
+        $highestScore = $sessions->whereNotNull('total_score')->max('total_score') ?? 0;
+        $lowestScore = $sessions->whereNotNull('total_score')->min('total_score') ?? 0;
+
+        $passingScore = $exam->total_points * 0.6;
+        $passedCount = $sessions->where('total_score', '>=', $passingScore)->count();
+        $failedCount = $completedSessions - $passedCount;
+        $passRate = $completedSessions > 0 ? ($passedCount / $completedSessions) * 100 : 0;
+
+        // Score distribution
+        $scoresDistribution = [0, 0, 0, 0, 0]; // 0-20%, 21-40%, 41-60%, 61-80%, 81-100%
+        foreach ($sessions as $session) {
+            if ($session->total_score !== null && $exam->total_points > 0) {
+                $percentage = ($session->total_score / $exam->total_points) * 100;
+                if ($percentage <= 20) $scoresDistribution[0]++;
+                elseif ($percentage <= 40) $scoresDistribution[1]++;
+                elseif ($percentage <= 60) $scoresDistribution[2]++;
+                elseif ($percentage <= 80) $scoresDistribution[3]++;
+                else $scoresDistribution[4]++;
+            }
+        }
+
+        // Answer category breakdown
+        $answerCategoryBreakdown = $this->getAnswerCategoryBreakdown($exam);
+        $totalAnswers = array_sum($answerCategoryBreakdown);
+        $categoryPercentages = [
+            'paham_konsep' => $totalAnswers > 0 ? round(($answerCategoryBreakdown['benar_benar'] / $totalAnswers) * 100, 1) : 0,
+            'miskonsepsi' => $totalAnswers > 0 ? round(($answerCategoryBreakdown['benar_salah'] / $totalAnswers) * 100, 1) : 0,
+            'menebak' => $totalAnswers > 0 ? round(($answerCategoryBreakdown['salah_benar'] / $totalAnswers) * 100, 1) : 0,
+            'tidak_paham' => $totalAnswers > 0 ? round(($answerCategoryBreakdown['salah_salah'] / $totalAnswers) * 100, 1) : 0,
+        ];
+
+        // Chapter breakdown
+        $chapterBreakdown = $this->getChapterBreakdown($exam);
+
+        // Question analysis
+        $questionAnalysis = $this->getQuestionAnalysis($exam);
+
+        // Student results
+        $results = $sessions->map(function ($session) use ($exam) {
+            $breakdown = $session->breakdown_summary;
+            $percentage = $exam->total_points > 0 ? ($session->total_score / $exam->total_points) * 100 : 0;
+
+            return [
+                'student_name' => $session->student_name,
+                'student_identifier' => $session->student_identifier ?? '-',
+                'status' => $session->status_display,
+                'started_at' => $session->getStartTimeFormatted(),
+                'finished_at' => $session->getFinishTimeFormatted(),
+                'duration' => $session->getDurationFormatted(),
+                'paham_konsep' => $breakdown['benar_benar'],
+                'miskonsepsi' => $breakdown['benar_salah'],
+                'menebak' => $breakdown['salah_benar'],
+                'tidak_paham' => $breakdown['salah_salah'],
+                'total_score' => $session->total_score ?? 0,
+                'percentage' => round($percentage, 1),
+                'passed' => $percentage >= 60
+            ];
+        });
+
+        $data = [
+            'exam' => $exam,
+            'results' => $results,
+            'totalParticipants' => $totalParticipants,
+            'averageScore' => round($averageScore, 1),
+            'highestScore' => round($highestScore, 1),
+            'lowestScore' => round($lowestScore, 1),
+            'passRate' => round($passRate, 1),
+            'passedCount' => $passedCount,
+            'failedCount' => $failedCount,
+            'scoresDistribution' => $scoresDistribution,
+            'answerCategoryBreakdown' => $answerCategoryBreakdown,
+            'categoryPercentages' => $categoryPercentages,
+            'chapterBreakdown' => $chapterBreakdown,
+            'questionAnalysis' => $questionAnalysis,
+            'generatedAt' => now()->format('d-m-Y H:i:s')
+        ];
+
+        $pdf = PDF::loadView('exports.exam-results-pdf', $data, [], [
+            'format' => 'A4-L', // Landscape
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'margin_top' => 10,
+            'margin_bottom' => 10,
+        ]);
+
+        $filename = 'hasil_ujian_' . $exam->code . '_' . date('Y-m-d') . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     // ===== QUESTION BANK =====

@@ -17,8 +17,17 @@
                             </p>
                         </div>
                         <div class="text-end">
-                            <h2 class="mb-0 fw-bold text-primary" id="current-code">{{ $exam->getCurrentCode() }}</h2>
-                            <small class="text-muted">Kode Ujian (Update otomatis setiap 2 menit)</small>
+                            <div class="d-flex align-items-center gap-2 justify-content-end">
+                                <div>
+                                    <h2 class="mb-0 fw-bold text-primary" id="current-code">{{ $exam->getCurrentCode() }}</h2>
+                                    <small class="text-muted">Kode Ujian Aktif</small>
+                                </div>
+                                @if($exam->status === 'waiting')
+                                <button class="btn btn-outline-primary btn-sm" onclick="regenerateCode()" title="Generate Ulang Kode">
+                                    <i class="bi bi-arrow-clockwise"></i> Generate Ulang
+                                </button>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -271,22 +280,47 @@ let refreshInterval;
 $(document).ready(function() {
     refreshParticipants();
     startAutoRefresh();
-    startCodeRefresh();
 });
 
 function startAutoRefresh() {
     refreshInterval = setInterval(refreshParticipants, 5000); // Refresh every 5 seconds
 }
 
-function startCodeRefresh() {
-    setInterval(function() {
-        // Check for code updates every 30 seconds
-        $.get(`/guru/exams/${examId}/participants`, function(data) {
-            if (data.current_code) {
-                $('#current-code').text(data.current_code);
-            }
-        });
-    }, 30000);
+function regenerateCode() {
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: 'Apakah Anda yakin ingin generate ulang kode ujian?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, Generate Ulang',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.post(`/guru/exams/${examId}/regenerate-code`, {
+                _token: $('meta[name="csrf-token"]').attr('content')
+            }).done(function(response) {
+                if (response.success) {
+                    $('#current-code').text(response.code);
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        html: `Kode baru: <strong class="text-primary fs-4">${response.code}</strong>`,
+                        icon: 'success',
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                }
+            }).fail(function(xhr) {
+                const response = xhr.responseJSON;
+                Swal.fire({
+                    title: 'Gagal!',
+                    text: response.message || 'Terjadi kesalahan',
+                    icon: 'error'
+                });
+            });
+        }
+    });
 }
 
 function refreshParticipants() {
