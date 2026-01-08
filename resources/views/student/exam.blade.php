@@ -36,11 +36,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Finish Button -->
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finishExamModal">
-                    <i class="bi bi-check-lg"></i> إنهاء
-                </button>
             </div>
         </div>
     </nav>
@@ -180,6 +175,10 @@
                                             <button class="btn btn-primary" onclick="goToQuestion({{ $index + 2 }})">
                                                 التالي <i class="bi bi-chevron-right"></i>
                                             </button>
+                                        @else
+                                            <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#finishExamModal">
+                                               (Selesai) إنهاء
+                                            </button>
                                         @endif
                                     </div>
                                     <div>
@@ -236,11 +235,6 @@
                 </div>
                 <small id="mobile-progress-text">{{ $progress }}%</small>
             </div>
-            <div class="col-4 text-end">
-                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#finishExamModal">
-                    إنهاء
-                </button>
-            </div>
         </div>
     </div>
 </div>
@@ -261,11 +255,12 @@
                 <div class="mb-3">
                     <p>حالة أداءك:</p>
                     <ul>
-                        <li>إجمالي الأسئلة: <strong>{{ $questions->count() }}</strong></li>
-                        <li>الأسئلة المجابة بالكامل: <strong><span id="answered-questions">0</span></strong></li>
+                        <li>إجمالي الأسئلة: <strong>{{ $questions->count() }}</strong> ({{ $questions->count() * 2 }} مستوى)</li>
+                        <li>المستويات المجابة: <strong><span id="answered-questions">0</span></strong> من {{ $questions->count() * 2 }}</li>
                         <li>التقدم: <strong><span id="current-progress">{{ $progress }}%</span></strong></li>
                         <li>الوقت المتبقي: <strong><span id="remaining-time">-</span></strong></li>
                     </ul>
+                    <p class="text-info small mb-0"><i class="bi bi-info-circle"></i> كل سؤال يحتوي على مستويين (المستوى الأول والثاني)</p>
                 </div>
                 <p class="text-muted">بعد إنهاء الامتحان، لا يمكنك تغيير الإجابات.</p>
             </div>
@@ -275,15 +270,6 @@
                     <i class="bi bi-check-lg"></i> نعم، إنهاء الامتحان
                 </button>
             </div>
-        </div>
-    </div>
-</div>
-
-<!-- Auto-save indicator -->
-<div id="save-indicator" class="position-fixed bottom-0 end-0 m-3" style="z-index: 1050;">
-    <div class="toast" id="saveToast" role="alert">
-        <div class="toast-body">
-            <i class="bi bi-check-circle text-success"></i> تم حفظ الإجابة
         </div>
     </div>
 </div>
@@ -453,20 +439,19 @@ function saveAnswer(element) {
 function submitAnswer(questionId) {
     const tier1Answer = $(`input[name="tier1_q${questionId}"]:checked`).val();
     const tier2Answer = $(`input[name="tier2_q${questionId}"]:checked`).val();
-    
-    // Only submit if both tiers are answered
-    if (tier1Answer !== undefined && tier2Answer !== undefined) {
+
+    // Submit if at least one tier is answered (can be partial)
+    if (tier1Answer !== undefined || tier2Answer !== undefined) {
         $.post(`/exam/answer/${sessionId}`, {
             question_id: questionId,
-            tier1_answer: tier1Answer,
-            tier2_answer: tier2Answer,
+            tier1_answer: tier1Answer !== undefined ? tier1Answer : null,
+            tier2_answer: tier2Answer !== undefined ? tier2Answer : null,
             _token: $('meta[name="csrf-token"]').attr('content')
         }).done(function(response) {
             if (response.success) {
-                showSaveIndicator();
                 updateProgressFromResponse(response);
                 updateQuestionNavigation();
-                
+
                 // Update remaining time from server
                 if (response.remaining_time !== undefined) {
                     remainingTime = response.remaining_time;
@@ -497,24 +482,35 @@ function updateProgressFromResponse(response) {
 }
 
 function updateProgress() {
-    let answeredQuestions = 0;
-    
-    // Count questions where both tiers are answered
+    let answeredTiers = 0;
+    const questionIds = new Set();
+
+    // Collect unique question IDs first
     $('input[data-tier="1"]').each(function() {
-        const questionId = $(this).data('question-id');
+        questionIds.add($(this).data('question-id'));
+    });
+
+    // Count each tier separately (each tier = 0.5 question)
+    questionIds.forEach(function(questionId) {
         const tier1Answered = $(`input[name="tier1_q${questionId}"]:checked`).length > 0;
         const tier2Answered = $(`input[name="tier2_q${questionId}"]:checked`).length > 0;
-        
-        if (tier1Answered && tier2Answered) {
-            answeredQuestions++;
+
+        if (tier1Answered) {
+            answeredTiers++;
+        }
+        if (tier2Answered) {
+            answeredTiers++;
         }
     });
-    
-    const progress = Math.round((answeredQuestions / totalQuestions) * 100);
-    
+
+    // Total items = totalQuestions * 2 (because each question has 2 tiers)
+    const totalItems = totalQuestions * 2;
+    const progress = Math.round((answeredTiers / totalItems) * 100);
+    const answeredQuestions = answeredTiers / 2;
+
     $('#progress-bar, #mobile-progress-bar').css('width', progress + '%');
     $('#progress-text, #mobile-progress-text').text(progress + '%');
-    $('#answered-questions').text(answeredQuestions);
+    $('#answered-questions').text(answeredQuestions.toFixed(1).replace('.0', ''));
     $('#current-progress').text(progress + '%');
 }
 
@@ -637,11 +633,6 @@ function finishExam() {
         alert('Terjadi kesalahan koneksi. Silakan coba lagi.');
         $('input, button').prop('disabled', false);
     });
-}
-
-function showSaveIndicator() {
-    const toast = new bootstrap.Toast(document.getElementById('saveToast'));
-    toast.show();
 }
 
 // Font size control

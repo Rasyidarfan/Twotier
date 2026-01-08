@@ -73,24 +73,19 @@ class StudentExamSession extends Model
         ]);
     }
     
-    // Fill identity (for waiting exam)
+    // Fill identity
     public function fillIdentity($studentName, $studentIdentifier = null)
     {
         // Check current exam status to determine the correct session status
-        if ($this->exam->status === 'waiting') {
-            // For waiting exams, students are automatically approved after filling identity
+        if ($this->exam->status === 'waiting' || $this->exam->status === 'active') {
+            // For waiting or active exams, students are automatically approved after filling identity
+            // This allows late students to join active exams without waiting for approval
             $this->update([
                 'student_name' => $studentName,
                 'student_identifier' => $studentIdentifier,
                 'status' => 'approved',
                 'approved' => true,
                 'approved_at' => now()
-            ]);
-        } else if ($this->exam->isActive()) {
-            $this->update([
-                'student_name' => $studentName,
-                'student_identifier' => $studentIdentifier,
-                'status' => 'waiting_approval'
             ]);
         } else {
             // For draft or finished exams, keep as waiting_approval

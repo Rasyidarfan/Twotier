@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
             SubjectsTableSeeder::class,
             ChaptersTableSeeder::class,
             QuestionsTableSeeder::class,
+            ExamsTableSeeder::class,
+            ExamQuestionsTableSeeder::class,
+            ExamSessionsTableSeeder::class,
+            StudentExamSessionsTableSeeder::class,
+            StudentAnswersTableSeeder::class,
+            ExamResultsTableSeeder::class,
         ]);
     }
 }

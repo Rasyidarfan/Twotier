@@ -1,66 +1,218 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Two-Tier Examination System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem ujian berbasis web yang menggunakan metodologi **Two-Tier Diagnostic Test** untuk mengevaluasi pemahaman konsep dan kemampuan reasoning siswa.
 
-## About Laravel
+## Tentang Sistem
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Two-Tier Examination System adalah aplikasi web komprehensif yang dirancang untuk melakukan penilaian diagnostik dengan pendekatan dua tingkat. Sistem ini memungkinkan pendidik untuk membuat, mengelola, dan memantau ujian secara real-time sambil memberikan siswa pengalaman ujian yang terstruktur.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Apa itu Two-Tier Test?
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Two-Tier Test adalah metode penilaian yang terdiri dari dua bagian:
 
-## Learning Laravel
+1. **Tier 1 (Konsep)**: Pertanyaan tentang pemahaman konsep dasar
+2. **Tier 2 (Reasoning)**: Pertanyaan tentang alasan/justifikasi dari jawaban Tier 1
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Sistem penilaian:
+- **Benar-Benar (100%)**: Pemahaman konsep dan reasoning sempurna
+- **Benar-Salah (50%)**: Paham konsep tapi reasoning kurang tepat
+- **Salah-Benar (50%)**: Konsep salah tapi reasoning logis
+- **Salah-Salah (0%)**: Miskonsepsi total
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Fitur Utama
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Untuk Administrator
+- Manajemen user (admin & guru)
+- Manajemen bank soal dengan two-tier structure
+- Manajemen mata pelajaran dan chapter
+- Kontrol akses berbasis role
 
-## Laravel Sponsors
+### Untuk Guru
+- Pembuatan dan pengelolaan ujian
+- Monitoring real-time peserta ujian
+- Kontrol waktu ujian (extend time per siswa/semua)
+- Approval manual peserta
+- Broadcast pesan ke peserta
+- Export hasil ujian (CSV)
+- Analisis statistik two-tier
+- Analisis tingkat kesulitan soal
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Untuk Siswa
+- Join ujian dengan kode 6 karakter (tanpa login)
+- Interface ujian yang user-friendly
+- Timer otomatis
+- Progress tracking
+- Hasil langsung (jika diaktifkan)
 
-### Premium Partners
+## Teknologi
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Backend**: Laravel 10 (PHP 8.1+)
+- **Database**: MySQL/MariaDB
+- **Frontend**: Blade Templates + JavaScript
+- **Real-time**: AJAX Polling
+- **Export**: CSV Generation
+- **PDF**: mPDF (untuk export laporan)
 
-## Contributing
+## Quick Start
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Instalasi Otomatis
 
-## Code of Conduct
+```bash
+# Clone repository
+git clone <repository-url>
+cd twotier
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# Jalankan setup script
+./setup.sh
+```
 
-## Security Vulnerabilities
+### Instalasi Manual
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Install Dependencies**
+   ```bash
+   composer install
+   npm install
+   ```
+
+2. **Setup Environment**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+
+3. **Konfigurasi Database**
+
+   Edit `.env`:
+   ```env
+   DB_DATABASE=twotier
+   DB_USERNAME=root
+   DB_PASSWORD=your_password
+   ```
+
+4. **Migrasi & Seeding**
+   ```bash
+   # Buat database terlebih dahulu
+   mysql -u root -p
+   CREATE DATABASE twotier;
+   EXIT;
+
+   # Jalankan migrasi
+   php artisan migrate
+
+   # Seed data sample (optional)
+   php artisan db:seed
+   ```
+
+5. **Start Server**
+   ```bash
+   php artisan serve
+   ```
+
+6. **Akses Aplikasi**
+
+   Buka browser: `http://localhost:8000`
+
+**Default Credentials** (setelah db:seed):
+- Admin: `admin@example.com` / `password`
+- Guru: `guru@example.com` / `password`
+
+## Dokumentasi
+
+- [SETUP.md](SETUP.md) - Panduan instalasi lengkap
+- [FEATURES.md](FEATURES.md) - Dokumentasi fitur lengkap
+
+## Struktur Project
+
+```
+twotier/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AdminController.php    # Admin functions
+│   │   ├── GuruController.php     # Teacher functions
+│   │   ├── StudentController.php  # Student exam flow
+│   │   └── AuthController.php     # Authentication
+│   ├── Models/
+│   │   ├── User.php               # Admin & Guru
+│   │   ├── Exam.php               # Exam management
+│   │   ├── Question.php           # Two-tier questions
+│   │   ├── StudentExamSession.php # Student sessions
+│   │   └── StudentAnswer.php      # Student answers
+│   └── Traits/
+│       └── HasTimezone.php        # Timezone support
+├── database/
+│   ├── migrations/                # Database schema
+│   └── seeders/                   # Sample data
+├── resources/
+│   └── views/
+│       ├── admin/                 # Admin views
+│       ├── guru/                  # Teacher views
+│       └── student/               # Student views
+└── routes/
+    └── web.php                    # Application routes
+```
+
+## Workflow Ujian
+
+```
+┌─────────┐
+│  DRAFT  │ ──> Guru menyiapkan soal
+└────┬────┘
+     │
+     v
+┌─────────┐
+│ WAITING │ ──> Siswa join & auto-approved
+└────┬────┘     (Generate exam code)
+     │
+     v
+┌─────────┐
+│ ACTIVE  │ ──> Ujian berlangsung
+└────┬────┘     (Manual approval untuk late joiners)
+     │
+     v
+┌──────────┐
+│ FINISHED │ ──> Hasil & statistik
+└──────────┘
+```
+
+## Database Schema
+
+### Core Tables
+- `users` - Admin & Guru users
+- `subjects` - Mata pelajaran
+- `chapters` - Chapter per subject
+- `questions` - Bank soal two-tier
+- `exams` - Data ujian
+- `exam_questions` - Soal per ujian
+- `student_exam_sessions` - Sesi siswa
+- `student_answers` - Jawaban siswa
+
+## Kontribusi
+
+Silakan buat issue atau pull request untuk:
+- Bug reports
+- Feature requests
+- Improvements
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Project ini adalah bagian dari sistem pendidikan internal. Silakan hubungi maintainer untuk informasi lisensi.
+
+## Support
+
+Untuk pertanyaan atau bantuan:
+1. Baca dokumentasi di [FEATURES.md](FEATURES.md)
+2. Cek [SETUP.md](SETUP.md) untuk troubleshooting
+3. Buat issue di repository
+
+---
+
+**Catatan Keamanan**: Pastikan untuk mengganti default credentials dan mengamankan `.env` file di production!
+
+## Changelog
+
+- **v2.0** - Complete system overhaul dengan improved workflow
+- **v1.0** - Initial release dengan basic two-tier functionality
+
+## Credits
+
+Developed for educational assessment purposes using Laravel framework.

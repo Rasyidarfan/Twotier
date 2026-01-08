@@ -53,13 +53,14 @@ class StudentController extends Controller
             'browser' => $request->input('browser')
         ];
 
-        // Create or find existing session
+        // Create session - always start with waiting_identity
+        // Students must fill identity first, then wait for teacher approval
         $session = StudentExamSession::create([
             'exam_id' => $exam->id,
             'timezone' => $deviceTimezone,
             'device_info' => $deviceInfo,
             'joined_at' => now(),
-            'status' => $exam->status === 'waiting' ? 'waiting_identity' : 'waiting_approval'
+            'status' => 'waiting_identity'
         ]);
 
         return redirect()->route('exam.waiting-room', $session->id);
@@ -165,20 +166,32 @@ class StudentController extends Controller
         ]);
 
         $existingSession = StudentExamSession::find($request->existing_session_id);
-        
+
         if (!$existingSession || $existingSession->exam_id !== $session->exam_id) {
             return back()->withErrors(['existing_session_id' => 'Sesi tidak valid.']);
         }
 
-        // Check if existing session can be continued
-        if (!$existingSession->canContinueExam()) {
+        // Check if session can potentially be continued (not finished/timeout/kicked)
+        if (in_array($existingSession->status, ['finished', 'timeout', 'kicked'])) {
             return back()->withErrors(['existing_session_id' => 'Sesi tidak dapat dilanjutkan.']);
         }
 
-        // Remove current session and redirect to existing session
+        // For active exams, require teacher re-approval for security
+        // Change existing session status to waiting_approval
+        if ($session->exam->status === 'active' && $existingSession->status === 'in_progress') {
+            $existingSession->update([
+                'status' => 'waiting_approval',
+                'approved' => false,
+                'approved_at' => null,
+                'approved_by' => null
+            ]);
+        }
+
+        // Remove current session (the duplicate one)
         $session->delete();
-        
-        return redirect()->route('exam.take', $existingSession->id);
+
+        // Redirect to waiting room of existing session
+        return redirect()->route('exam.waiting-room', $existingSession->id);
     }
 
     // ===== TAKE EXAM =====
@@ -188,8 +201,13 @@ class StudentController extends Controller
             return redirect()->route('exam.waiting-room', $session->id);
         }
 
+        // Verify exam is active before allowing start
+        if ($session->exam->status !== 'active') {
+            return redirect()->back()->with('error', 'Ujian belum dimulai oleh guru. Status ujian: ' . $session->exam->status_display);
+        }
+
         $session->startSession();
-        
+
         return redirect()->route('exam.take', $session->id);
     }
 
@@ -198,14 +216,7 @@ class StudentController extends Controller
         $exam = $session->exam;
 
         // Auto-start session if approved and exam is active
-        // Also auto-start if waiting_identity and exam is waiting
         if ($session->status === 'approved' && $exam->status === 'active') {
-            $session->startSession();
-            // Refresh the session model to get updated data
-            $session->refresh();
-        } else if ($session->status === 'waiting_identity' && $exam->status === 'waiting') {
-            // For exams in waiting status, waiting_identity sessions can proceed directly
-            $session->update(['status' => 'approved']);
             $session->startSession();
             // Refresh the session model to get updated data
             $session->refresh();
@@ -231,22 +242,26 @@ class StudentController extends Controller
             ->keyBy('question_id')
             ->toArray();
 
-        // Calculate progress
+        // Calculate progress (count each tier separately)
         $totalQuestions = $questions->count();
-        $answeredQuestions = 0;
-        
+        $answeredTiers = 0;
+
         foreach ($questions as $question) {
             if (isset($existingAnswers[$question->id])) {
                 $answer = $existingAnswers[$question->id];
-                // Count as answered only if both tiers are answered
-                if (isset($answer['tier1_answer']) && isset($answer['tier2_answer']) && 
-                    $answer['tier1_answer'] !== null && $answer['tier2_answer'] !== null) {
-                    $answeredQuestions++;
+                // Count each tier separately
+                if (isset($answer['tier1_answer']) && $answer['tier1_answer'] !== null) {
+                    $answeredTiers++;
+                }
+                if (isset($answer['tier2_answer']) && $answer['tier2_answer'] !== null) {
+                    $answeredTiers++;
                 }
             }
         }
-        
-        $progress = $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
+
+        // Total items = questions * 2 (each question has 2 tiers)
+        $totalItems = $totalQuestions * 2;
+        $progress = $totalItems > 0 ? round(($answeredTiers / $totalItems) * 100) : 0;
 
         return view('student.exam', compact('session', 'exam', 'questions', 'existingAnswers', 'progress'));
     }
@@ -255,8 +270,8 @@ class StudentController extends Controller
     {
         $request->validate([
             'question_id' => 'required|exists:questions,id',
-            'tier1_answer' => 'required|integer|min:0|max:4',
-            'tier2_answer' => 'required|integer|min:0|max:4',
+            'tier1_answer' => 'nullable|integer|min:0|max:4',
+            'tier2_answer' => 'nullable|integer|min:0|max:4',
         ]);
 
         // Check if session is still valid
@@ -291,13 +306,25 @@ class StudentController extends Controller
             ]
         );
 
-        // Calculate progress
+        // Calculate progress (count each tier separately)
         $totalQuestions = ExamQuestion::where('exam_id', $session->exam_id)->count();
-        $answeredQuestions = StudentAnswer::where('session_id', $session->id)
-            ->whereNotNull('tier1_answer')
-            ->whereNotNull('tier2_answer')
-            ->count();
-        $progress = $totalQuestions > 0 ? round(($answeredQuestions / $totalQuestions) * 100) : 0;
+
+        // Count answered tiers
+        $answers = StudentAnswer::where('session_id', $session->id)->get();
+        $answeredTiers = 0;
+        foreach ($answers as $ans) {
+            if ($ans->tier1_answer !== null) {
+                $answeredTiers++;
+            }
+            if ($ans->tier2_answer !== null) {
+                $answeredTiers++;
+            }
+        }
+
+        // Total items = questions * 2 (each question has 2 tiers)
+        $totalItems = $totalQuestions * 2;
+        $progress = $totalItems > 0 ? round(($answeredTiers / $totalItems) * 100) : 0;
+        $answeredQuestions = $answeredTiers / 2;
 
         return response()->json([
             'success' => true,

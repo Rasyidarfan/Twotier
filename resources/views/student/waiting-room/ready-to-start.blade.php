@@ -19,9 +19,15 @@
                 </div>
 
                 <!-- Ready to Start Card -->
-                <div class="card border-success">
-                    <div class="card-header bg-success text-white text-center">
-                        <h4 class="mb-0"><i class="bi bi-check-circle-fill"></i> Anda Telah Disetujui!</h4>
+                <div class="card {{ $exam->status === 'active' ? 'border-success' : 'border-warning' }}">
+                    <div class="card-header {{ $exam->status === 'active' ? 'bg-success' : 'bg-warning text-dark' }} text-white text-center">
+                        <h4 class="mb-0">
+                            @if($exam->status === 'active')
+                                <i class="bi bi-check-circle-fill"></i> Anda Telah Disetujui!
+                            @else
+                                <i class="bi bi-clock-fill"></i> Disetujui - Menunggu Ujian Dimulai
+                            @endif
+                        </h4>
                     </div>
                     <div class="card-body p-4">
                         <div class="text-center mb-4">
@@ -37,14 +43,31 @@
                             @endif
                         </div>
 
+                        <!-- Error Message -->
+                        @if(session('error'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> {{ session('error') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
                         <!-- Start Button -->
                         <div class="d-grid mb-4">
-                            <form method="POST" action="{{ route('exam.start', $session) }}">
-                                @csrf
-                                <button type="submit" class="btn btn-success btn-lg" id="startButton">
-                                    <i class="bi bi-play-fill"></i> Mulai Ujian Sekarang
+                            @if($exam->status === 'active')
+                                <form method="POST" action="{{ route('exam.start', $session) }}">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success btn-lg" id="startButton">
+                                        <i class="bi bi-play-fill"></i> Mulai Ujian Sekarang
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" class="btn btn-secondary btn-lg" disabled id="startButton">
+                                    <i class="bi bi-clock"></i> Menunggu Guru Memulai Ujian
                                 </button>
-                            </form>
+                                <small class="text-muted text-center mt-2 d-block">
+                                    Status ujian: <span class="badge bg-warning">{{ $exam->status_display }}</span>
+                                </small>
+                            @endif
                         </div>
 
                         <!-- Exam Info -->
