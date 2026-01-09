@@ -24,6 +24,10 @@
                 <i class="bi bi-arrow-left me-2"></i>
                 Kembali ke Ujian
             </a>
+            <a href="{{ route('guru.exams.item-analysis', $exam->id) }}" class="btn btn-primary me-2">
+                <i class="bi bi-clipboard-data me-2"></i>
+                Analisis Butir Soal
+            </a>
             <div class="btn-group">
                 <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="bi bi-download me-2"></i>
@@ -249,6 +253,13 @@
                     </thead>
                     <tbody>
                         @foreach($questionAnalysis as $index => $analysis)
+                            @php
+                                $total = $analysis['benar_benar'] + $analysis['benar_salah'] + $analysis['salah_benar'] + $analysis['salah_salah'];
+                                $benarBenarPct = $total > 0 ? ($analysis['benar_benar'] / $total) * 100 : 0;
+                                $benarSalahPct = $total > 0 ? ($analysis['benar_salah'] / $total) * 100 : 0;
+                                $salahBenarPct = $total > 0 ? ($analysis['salah_benar'] / $total) * 100 : 0;
+                                $salahSalahPct = $total > 0 ? ($analysis['salah_salah'] / $total) * 100 : 0;
+                            @endphp
                             <tr>
                                 <td>{{ $index + 1 }}</td>
                                 <td>
@@ -256,17 +267,39 @@
                                         {{ Str::limit($analysis['question']->tier1_question, 80) }}
                                     </div>
                                 </td>
-                                <td class="text-center">
-                                    <span class="badge bg-success">{{ $analysis['benar_benar'] }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-warning text-dark">{{ $analysis['benar_salah'] }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-info">{{ $analysis['salah_benar'] }}</span>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge bg-danger">{{ $analysis['salah_salah'] }}</span>
+                                <td colspan="4">
+                                    <div class="mini-bar-chart-container">
+                                        <div class="mini-bar-chart">
+                                            @if($benarBenarPct > 0)
+                                            <div class="bar-segment bg-paham" style="width: {{ $benarBenarPct }}%;"
+                                                 title="Paham Konsep: {{ $analysis['benar_benar'] }} ({{ number_format($benarBenarPct, 1) }}%)">
+                                            </div>
+                                            @endif
+                                            @if($benarSalahPct > 0)
+                                            <div class="bar-segment bg-miskonsepsi" style="width: {{ $benarSalahPct }}%;"
+                                                 title="Miskonsepsi: {{ $analysis['benar_salah'] }} ({{ number_format($benarSalahPct, 1) }}%)">
+                                            </div>
+                                            @endif
+                                            @if($salahBenarPct > 0)
+                                            <div class="bar-segment bg-menebak" style="width: {{ $salahBenarPct }}%;"
+                                                 title="Menebak: {{ $analysis['salah_benar'] }} ({{ number_format($salahBenarPct, 1) }}%)">
+                                            </div>
+                                            @endif
+                                            @if($salahSalahPct > 0)
+                                            <div class="bar-segment bg-tidak-paham" style="width: {{ $salahSalahPct }}%;"
+                                                 title="Tidak Paham Konsep: {{ $analysis['salah_salah'] }} ({{ number_format($salahSalahPct, 1) }}%)">
+                                            </div>
+                                            @endif
+                                        </div>
+                                        <!-- <div class="mini-bar-legend">
+                                            <small>
+                                                <span class="badge bg-success">{{ $analysis['benar_benar'] }}</span>
+                                                <span class="badge bg-warning text-dark">{{ $analysis['benar_salah'] }}</span>
+                                                <span class="badge bg-info">{{ $analysis['salah_benar'] }}</span>
+                                                <span class="badge bg-danger">{{ $analysis['salah_salah'] }}</span>
+                                            </small>
+                                        </div> -->
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-info"
@@ -390,6 +423,61 @@
 </div>
 
 @push('scripts')
+<style>
+    .mini-bar-chart-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 5px 0;
+    }
+
+    .mini-bar-chart {
+        display: flex;
+        width: 100%;
+        height: 24px;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .bar-segment {
+        height: 100%;
+        transition: opacity 0.3s ease;
+        cursor: pointer;
+    }
+
+    .bar-segment:hover {
+        opacity: 0.8;
+    }
+
+    .bg-paham {
+        background-color: rgba(25, 135, 84, 0.8);
+    }
+
+    .bg-miskonsepsi {
+        background-color: rgba(255, 193, 7, 0.8);
+    }
+
+    .bg-menebak {
+        background-color: rgba(13, 110, 253, 0.8);
+    }
+
+    .bg-tidak-paham {
+        background-color: rgba(220, 53, 69, 0.8);
+    }
+
+    .mini-bar-legend {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .mini-bar-legend .badge {
+        font-size: 0.75rem;
+        padding: 0.25em 0.5em;
+    }
+</style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -855,13 +943,75 @@ function viewQuestionDetails(questionId) {
 
                     <h6 class="text-primary mb-3 text-center">إحصائيات الإجابات (${data.total_answers} طالب)</h6>
 
-                    <div class="row">
-                        <div class="col-md-12">
-                            <h6 class="text-center mb-2">فئات الإجابات</h6>
-                            <div style="height: 80px;">
-                                <canvas id="modalCategoryChart"></canvas>
-                            </div>
-                        </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered text-center">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>الفئة</th>
+                                    <th>العدد</th>
+                                    <th>النسبة المئوية</th>
+                                    <th>المؤشر</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-end">
+                                        <span class="badge bg-success">فهم المفهوم</span>
+                                    </td>
+                                    <td><strong>${data.category_breakdown.benar_benar}</strong></td>
+                                    <td>${((data.category_breakdown.benar_benar / data.total_answers) * 100).toFixed(1)}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-success" role="progressbar"
+                                                 style="width: ${((data.category_breakdown.benar_benar / data.total_answers) * 100).toFixed(1)}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end">
+                                        <span class="badge bg-warning text-dark">مفهوم خاطئ</span>
+                                    </td>
+                                    <td><strong>${data.category_breakdown.benar_salah}</strong></td>
+                                    <td>${((data.category_breakdown.benar_salah / data.total_answers) * 100).toFixed(1)}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-warning" role="progressbar"
+                                                 style="width: ${((data.category_breakdown.benar_salah / data.total_answers) * 100).toFixed(1)}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end">
+                                        <span class="badge bg-info">تخمين</span>
+                                    </td>
+                                    <td><strong>${data.category_breakdown.salah_benar}</strong></td>
+                                    <td>${((data.category_breakdown.salah_benar / data.total_answers) * 100).toFixed(1)}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-info" role="progressbar"
+                                                 style="width: ${((data.category_breakdown.salah_benar / data.total_answers) * 100).toFixed(1)}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-end">
+                                        <span class="badge bg-danger">عدم فهم المفهوم</span>
+                                    </td>
+                                    <td><strong>${data.category_breakdown.salah_salah}</strong></td>
+                                    <td>${((data.category_breakdown.salah_salah / data.total_answers) * 100).toFixed(1)}%</td>
+                                    <td>
+                                        <div class="progress" style="height: 20px;">
+                                            <div class="progress-bar bg-danger" role="progressbar"
+                                                 style="width: ${((data.category_breakdown.salah_salah / data.total_answers) * 100).toFixed(1)}%">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -982,11 +1132,7 @@ function viewQuestionDetails(questionId) {
                     title: 'Detail Analisis Soal',
                     html: html,
                     width: '900px',
-                    confirmButtonText: 'Tutup',
-                    didOpen: () => {
-                        // Initialize chart in modal
-                        initModalCategoryChart(data.category_breakdown, data.total_answers);
-                    }
+                    confirmButtonText: 'Tutup'
                 });
             } catch (renderError) {
                 Swal.fire({
@@ -1005,103 +1151,6 @@ function viewQuestionDetails(questionId) {
                 confirmButtonText: 'OK'
             });
         });
-}
-
-function initModalCategoryChart(categoryData, totalAnswers) {
-    const ctx = document.getElementById('modalCategoryChart').getContext('2d');
-
-    // Calculate percentages
-    const benarBenarPct = totalAnswers > 0 ? ((categoryData.benar_benar / totalAnswers) * 100) : 0;
-    const benarSalahPct = totalAnswers > 0 ? ((categoryData.benar_salah / totalAnswers) * 100) : 0;
-    const salahBenarPct = totalAnswers > 0 ? ((categoryData.salah_benar / totalAnswers) * 100) : 0;
-    const salahSalahPct = totalAnswers > 0 ? ((categoryData.salah_salah / totalAnswers) * 100) : 0;
-
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [''],
-            datasets: [
-                {
-                    label: 'Paham Konsep',
-                    data: [benarBenarPct],
-                    backgroundColor: 'rgba(25, 135, 84, 0.9)',
-                    borderColor: 'rgba(25, 135, 84, 1)',
-                    borderWidth: 1,
-                    rawData: categoryData.benar_benar
-                },
-                {
-                    label: 'Miskonsepsi',
-                    data: [benarSalahPct],
-                    backgroundColor: 'rgba(255, 193, 7, 0.9)',
-                    borderColor: 'rgba(255, 193, 7, 1)',
-                    borderWidth: 1,
-                    rawData: categoryData.benar_salah
-                },
-                {
-                    label: 'Menebak',
-                    data: [salahBenarPct],
-                    backgroundColor: 'rgba(13, 110, 253, 0.9)',
-                    borderColor: 'rgba(13, 110, 253, 1)',
-                    borderWidth: 1,
-                    rawData: categoryData.salah_benar
-                },
-                {
-                    label: 'Tidak Paham Konsep',
-                    data: [salahSalahPct],
-                    backgroundColor: 'rgba(220, 53, 69, 0.9)',
-                    borderColor: 'rgba(220, 53, 69, 1)',
-                    borderWidth: 1,
-                    rawData: categoryData.salah_salah
-                }
-            ]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'right',
-                    labels: {
-                        boxWidth: 15,
-                        font: {
-                            size: 11
-                        },
-                        padding: 10
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.dataset.label || '';
-                            const percentage = context.parsed.x || 0;
-                            const rawValue = context.dataset.rawData;
-                            return label + ': ' + rawValue + ' (' + percentage.toFixed(1) + '%)';
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    stacked: true,
-                    beginAtZero: true,
-                    max: 100,
-                    ticks: {
-                        callback: function(value) {
-                            return value + '%';
-                        },
-                        font: {
-                            size: 10
-                        }
-                    }
-                },
-                y: {
-                    stacked: true,
-                    display: false
-                }
-            }
-        }
-    });
 }
 
 </script>

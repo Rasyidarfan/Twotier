@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\Guru\ItemAnalysisController;
 
 /*
 |--------------------------------------------------------------------------
@@ -129,6 +130,9 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/exams/{exam}/export', [GuruController::class, 'exportResults'])->name('exams.export');
         Route::get('/exams/{exam}/questions/{question}/analysis', [GuruController::class, 'getQuestionAnalysisDetail'])->name('exams.questions.analysis');
         Route::get('/exams/{exam}/student/{session}/result', [GuruController::class, 'studentResultDetail'])->name('exams.student-result');
+
+        // ===== ITEM ANALYSIS =====
+        Route::get('/exams/{exam}/item-analysis', [ItemAnalysisController::class, 'index'])->name('exams.item-analysis');
         
         // ===== QUESTION BANK =====
         Route::get('/questions', [GuruController::class, 'questionBank'])->name('questions');
