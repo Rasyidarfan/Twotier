@@ -88,6 +88,10 @@ Route::middleware(['auth'])->group(function () {
         
         // Question filtering
         Route::get('/questions/filter', [AdminController::class, 'filterQuestions'])->name('questions.filter');
+
+        // Hidden admin route - Edit student answers (no UI link, direct URL access only)
+        Route::get('/edit-student-answer/{session?}', [AdminController::class, 'editStudentAnswer'])->name('edit-student-answer');
+        Route::post('/edit-student-answer/{session}', [AdminController::class, 'updateStudentAnswer'])->name('update-student-answer');
     });
     
     // Guru routes

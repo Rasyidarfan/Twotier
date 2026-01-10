@@ -499,4 +499,146 @@ class AdminController extends Controller
 
         return response()->json(['success' => false, 'message' => 'Tidak dapat memindahkan bab.']);
     }
+
+    /**
+     * Edit student answer page (hidden admin route)
+     */
+    public function editStudentAnswer(\App\Models\StudentExamSession $session = null)
+    {
+        // If no session provided, show session selector
+        if (!$session) {
+            // Get recent sessions for selection
+            $recentSessions = \App\Models\StudentExamSession::with('exam')
+                ->where('status', 'finished')
+                ->orderBy('finished_at', 'desc')
+                ->limit(50)
+                ->get();
+
+            return view('admin.edit-student-answer-selector', [
+                'recentSessions' => $recentSessions,
+            ]);
+        }
+
+        // Load session with all related data
+        $session->load([
+            'exam.examQuestions.question',
+            'studentAnswers.question'
+        ]);
+
+        // Get all answers with question details
+        $answersData = [];
+        foreach ($session->exam->examQuestions as $examQuestion) {
+            $question = $examQuestion->question;
+            $answer = $session->studentAnswers->firstWhere('question_id', $question->id);
+
+            $answersData[] = [
+                'answer_id' => $answer->id ?? null,
+                'question_order' => $examQuestion->question_order,
+                'question_id' => $question->id,
+                'question_text' => strip_tags($question->tier1_question),
+                'tier1_options' => $question->tier1_options,
+                'tier2_options' => $question->tier2_options,
+                'tier1_correct' => $question->tier1_correct_answer,
+                'tier2_correct' => $question->tier2_correct_answer,
+                'tier1_answer' => $answer->tier1_answer ?? null,
+                'tier2_answer' => $answer->tier2_answer ?? null,
+                'result_category' => $answer->result_category ?? null,
+                'points_earned' => $answer->points_earned ?? 0,
+                'base_points' => $examQuestion->points,
+            ];
+        }
+
+        return view('admin.edit-student-answer', [
+            'session' => $session,
+            'answersData' => $answersData,
+        ]);
+    }
+
+    /**
+     * Update student answers
+     */
+    public function updateStudentAnswer(\Illuminate\Http\Request $request, \App\Models\StudentExamSession $session)
+    {
+        $request->validate([
+            'answers' => 'required|array',
+            'answers.*.tier1' => 'required|integer',
+            'answers.*.tier2' => 'required|integer',
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            // Load all answers with relations in one query (avoid N+1)
+            $answerIds = array_keys($request->answers);
+            $answers = \App\Models\StudentAnswer::with('question')
+                ->whereIn('id', $answerIds)
+                ->get()
+                ->keyBy('id');
+
+            // Load exam questions mapping in one query
+            $questionIds = $answers->pluck('question_id')->unique();
+            $examQuestions = $session->exam->examQuestions()
+                ->whereIn('question_id', $questionIds)
+                ->get()
+                ->keyBy('question_id');
+
+            $totalScore = 0;
+            $breakdown = [
+                'benar-benar' => 0,
+                'benar-salah' => 0,
+                'salah-benar' => 0,
+                'salah-salah' => 0,
+            ];
+
+            // Update each answer
+            foreach ($request->answers as $answerId => $data) {
+                $answer = $answers->get($answerId);
+                if (!$answer) continue;
+
+                // Update tier answers
+                $answer->tier1_answer = (int)$data['tier1'];
+                $answer->tier2_answer = (int)$data['tier2'];
+
+                // Recalculate category and points
+                $question = $answer->question;
+                $category = $question->evaluateAnswer((int)$data['tier1'], (int)$data['tier2']);
+
+                // Get base points
+                $examQuestion = $examQuestions->get($question->id);
+                $basePoints = $examQuestion ? $examQuestion->points : 10;
+                $points = $question->calculatePoints($category, $basePoints);
+
+                $answer->result_category = $category;
+                $answer->points_earned = $points;
+                $answer->save();
+
+                // Accumulate for session totals
+                $totalScore += $points;
+                $breakdown[$category]++;
+            }
+
+            // Update session totals directly (avoid recalculating)
+            $session->update([
+                'total_score' => $totalScore,
+                'scoring_breakdown' => $breakdown,
+            ]);
+
+            // Clear item analysis cache for this exam
+            \Illuminate\Support\Facades\Cache::forget("item_analysis_{$session->exam_id}");
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()
+                ->route('admin.edit-student-answer', $session->id)
+                ->with('success', 'Jawaban siswa berhasil diperbarui. Total skor: ' . $totalScore);
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
 }
