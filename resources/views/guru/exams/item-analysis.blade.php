@@ -162,8 +162,12 @@
         <div class="row mt-4">
             <div class="col-12">
                 <div class="card shadow-sm">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Tabel Nilai Siswa (Skala 0-2)</h5>
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Tabel Nilai Siswa</h5>
+                        <button class="btn btn-sm btn-primary" onclick="copyTableToClipboard(event)">
+                            <i class="bi bi-clipboard me-1"></i>
+                            Copy untuk Excel
+                        </button>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -297,6 +301,52 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
+            // Function to copy table to clipboard for Excel
+            function copyTableToClipboard(event) {
+                const table = document.getElementById('studentScoresTable');
+                let tsv = '';
+
+                // Get headers
+                const headers = table.querySelectorAll('thead th');
+                const headerTexts = [];
+                headers.forEach(header => {
+                    headerTexts.push(header.innerText.trim());
+                });
+                tsv += headerTexts.join('\t') + '\n';
+
+                // Get rows
+                const rows = table.querySelectorAll('tbody tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    const cellTexts = [];
+                    cells.forEach(cell => {
+                        // Remove badge markup, get just the number/text
+                        let text = cell.innerText.trim();
+                        cellTexts.push(text);
+                    });
+                    tsv += cellTexts.join('\t') + '\n';
+                });
+
+                // Copy to clipboard
+                navigator.clipboard.writeText(tsv).then(() => {
+                    // Show success message
+                    const button = event.target.closest('button');
+                    const originalHTML = button.innerHTML;
+                    button.innerHTML = '<i class="bi bi-check-lg me-1"></i>Tersalin!';
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-success');
+
+                    setTimeout(() => {
+                        button.innerHTML = originalHTML;
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-primary');
+                    }, 2000);
+                }).catch(err => {
+                    alert('Gagal menyalin tabel. Silakan coba lagi.');
+                    console.error('Error copying table:', err);
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 // Prepare data for charts
                 const items = @json($analysis['items']);
