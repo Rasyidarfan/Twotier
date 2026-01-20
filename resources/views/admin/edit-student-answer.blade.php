@@ -162,6 +162,42 @@
             </div>
         </div>
     </form>
+
+    <!-- Recalculate All Scores Section -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm border-warning">
+                <div class="card-header bg-warning bg-opacity-10">
+                    <h5 class="mb-0 text-warning">
+                        <i class="bi bi-calculator"></i> Hitung Ulang Semua Skor
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">
+                        <strong>Fitur ini akan menghitung ulang SEMUA skor siswa di SEMUA ujian</strong> berdasarkan jawaban yang tersimpan.
+                    </p>
+                    <p class="mb-3">Proses ini akan:</p>
+                    <ul class="mb-3">
+                        <li>Menghitung ulang <code>result_category</code> untuk setiap jawaban</li>
+                        <li>Menghitung ulang <code>points_earned</code> berdasarkan kategori</li>
+                        <li>Menghitung ulang <code>total_score</code> untuk setiap session</li>
+                        <li>Update <code>scoring_breakdown</code> (benar-benar, benar-salah, dll)</li>
+                        <li>Clear cache analisis butir soal</li>
+                    </ul>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle"></i> Gunakan fitur ini jika ada perubahan pada sistem penilaian atau jika ada data yang tidak konsisten.
+                    </p>
+                    <form action="{{ route('admin.recalculate-all-scores') }}" method="POST" id="recalculateFormIndividual" class="d-inline">
+                        @csrf
+                        <button type="button" class="btn btn-warning" onclick="confirmRecalculateIndividual()">
+                            <i class="bi bi-calculator"></i> Hitung Ulang Semua Skor
+                        </button>
+                    </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
 
 @push('scripts')
@@ -283,6 +319,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+function confirmRecalculateIndividual() {
+    if (confirm('PERINGATAN!\n\nFitur ini akan menghitung ulang SEMUA skor siswa di SEMUA ujian berdasarkan jawaban yang tersimpan (tier1_answer dan tier2_answer).\n\nProses ini akan:\n✓ Menghitung ulang result_category\n✓ Menghitung ulang points_earned\n✓ Menghitung ulang total_score per session\n✓ Update scoring_breakdown\n✓ Clear cache analisis butir soal\n\nApakah Anda yakin ingin melanjutkan?')) {
+        const form = document.getElementById('recalculateFormIndividual');
+        const submitBtn = form.querySelector('button');
+
+        // Show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Menghitung ulang...';
+
+        form.submit();
+    }
+}
 </script>
 @endpush
 @endsection

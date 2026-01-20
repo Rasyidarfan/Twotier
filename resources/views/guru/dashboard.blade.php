@@ -248,6 +248,8 @@
     </div>
 </div>
 
+@include('partials.help-button')
+
 <style>
     .border-left-primary {
         border-left: 0.25rem solid #4e73df !important;

@@ -1,0 +1,12 @@
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="450" fill="#e9d5ff"/>
+  <text x="400" y="200" font-family="Arial" font-size="24" font-weight="bold" fill="#764ba2" text-anchor="middle">
+    Langkah 1: Login ke Dashboard Guru
+  </text>
+  <text x="400" y="235" font-family="Arial" font-size="18" fill="#667eea" text-anchor="middle">
+    [Ganti dengan screenshot sebenarnya]
+  </text>
+  <text x="400" y="265" font-family="Arial" font-size="14" fill="#9333ea" text-anchor="middle">
+    Ukuran: 800x450px (16:9)
+  </text>
+</svg>

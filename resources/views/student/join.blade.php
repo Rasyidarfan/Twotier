@@ -83,6 +83,8 @@
         </div>
     </div>
 </div>
+
+@include('partials.help-button')
 @endsection
 
 @push('styles')

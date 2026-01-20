@@ -1,0 +1,10 @@
+<svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="300" fill="#e9d5ff"/>
+  <!-- Simple person icon -->
+  <circle cx="150" cy="110" r="45" fill="#764ba2"/>
+  <path d="M90 200 Q150 230 210 200 L210 250 Q150 280 90 250 Z" fill="#764ba2"/>
+  <!-- Text -->
+  <text x="150" y="290" font-family="Arial" font-size="12" font-weight="bold" fill="#667eea" text-anchor="middle">
+    Software Developer
+  </text>
+</svg>

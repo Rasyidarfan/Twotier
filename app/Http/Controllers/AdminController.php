@@ -641,4 +641,118 @@ class AdminController extends Controller
                 ->withInput();
         }
     }
+
+    /**
+     * Recalculate all student scores based on their answers
+     * This will recalculate result_category and points_earned for all student_answers
+     * across all exams, and update total_score in student_exam_sessions
+     */
+    public function recalculateAllScores(\Illuminate\Http\Request $request)
+    {
+        try {
+            \Illuminate\Support\Facades\DB::beginTransaction();
+
+            $stats = [
+                'sessions_processed' => 0,
+                'answers_recalculated' => 0,
+                'exams_affected' => [],
+            ];
+
+            // Get all sessions (optionally filter by exam_id if provided)
+            $sessionsQuery = \App\Models\StudentExamSession::with(['exam.examQuestions', 'studentAnswers.question']);
+
+            if ($request->filled('exam_id')) {
+                $sessionsQuery->where('exam_id', $request->exam_id);
+            }
+
+            $sessions = $sessionsQuery->get();
+
+            foreach ($sessions as $session) {
+                // Load exam questions mapping for this exam
+                $examQuestions = $session->exam->examQuestions->keyBy('question_id');
+
+                $totalScore = 0;
+                $breakdown = [
+                    'benar-benar' => 0,
+                    'benar-salah' => 0,
+                    'salah-benar' => 0,
+                    'salah-salah' => 0,
+                ];
+
+                // Recalculate each answer
+                foreach ($session->studentAnswers as $answer) {
+                    if (!$answer->question) {
+                        continue; // Skip if question was deleted
+                    }
+
+                    // Skip if no answers recorded
+                    if (is_null($answer->tier1_answer) || is_null($answer->tier2_answer)) {
+                        continue;
+                    }
+
+                    $question = $answer->question;
+
+                    // Recalculate category
+                    $category = $question->evaluateAnswer(
+                        (int)$answer->tier1_answer,
+                        (int)$answer->tier2_answer
+                    );
+
+                    // Get base points from exam_questions
+                    $examQuestion = $examQuestions->get($question->id);
+                    $basePoints = $examQuestion ? $examQuestion->points : 10;
+
+                    // Calculate points
+                    $points = $question->calculatePoints($category, $basePoints);
+
+                    // Update answer
+                    $answer->result_category = $category;
+                    $answer->points_earned = $points;
+                    $answer->save();
+
+                    // Accumulate for session totals
+                    $totalScore += $points;
+                    $breakdown[$category]++;
+
+                    $stats['answers_recalculated']++;
+                }
+
+                // Update session totals
+                $session->update([
+                    'total_score' => $totalScore,
+                    'scoring_breakdown' => $breakdown,
+                ]);
+
+                $stats['sessions_processed']++;
+
+                // Track affected exams
+                if (!in_array($session->exam_id, $stats['exams_affected'])) {
+                    $stats['exams_affected'][] = $session->exam_id;
+                }
+            }
+
+            // Clear item analysis cache for all affected exams
+            foreach ($stats['exams_affected'] as $examId) {
+                \Illuminate\Support\Facades\Cache::forget("item_analysis_{$examId}");
+            }
+
+            \Illuminate\Support\Facades\DB::commit();
+
+            return redirect()
+                ->back()
+                ->with('success', sprintf(
+                    'Berhasil menghitung ulang skor! Sessions: %d, Jawaban: %d, Ujian: %d',
+                    $stats['sessions_processed'],
+                    $stats['answers_recalculated'],
+                    count($stats['exams_affected'])
+                ));
+
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\DB::rollBack();
+
+            return redirect()
+                ->back()
+                ->with('error', 'Terjadi kesalahan saat menghitung ulang skor: ' . $e->getMessage());
+        }
+    }
 }

@@ -96,6 +96,8 @@
     </div>
 </div>
 
+@include('partials.help-button')
+
 <style>
     body {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

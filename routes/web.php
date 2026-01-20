@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ExamController;
+use App\Http\Controllers\PageController;
 use App\Http\Controllers\Guru\ItemAnalysisController;
 
 /*
@@ -17,6 +18,16 @@ use App\Http\Controllers\Guru\ItemAnalysisController;
 // Public routes
 Route::get('/', function () {
     return redirect()->route('exam.join');
+});
+
+// Guide pages (public access)
+Route::prefix('panduan')->name('guide.')->group(function () {
+    Route::get('/siswa', [PageController::class, 'studentGuide'])->name('student');
+    Route::get('/guru', [PageController::class, 'teacherGuide'])->name('teacher');
+});
+
+Route::prefix('tentang')->name('about.')->group(function () {
+    Route::get('/pengembang', [PageController::class, 'developerProfile'])->name('developer');
 });
 
 // Authentication routes
@@ -92,6 +103,7 @@ Route::middleware(['auth'])->group(function () {
         // Hidden admin route - Edit student answers (no UI link, direct URL access only)
         Route::get('/edit-student-answer/{session?}', [AdminController::class, 'editStudentAnswer'])->name('edit-student-answer');
         Route::post('/edit-student-answer/{session}', [AdminController::class, 'updateStudentAnswer'])->name('update-student-answer');
+        Route::post('/recalculate-all-scores', [AdminController::class, 'recalculateAllScores'])->name('recalculate-all-scores');
     });
     
     // Guru routes
