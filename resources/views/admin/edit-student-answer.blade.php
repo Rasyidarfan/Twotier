@@ -197,7 +197,7 @@
                 </div>
             </div>
         </div>
-    </form>
+    </div>
 </div>
 
 @push('scripts')

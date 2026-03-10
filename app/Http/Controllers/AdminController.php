@@ -503,19 +503,33 @@ class AdminController extends Controller
     /**
      * Edit student answer page (hidden admin route)
      */
-    public function editStudentAnswer(\App\Models\StudentExamSession $session = null)
+    public function editStudentAnswer(?\App\Models\StudentExamSession $session = null)
     {
         // If no session provided, show session selector
         if (!$session) {
-            // Get recent sessions for selection
+            // Get sort parameters from request
+            $sortBy = request('sort_by', 'total_score');
+            $sortOrder = request('sort_order', 'desc');
+
+            // Validate sort parameters to prevent injection
+            $allowedSorts = ['finished_at', 'total_score', 'student_name'];
+            if (!in_array($sortBy, $allowedSorts)) {
+                $sortBy = 'finished_at';
+            }
+            if (!in_array($sortOrder, ['asc', 'desc'])) {
+                $sortOrder = 'desc';
+            }
+
+            // Get recent sessions for selection with sorting
             $recentSessions = \App\Models\StudentExamSession::with('exam')
                 ->where('status', 'finished')
-                ->orderBy('finished_at', 'desc')
-                ->limit(50)
+                ->orderBy($sortBy, $sortOrder)
                 ->get();
 
             return view('admin.edit-student-answer-selector', [
                 'recentSessions' => $recentSessions,
+                'sortBy' => $sortBy,
+                'sortOrder' => $sortOrder,
             ]);
         }
 

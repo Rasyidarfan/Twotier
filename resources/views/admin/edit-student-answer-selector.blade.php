@@ -45,8 +45,9 @@
                     <h5 class="mb-0">Pilih Session</h5>
                 </div>
                 <div class="card-body">
+                    <!-- Search note -->
                     <div class="mb-3">
-                        <input type="text" id="searchSession" class="form-control" placeholder="Cari nama siswa atau exam...">
+                        <p class="text-muted small mb-0">💡 Gunakan sorting dan pagination untuk navigasi. Search hanya bekerja pada halaman saat ini.</p>
                     </div>
 
                     <div class="table-responsive">
@@ -54,15 +55,36 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Session ID</th>
-                                    <th>Nama Siswa</th>
+                                    <th>
+                                        <a href="{{ route('admin.edit-student-answer', ['sort_by' => 'student_name', 'sort_order' => $sortBy === 'student_name' && $sortOrder === 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none">
+                                            Nama Siswa
+                                            @if($sortBy === 'student_name')
+                                                <i class="bi bi-{{ $sortOrder === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th>Ujian</th>
-                                    <th>Total Skor</th>
-                                    <th>Selesai</th>
+                                    <th>
+                                        <a href="{{ route('admin.edit-student-answer', ['sort_by' => 'total_score', 'sort_order' => $sortBy === 'total_score' && $sortOrder === 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none">
+                                            Total Skor
+                                            @if($sortBy === 'total_score')
+                                                <i class="bi bi-{{ $sortOrder === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="{{ route('admin.edit-student-answer', ['sort_by' => 'finished_at', 'sort_order' => $sortBy === 'finished_at' && $sortOrder === 'asc' ? 'desc' : 'asc']) }}" class="text-decoration-none">
+                                            Selesai
+                                            @if($sortBy === 'finished_at')
+                                                <i class="bi bi-{{ $sortOrder === 'asc' ? 'arrow-up' : 'arrow-down' }}"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($recentSessions as $session)
+                                @forelse($recentSessions as $session)
                                 <tr>
                                     <td>{{ $session->id }}</td>
                                     <td>{{ $session->student_name }}</td>
@@ -75,9 +97,18 @@
                                         </a>
                                     </td>
                                 </tr>
-                                @endforeach
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-4">Tidak ada session yang ditemukan</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
+                    </div>
+
+                    <!-- Session count -->
+                    <div class="mt-3 text-muted small">
+                        Total: {{ count($recentSessions) }} session
                     </div>
                 </div>
             </div>
@@ -87,16 +118,6 @@
 
 @push('scripts')
 <script>
-document.getElementById('searchSession').addEventListener('keyup', function() {
-    const searchTerm = this.value.toLowerCase();
-    const rows = document.querySelectorAll('#sessionsTable tbody tr');
-
-    rows.forEach(row => {
-        const text = row.textContent.toLowerCase();
-        row.style.display = text.includes(searchTerm) ? '' : 'none';
-    });
-});
-
 function confirmRecalculate() {
     if (confirm('PERINGATAN!\n\nFitur ini akan menghitung ulang SEMUA skor siswa di SEMUA ujian berdasarkan jawaban yang tersimpan (tier1_answer dan tier2_answer).\n\nProses ini akan:\n✓ Menghitung ulang result_category\n✓ Menghitung ulang points_earned\n✓ Menghitung ulang total_score per session\n✓ Update scoring_breakdown\n✓ Clear cache analisis butir soal\n\nApakah Anda yakin ingin melanjutkan?')) {
         const form = document.getElementById('recalculateForm');
