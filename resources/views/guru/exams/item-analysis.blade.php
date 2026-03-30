@@ -51,10 +51,8 @@
                                     <h3 class="mb-0">{{ $analysis['statistics']['total_students'] }}</h3>
                                     @php
                                         $df = $analysis['statistics']['total_students'] - 2;
-                                        $rTabel = $analysis['items'][array_key_first($analysis['items'])]['validity']['r_tabel'] ?? 0;
                                     @endphp
-                                    <small class="text-muted d-block mt-1">r tabel = {{ number_format($rTabel, 3) }}
-                                        (df={{ $df }})</small>
+                                    <small class="text-muted d-block mt-1">df = {{ $df }}</small>
                                 </div>
                             </div>
                             <div class="col-md-3">
@@ -65,8 +63,11 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-2">
-                                    <h6 class="text-muted">Rata-rata Validitas</h6>
-                                    <h3 class="mb-0">{{ number_format($analysis['statistics']['avg_validity'], 3) }}</h3>
+                                    <h6 class="text-muted">Nilai r Tabel</h6>
+                                    @php
+                                        $rTabel = $analysis['items'][array_key_first($analysis['items'])]['validity']['r_tabel'] ?? 0;
+                                    @endphp
+                                    <h3 class="mb-0">{{ number_format($rTabel, 3) }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -372,7 +373,11 @@
     </div>
 
     @push('scripts')
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+        <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+        <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet">
         <script>
             // Current display mode
             let currentTableMode = 'soal';
@@ -440,6 +445,10 @@
                     btnPerTier.classList.remove('active');
                     // Save preference to localStorage
                     localStorage.setItem('itemAnalysisTableMode', 'soal');
+                    // Reinitialize DataTable for Per Soal
+                    if (dataTablePerSoal) {
+                        dataTablePerSoal.columns.adjust().draw();
+                    }
                 });
 
                 btnPerTier.addEventListener('click', () => {
@@ -450,6 +459,10 @@
                     btnPerSoal.classList.remove('active');
                     // Save preference to localStorage
                     localStorage.setItem('itemAnalysisTableMode', 'tier');
+                    // Reinitialize DataTable for Per Tier
+                    if (dataTablePerTier) {
+                        dataTablePerTier.columns.adjust().draw();
+                    }
                 });
 
                 // Load saved preference from localStorage
@@ -459,9 +472,58 @@
                 }
             }
 
+            // Initialize DataTables
+            let dataTablePerSoal = null;
+            let dataTablePerTier = null;
+
+            function initializeDataTables() {
+                // Destroy existing instances if they exist
+                if (dataTablePerSoal) {
+                    dataTablePerSoal.destroy();
+                }
+                if (dataTablePerTier) {
+                    dataTablePerTier.destroy();
+                }
+
+                // Initialize Per Soal table
+                dataTablePerSoal = $('#studentScoresTable').DataTable({
+                    paging: false,
+                    searching: true,
+                    info: false,
+                    columnDefs: [
+                        { orderable: false, targets: 0 } // Disable sorting for No column
+                    ],
+                    order: [],
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        emptyTable: "Tidak ada data tersedia"
+                    }
+                });
+
+                // Initialize Per Tier table
+                dataTablePerTier = $('#studentScoresTierTable').DataTable({
+                    paging: false,
+                    searching: true,
+                    info: false,
+                    columnDefs: [
+                        { orderable: false, targets: 0 } // Disable sorting for No column
+                    ],
+                    order: [],
+                    language: {
+                        search: "Cari:",
+                        lengthMenu: "Tampilkan _MENU_ entri",
+                        emptyTable: "Tidak ada data tersedia"
+                    }
+                });
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
                 // Setup table toggle functionality
                 setupTableToggle();
+
+                // Initialize DataTables
+                initializeDataTables();
 
                 // Prepare data for charts
                 const items = @json($analysis['items']);
