@@ -87,7 +87,11 @@ class ItemAnalysisService
                 $studentRow = [
                     'student_name' => $session->student_name,
                     'total_score' => $session->total_score,
-                    'scores' => []
+                    'scores' => [],
+                    'tier_scores' => [
+                        'tier1' => [],
+                        'tier2' => []
+                    ]
                 ];
 
                 foreach ($exam->examQuestions as $examQuestion) {
@@ -95,6 +99,9 @@ class ItemAnalysisService
                     $answer = $session->studentAnswers->firstWhere('question_id', $questionId);
 
                     $itemScore = 0;
+                    $tier1Score = 0;
+                    $tier2Score = 0;
+
                     if ($answer) {
                         $itemScore = match ($answer->result_category) {
                             'benar-benar' => 2,
@@ -103,9 +110,16 @@ class ItemAnalysisService
                             'salah-salah' => 0,
                             default => 0
                         };
+
+                        // Decode result_category to individual tier scores (0 or 1)
+                        $tier1Score = in_array($answer->result_category, ['benar-benar', 'benar-salah']) ? 1 : 0;
+                        $tier2Score = in_array($answer->result_category, ['benar-benar', 'salah-benar']) ? 1 : 0;
                     }
 
-                    $studentRow['scores'][$examQuestion->question_order] = $itemScore;
+                    $questionOrder = $examQuestion->question_order;
+                    $studentRow['scores'][$questionOrder] = $itemScore;
+                    $studentRow['tier_scores']['tier1'][$questionOrder] = $tier1Score;
+                    $studentRow['tier_scores']['tier2'][$questionOrder] = $tier2Score;
                 }
 
                 $studentScores[] = $studentRow;
@@ -186,6 +200,9 @@ class ItemAnalysisService
 
     /**
      * Calculate reliability (Cronbach's Alpha) for the entire exam
+     * Formula: α = (k/(k-1)) × (1 - Σσ²ᵢ/σ²ₜ)
+     * Where: k = number of items, σ²ᵢ = item variance, σ²ₜ = total score variance
+     * Important: Total variance must be calculated from summed item scores, not from database total_score
      */
     private function calculateReliability(int $examId): array
     {
@@ -204,9 +221,8 @@ class ItemAnalysisService
             ];
         }
 
-        // Calculate variance per item
-        $itemVariances = [];
-
+        // Get item scores for all items
+        $itemScoresMatrix = [];
         foreach ($exam->examQuestions as $examQuestion) {
             $questionId = $examQuestion->question->id;
 
@@ -226,17 +242,12 @@ class ItemAnalysisService
                 };
             })->toArray();
 
-            $itemVariances[] = $this->variance($itemScores);
+            $itemScoresMatrix[] = $itemScores;
         }
 
-        // Calculate total variance
-        $totalScores = $sessions->pluck('total_score')->toArray();
-        $totalVariance = $this->variance($totalScores);
+        $k = count($itemScoresMatrix);
 
-        // Calculate Cronbach's Alpha
-        $k = count($itemVariances);
-
-        if ($k < 2 || $totalVariance == 0) {
+        if ($k < 2) {
             return [
                 'alpha' => 0,
                 'interpretation' => 'Data Tidak Cukup',
@@ -244,8 +255,34 @@ class ItemAnalysisService
             ];
         }
 
+        // Calculate variance for each item
+        $itemVariances = array_map(fn($scores) => $this->variance($scores), $itemScoresMatrix);
         $sumItemVariance = array_sum($itemVariances);
+
+        // Calculate total score variance from summed item scores (not from database total_score)
+        $totalScores = [];
+        for ($studentIdx = 0; $studentIdx < $sessions->count(); $studentIdx++) {
+            $total = 0;
+            for ($itemIdx = 0; $itemIdx < $k; $itemIdx++) {
+                $total += $itemScoresMatrix[$itemIdx][$studentIdx];
+            }
+            $totalScores[] = $total;
+        }
+        $totalVariance = $this->variance($totalScores);
+
+        // Apply Cronbach's Alpha formula: α = (k/(k-1)) × (1 - Σσ²ᵢ/σ²ₜ)
+        if ($totalVariance == 0) {
+            return [
+                'alpha' => 0,
+                'interpretation' => 'Data Tidak Cukup',
+                'color' => 'secondary',
+            ];
+        }
+
         $alpha = ($k / ($k - 1)) * (1 - ($sumItemVariance / $totalVariance));
+
+        // Clamp alpha to [0, 1] range (theoretical limit)
+        $alpha = max(0, min(1, $alpha));
 
         // Interpretation
         $isReliable = $alpha > 0.6;

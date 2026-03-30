@@ -164,54 +164,127 @@
                 <div class="card shadow-sm">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Tabel Nilai Siswa</h5>
-                        <button class="btn btn-sm btn-primary" onclick="copyTableToClipboard(event)">
-                            <i class="bi bi-clipboard me-1"></i>
-                            Copy untuk Excel
-                        </button>
+                        <div class="d-flex gap-2 align-items-center">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-secondary active" id="btnPerSoal" data-mode="soal">
+                                    <i class="bi bi-list-ul me-1"></i>Per Soal
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary" id="btnPerTier" data-mode="tier">
+                                    <i class="bi bi-diagram-3 me-1"></i>Per Tier
+                                </button>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="copyTableToClipboard(event)">
+                                <i class="bi bi-clipboard me-1"></i>
+                                Copy untuk Excel
+                            </button>
+                        </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm align-middle" id="studentScoresTable">
-                                <thead class="table-light">
-                                    <tr class="text-center">
-                                        <th style="width: 5%;">No</th>
-                                        <th style="width: 20%;">Nama Siswa</th>
-                                        @foreach($analysis['items'] as $item)
-                                            <th style="width: {{ 60 / count($analysis['items']) }}%;">
-                                                S{{ $item['question_number'] }}</th>
-                                        @endforeach
-                                        <th style="width: 15%;">Total Nilai</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($analysis['student_scores'] as $index => $student)
-                                        <tr>
-                                            <td class="text-center">{{ $index + 1 }}</td>
-                                            <td>{{ $student['student_name'] }}</td>
-                                            @foreach($student['scores'] as $score)
-                                                <td class="text-center">
-                                                    @if($score == 2)
-                                                        <span class="badge bg-success">{{ $score }}</span>
-                                                    @elseif($score == 1)
-                                                        <span class="badge bg-warning text-dark">{{ $score }}</span>
-                                                    @else
-                                                        <span class="badge bg-danger">{{ $score }}</span>
-                                                    @endif
-                                                </td>
+                        <!-- Per Soal Mode -->
+                        <div id="containerPerSoal" style="display: block;">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle" id="studentScoresTable">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th style="width: 5%;">No</th>
+                                            <th style="width: 20%;">Nama Siswa</th>
+                                            @foreach($analysis['items'] as $item)
+                                                <th style="width: {{ 60 / count($analysis['items']) }}%;">
+                                                    S{{ $item['question_number'] }}</th>
                                             @endforeach
-                                            <td class="text-center"><strong>{{ $student['total_score'] }}</strong></td>
+                                            <th style="width: 15%;">Total Nilai</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($analysis['student_scores'] as $index => $student)
+                                            <tr>
+                                                <td class="text-center">{{ $index + 1 }}</td>
+                                                <td>{{ $student['student_name'] }}</td>
+                                                @foreach($student['scores'] as $score)
+                                                    <td class="text-center">
+                                                        @if($score == 2)
+                                                            <span class="badge bg-success">{{ $score }}</span>
+                                                        @elseif($score == 1)
+                                                            <span class="badge bg-warning text-dark">{{ $score }}</span>
+                                                        @else
+                                                            <span class="badge bg-danger">{{ $score }}</span>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                                <td class="text-center"><strong>{{ $student['total_score'] }}</strong></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <strong>Keterangan:</strong>
+                                    <span class="badge bg-success">2</span> = Benar-Benar (Paham Konsep),
+                                    <span class="badge bg-warning text-dark">1</span> = Parsial (Benar-Salah atau Salah-Benar),
+                                    <span class="badge bg-danger">0</span> = Salah-Salah (Tidak Paham)
+                                </small>
+                            </div>
                         </div>
-                        <div class="mt-3">
-                            <small class="text-muted">
-                                <strong>Keterangan:</strong>
-                                <span class="badge bg-success">2</span> = Benar-Benar (Paham Konsep),
-                                <span class="badge bg-warning text-dark">1</span> = Parsial (Benar-Salah atau Salah-Benar),
-                                <span class="badge bg-danger">0</span> = Salah-Salah (Tidak Paham)
-                            </small>
+
+                        <!-- Per Tier Mode -->
+                        <div id="containerPerTier" style="display: none;">
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-sm align-middle" id="studentScoresTierTable">
+                                    <thead class="table-light">
+                                        <tr class="text-center">
+                                            <th style="width: 5%;">No</th>
+                                            <th style="width: 20%;">Nama Siswa</th>
+                                            @php
+                                                $totalTierColumns = count($analysis['items']) * 2;
+                                                $tierColumnWidth = 60 / $totalTierColumns;
+                                            @endphp
+                                            @foreach($analysis['items'] as $item)
+                                                <th style="width: {{ $tierColumnWidth }}%;">S{{ $item['question_number'] }}T1</th>
+                                                <th style="width: {{ $tierColumnWidth }}%;">S{{ $item['question_number'] }}T2</th>
+                                            @endforeach
+                                            <th style="width: 15%;">Total Nilai</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($analysis['student_scores'] as $index => $student)
+                                            <tr>
+                                                <td class="text-center">{{ $index + 1 }}</td>
+                                                <td>{{ $student['student_name'] }}</td>
+                                                @foreach($analysis['items'] as $item)
+                                                    @php
+                                                        $questionNum = $item['question_number'];
+                                                        $tier1Score = $student['tier_scores']['tier1'][$questionNum] ?? 0;
+                                                        $tier2Score = $student['tier_scores']['tier2'][$questionNum] ?? 0;
+                                                    @endphp
+                                                    <td class="text-center">
+                                                        @if($tier1Score == 1)
+                                                            <span class="badge bg-success">1</span>
+                                                        @else
+                                                            <span class="badge bg-danger">0</span>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if($tier2Score == 1)
+                                                            <span class="badge bg-success">1</span>
+                                                        @else
+                                                            <span class="badge bg-danger">0</span>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                                <td class="text-center"><strong>{{ $student['total_score'] }}</strong></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <small class="text-muted">
+                                    <strong>Keterangan:</strong>
+                                    <span class="badge bg-success">1</span> = Benar,
+                                    <span class="badge bg-danger">0</span> = Salah
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -301,9 +374,14 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
         <script>
+            // Current display mode
+            let currentTableMode = 'soal';
+
             // Function to copy table to clipboard for Excel
             function copyTableToClipboard(event) {
-                const table = document.getElementById('studentScoresTable');
+                // Determine which table is currently visible
+                const tableId = currentTableMode === 'soal' ? 'studentScoresTable' : 'studentScoresTierTable';
+                const table = document.getElementById(tableId);
                 let tsv = '';
 
                 // Get headers
@@ -347,7 +425,44 @@
                 });
             }
 
+            // Toggle table display mode
+            function setupTableToggle() {
+                const btnPerSoal = document.getElementById('btnPerSoal');
+                const btnPerTier = document.getElementById('btnPerTier');
+                const containerPerSoal = document.getElementById('containerPerSoal');
+                const containerPerTier = document.getElementById('containerPerTier');
+
+                btnPerSoal.addEventListener('click', () => {
+                    currentTableMode = 'soal';
+                    containerPerSoal.style.display = 'block';
+                    containerPerTier.style.display = 'none';
+                    btnPerSoal.classList.add('active');
+                    btnPerTier.classList.remove('active');
+                    // Save preference to localStorage
+                    localStorage.setItem('itemAnalysisTableMode', 'soal');
+                });
+
+                btnPerTier.addEventListener('click', () => {
+                    currentTableMode = 'tier';
+                    containerPerSoal.style.display = 'none';
+                    containerPerTier.style.display = 'block';
+                    btnPerTier.classList.add('active');
+                    btnPerSoal.classList.remove('active');
+                    // Save preference to localStorage
+                    localStorage.setItem('itemAnalysisTableMode', 'tier');
+                });
+
+                // Load saved preference from localStorage
+                const savedMode = localStorage.getItem('itemAnalysisTableMode');
+                if (savedMode === 'tier') {
+                    btnPerTier.click();
+                }
+            }
+
             document.addEventListener('DOMContentLoaded', function () {
+                // Setup table toggle functionality
+                setupTableToggle();
+
                 // Prepare data for charts
                 const items = @json($analysis['items']);
 
