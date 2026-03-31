@@ -103,7 +103,7 @@
                                                 <option value="">-- Pilih --</option>
                                                 @foreach($data['tier1_options'] as $index => $option)
                                                     <option value="{{ $index }}"
-                                                            {{ $data['tier1_answer'] == $index ? 'selected' : '' }}>
+                                                            {{ ($data['tier1_answer'] ?? 0) == $index ? 'selected' : '' }}>
                                                         {{ chr(65 + $index) }}. {{ Str::limit($option, 30) }}
                                                     </option>
                                                 @endforeach
@@ -116,7 +116,7 @@
                                                 <option value="">-- Pilih --</option>
                                                 @foreach($data['tier2_options'] as $index => $option)
                                                     <option value="{{ $index }}"
-                                                            {{ $data['tier2_answer'] == $index ? 'selected' : '' }}>
+                                                            {{ ($data['tier2_answer'] ?? 0) == $index ? 'selected' : '' }}>
                                                         {{ chr(65 + $index) }}. {{ Str::limit($option, 30) }}
                                                     </option>
                                                 @endforeach

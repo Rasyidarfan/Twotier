@@ -539,6 +539,26 @@ class AdminController extends Controller
             'studentAnswers.question'
         ]);
 
+        // Ensure all questions have StudentAnswer records (create missing ones with default A=0)
+        foreach ($session->exam->examQuestions as $examQuestion) {
+            $question = $examQuestion->question;
+            \App\Models\StudentAnswer::firstOrCreate(
+                [
+                    'session_id' => $session->id,
+                    'question_id' => $question->id,
+                ],
+                [
+                    'tier1_answer' => 0,  // Default to A (index 0)
+                    'tier2_answer' => 0,  // Default to A (index 0)
+                    'result_category' => null,
+                    'points_earned' => 0,
+                ]
+            );
+        }
+
+        // Reload studentAnswers after creating missing records
+        $session->load('studentAnswers.question');
+
         // Get all answers with question details
         $answersData = [];
         foreach ($session->exam->examQuestions as $examQuestion) {
@@ -546,7 +566,7 @@ class AdminController extends Controller
             $answer = $session->studentAnswers->firstWhere('question_id', $question->id);
 
             $answersData[] = [
-                'answer_id' => $answer->id ?? null,
+                'answer_id' => $answer->id,
                 'question_order' => $examQuestion->question_order,
                 'question_id' => $question->id,
                 'question_text' => strip_tags($question->tier1_question),
@@ -554,10 +574,10 @@ class AdminController extends Controller
                 'tier2_options' => $question->tier2_options,
                 'tier1_correct' => $question->tier1_correct_answer,
                 'tier2_correct' => $question->tier2_correct_answer,
-                'tier1_answer' => $answer->tier1_answer ?? null,
-                'tier2_answer' => $answer->tier2_answer ?? null,
-                'result_category' => $answer->result_category ?? null,
-                'points_earned' => $answer->points_earned ?? 0,
+                'tier1_answer' => $answer->tier1_answer,
+                'tier2_answer' => $answer->tier2_answer,
+                'result_category' => $answer->result_category,
+                'points_earned' => $answer->points_earned,
                 'base_points' => $examQuestion->points,
             ];
         }
